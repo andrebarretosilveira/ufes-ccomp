@@ -1,2 +1,2 @@
-# ufes
-Trabalhos e códigos relacionados ao meu curso.
+# ufes-ccomp
+Trabalhos e códigos de matérias do curso Ciência da Computação.
