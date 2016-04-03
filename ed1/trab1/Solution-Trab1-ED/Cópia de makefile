@@ -1,4 +1,0 @@
-all :
-		gcc -c programa.c tadlista.c
-		gcc -o programa programa.o tadlista.o
-		./programa

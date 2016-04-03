@@ -1,1 +1,0 @@
-valgrind --leak-check=full --gen-suppressions=yes --show-reachable=yes --read-var-info=yes --track-origins=yes energie teste1.txt
