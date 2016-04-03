@@ -1,0 +1,37 @@
+
+/angle 4 def
+/order 3 def
+/rotateimage 30 def
+
+
+/a { 360 angle div } def 
+/s { 2 order neg exp } def	% 1/2^order
+/sinv { 2 order exp } def	% 2^order
+
+/len 72 def
+
+/F { len 0 rlineto } def
+/G   { len 0 rmoveto } def
+/+ {a rotate} def
+/- {a neg rotate} def
+
+/pageLetterCenter { 297.72 421.2 } def
+/linewidth 0.1 def
+
+gsave
+
+pageLetterCenter translate
+
+
+
+rotateimage rotate
+s s scale
+linewidth setlinewidth
+
+newpath 0 0 moveto
+
+stroke
+
+grestore
+
+showpage

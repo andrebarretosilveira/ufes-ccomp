@@ -1,0 +1,63 @@
+dores do rio preto
+3 6
+apiaca
+5 3
+presidente kennedy
+9 3
+marataizes
+11 4
+rio novo do sul
+10 5
+vargem alta
+9 7
+castelo
+7 7
+venda nova
+7 9
+ibatiba
+4 10
+afonso claudio
+6 11
+domingos martins
+11 9
+viana
+13 9
+serra
+14 10
+fundao
+12 11
+itarana
+10 12
+baixo guando
+9 15
+colatina
+12 15
+linhares
+16 16
+rio bananal
+14 17
+alto rio novo
+10 19
+mantenoplis
+9 20
+jaguare
+18 20
+nova venecia
+15 21
+agua doce do norte
+10 23
+ecoporanga
+12 24
+boa esperanca
+16 23
+sao mateus
+19 21
+conceicao da barra
+24 22
+pedro canario
+18 25
+montanha
+15 26
+
+
+

@@ -1,0 +1,4 @@
+angle 8 ; means 360/8
+order 3
+axiom ++F
+F = F+F

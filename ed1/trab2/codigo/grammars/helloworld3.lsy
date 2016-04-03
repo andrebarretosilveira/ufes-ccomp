@@ -1,0 +1,4 @@
+angle 8 ; means 360/8
+order 2
+axiom ++FX
+X = [-FX]+FX

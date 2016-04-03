@@ -1,0 +1,14 @@
+rua incluir   17 3 "Av. Fernando Ferrari"
+rua incluir   17 3 "Av. Fernando Ferrari"
+rua incluir   13 3 "Rua Carlos Martins"
+rua incluir   13 7 "Av. Munir Hilal"
+rua eliminar  13 7
+rua eliminar  13 7
+rua incluir   13 7 "Av. Munir Hilal"
+casa incluir  13 7 8 123 "Jose Manuel Sacramento"
+casa incluir  13 7 9 111 "Diogo Sacramento"
+casa incluir  13 7 2 133 "Rodrigo Sacramento"
+casa eliminar 13 7 8
+casa consumir 17 3 8 255
+bairro medir  17
+cidade medir

@@ -1,0 +1,4 @@
+angle 4 ; means 360/4
+order 2
+axiom F
+F = F[+F-]F ; F = F+F-F
