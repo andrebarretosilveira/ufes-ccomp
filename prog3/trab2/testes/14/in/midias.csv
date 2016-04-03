@@ -1,0 +1,21 @@
+Código;Nome;Tipo;Diretor;A(u)tores;Tamanho;Gênero;Série;Temporada;Possui ?;Consumiu?;Deseja ?;Preço
+1;Batman: o Inicio;F;3;1,4;140;AC;;;x;x;x;59,99
+2;Batman: O Cavaleiro das Trevas;F;3;1,2,4;152;AC;;;x;x;;39,99
+3;Batman: O Cavaleiro das Trevas Ressurge;F;3;1,4;165;AC;;;;;x;59,99
+4;O Cavaleiro das Trevas;L;;5;200;AC;;;;;x;79,99
+5;Warcraft: The Beginning;F;6;7;256;WA;;;;;x;39,99
+6;Sobrenatural – primeira temporada ;S;8;9,1;1100;TE;Sobrenatural;1;x;;;31,99
+7;Sobrenatural – terceira temporada ;S;8;9,1;950;TE;Sobrenatural;3;x;x;;33,99
+8;Dois homens e meio – primeira temporada;S;11;12,13;660;CO;Dois homens e meio;1;;;x;24,9
+9;Ela dança, eu danço e dando a volta por cima;F;14;15,16;104;DA;;;;;;59,99
+10;Os Incríveis;F;17;;115;IN;;;x;;x;20
+11;Se eu fosse você;F;20;19,21;104;CR;;;x;x;;59,99
+12;O vencedor;F;22;1,23;115;DR;;;;x;;18
+13;Harry Potter e as relíquias da morte;L;;24;561;FA;;;x;x;x;79,99
+14;Demolidor;F;26;25;103;FC;;;x;;;24,9
+15;A Origem;F;3;27;148;FC;;;;x;x;15
+16;Vikings – primeira Temporada;S;;;419;AC;Vikings;1;x;;;39,99
+17;O Nome do Vento;L;;28;656;FA;;;x;x;x;59,99
+18;Corações de Ferro;F;29;30;134;WA;;;;;x;11
+19;Clube da Luta;F;31;30;139;LU;;;x;;x;24,9
+20;300;F;32;33;117;WA;;;x;x;x;39,99

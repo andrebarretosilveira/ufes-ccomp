@@ -1,0 +1,370 @@
+\documentclass{article}
+
+\usepackage[brazil]{babel}    %%% Muda variáveis, ex. Abstract ---> Resumo
+\usepackage[latin1]{inputenc} %%% Substitui acentuação por TeX puro
+                              %%% Permite escrever com acentos, til e cedilha
+\usepackage[mmddyyyy,24hr]{datetime}	% Must come after 'babel' package
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{amsbsy}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{pstricks,pst-plot}
+\newcommand{\f}{\footnotesize}
+
+\newcommand{\transpose}{{^{\mathsf{T}}}}
+
+\newcommand{\aalpha}{{\boldsymbol{\alpha}}}
+\newcommand{\bbeta}{{\boldsymbol{\beta}}}
+\newcommand{\bb}{{\mathbf{b}}}
+\newcommand{\cc}{{\mathbf{c}}}
+\newcommand{\CC}{{\mathbf{C}}}
+\newcommand{\ee}{{\mathbf{e}}}
+\newcommand{\ff}{{\mathbf{f}}}
+\newcommand{\FF}{{\mathbf{F}}}
+\newcommand{\mm}{{\boldsymbol{{\mu}}}}
+\newcommand{\SSigma}{{\mathbf{{\Sigma}}}}
+\newcommand{\nnabla}{{\mathbf{{\nabla}}}}
+\newcommand{\mmm}{{\mathbf{m}}}
+\newcommand{\OO}{{\mathbf{O}}}
+\newcommand{\boldZero}{{\mathbf{0}}}
+\newcommand{\uu}{{\mathbf{u}}}
+\newcommand{\pp}{{\mathbf{p}}}
+\newcommand{\qq}{{\mathbf{q}}}
+\newcommand{\vv}{{\mathbf{v}}}
+\newcommand{\JJ}{{\mathbf{J}}}
+\newcommand{\jj}{{\mathbf{j}}}
+\newcommand{\hh}{{\mathbf{h}}}
+\newcommand{\ww}{{\mathbf{w}}}
+\newcommand{\ttau}{{\boldsymbol{{\tau}}}}
+\newcommand{\ttheta}{{\boldsymbol{{\theta}}}}
+\newcommand{\tb}{{\mathbf{t}}}
+\newcommand{\TT}{{\mathbf{T}}}
+\newcommand{\xx}{{\mathbf{x}}}
+\newcommand{\XX}{{\mathbf{X}}}
+\newcommand{\yy}{{\mathbf{y}}}
+
+\newcommand{\refeq}[1]{(\ref{eq:#1})}
+\newcommand{\reffig}[1]{fig.~\ref{fig:#1}}
+\newcommand{\refFig}[1]{Fig.~\ref{fig:#1}}
+\newcommand{\reftab}[1]{tabela~\ref{tab:#1}}
+\newcommand{\refTab}[1]{Tabela~\ref{tab:#1}}
+\newcommand{\refsection}[1]{seção~\ref{sec:#1}}
+\newcommand{\refSection}[1]{Seção~\ref{sec:#1}}
+
+
+
+\parindent=0pt
+
+% English
+\hyphenation{pi-xel pi-xels}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[obeyspaces]{url}% http://ctan.org/pkg/url
+\usepackage{hyperref}% http://ctan.org/pkg/hyperref
+\usepackage{etoolbox}
+\makeatletter
+\newcommand\urlemail[2]{%                %\newcommand\tpj@compose@mailto[3]{%
+\edef\@tempa{mailto:#1?subject=#2 }%
+\edef\@tempb{\expandafter\html@spaces\@tempa\@empty}%
+\mbox{\url{\@tempb}}}
+
+\catcode\%=11
+\def\html@spaces#1 #2{#1%20\ifx#2\@empty\else\expandafter\html@spaces\fi#2}
+\catcode\%=14
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\usepackage{geometry}
+\geometry{verbose,a4paper,tmargin=1.8cm,bmargin=1.8cm,lmargin=1.8cm,rmargin=1.8cm}
+\setlength{\parskip}{10pt}	% Vertical distance between two paragraphs
+
+
+\begin{document}
+\typeout{-------------------- L a T e X\space\space\space P A R A M E T E R S}
+\typeout{Paper height              = \the\paperheight}
+\typeout{Paragraph skip            = \the\parskip}
+\typeout{---------------------------------------------------}
+
+
+\begin{center}\textbf{
+\large UFES - CENTRO TECNOLÓGICO\\ DEPARTAMENTO DE INFORMÁTICA\\
+\normalsize Prof. Thomas W. Rauber\\
+Estruturas de Dados I -- Engenharia de Computação \& Ciência da Computação}
+\end{center}
+
+% \textordfeminine
+\textbf{2\textordmasculine\ Trabalho 2015/1} --
+\textbf{Sistemas de Lindenmayer}\\
+
+%\vspace{1cm}
+Última atualização: \today, \currenttime\\
+Data de entrega: veja \url{www.inf.ufes.br/~thomas}
+
+
+Linguagem de Programação para Implementação: C\\
+%Engenharia de Computação: C ou C++\\
+%Estatística: Octave\\
+%Octave/Matlab, preferencialmente código que seja compatível com os dois ambientes\\
+%C\\
+Grupo de até dois alunos
+
+\textbf{Objetivo:}
+Criação de interpretador de um sistema de Lindenmayer (\emph{L-system}).
+Visualização do objeto gráfico gerado.
+Representação e manipulação de informação estruturada por linguagem
+de programação de alto nível, listas, pilhas e árvores.\\
+
+\textbf{Parte I (7 Pontos):}
+
+Um sistema de Lindenmayer
+\cite{lindenmayer1968mathematical}
+\cite{L-Sistema}, \cite{L-system}, \cite{Interactive-L-system}
+\cite{L-system-Matlab},
+é uma gramatica formal que permite a geração de palavras finais (strings)
+que podem ser interpretadas como comandos simples de uma sistema gráfico de
+tartaruga.
+A sintaxe adotada neste trabalho deve ser o do
+material\footnote{A página contém um Java applet que tem que ser executado
+para ver o sistema em ação. Algumas versões mais
+novas do Java não permitem a execução deste applet não certificado.
+Assim tem que introduzir uma exceção pela interface de
+configuração do Java para permitir a execução.
+No Linux é o comando \texttt{javaws}, aba 'Security', 'Edit Site List',
+'Add' do site citado em \cite{L-system-Jennings}.}
+de Jennings \cite{L-system-Jennings}.
+
+
+Em um primeiro instante o programa deve ler um
+arquivo que contém a descrição completa da gramatica
+e preencher variáveis o estruturas de dados apropriadas.
+
+
+A funcionalidade da primeira versão devem incluir
+todos os comandos do preâmbulo e da produção e
+os comandos básicos da tartaruga, listados
+na \reftab{comandos}
+
+
+\begin{table*}[!ht]
+\centering
+\begin{tabular}{{ll}}
+\hline
+      % \bf Unidade & \bf Parâmetros  \\
+\hline
+\multicolumn{2}{l}{Preâmbulo}\\
+\hline
+angle $n$	&	Vira a tartaruga $360/n$ graus quando o comando + ou - for acionado\\
+order $n$	&	aplique a regras de produção $n$ vezes\\
+rotate $\alpha$	&	Rotacione a imagem inteira $\alpha$ antes de começar a desenhar\\
+\hline
+\multicolumn{2}{l}{Produção}\\
+\hline
+axiom \emph{string}	&	A string inicial do L-Sistema (ordem 0)\\
+$p = \emph{string}$	&	Regra de produção. Em cada iteração (ordem) todas as instâncias do\\
+& símbolo único $p$ serão substituídos pela string \emph{string}. Note que $p$ obrigatoriamente\\
+& é um único símbolo, e não pode ser do conjunto de caracteres especiais\\
+& $=, +, -, !, |, [, ], <, >, @, /, \setminus, \_, c$, ou espaço.\\
+& Maiúsculos são diferentes de minúsculos.\\
+\hline
+\multicolumn{2}{l}{Gráficos de Tartaruga}\\
+\hline
+F	&	Mover tartaruga com caneta baixada\\
+G	&	Mover tartaruga com caneta levantada\\
+$+$	&	Virar tartaruga por ângulo positivo\\
+$-$	&	Virar tartaruga por ângulo negativo\\
+$[$	&	Empilhar o estado da tartaruga (posição, orientação,
+	comprimento da reta e cor)\\
+$]$	&	Desempilhar o estado da tartaruga\\
+\hline
+\end{tabular}
+\caption{Sintaxe do L-Sistema segundo \cite{L-system-Jennings}}
+\label{tab:comandos}
+\end{table*}
+
+
+As regras de produção devem ser organizadas como lista encadeada.
+
+Todas as produções devem ser organizadas em uma árvore com
+número de filhos variável. A string final são as folhas dessa árvore.
+Inicialmente a string que cresce durante a aplicação das
+regras pode ser implementada como string mesmo,
+o que facilita a implementação (ou em paralelo).
+A string final unicamente é composta pelos
+comandos gráficos da tartaruga da \reftab{comandos}, sem serem
+interpretados pelo sistema de produção da string final.
+
+
+Dicas: Como tem uma quantidade elevada de processamento de cadeia de
+caracteres (strings), recomenda-se usar as utilidades providenciadas
+pelo sistema, por exemplo \texttt{strstr} para procurar uma
+string dentro da outra, ou \texttt{strcspn} para eliminar
+caracteres indesejados dentro de uma string.
+
+
+\textbf{Parte II (2 Pontos):}
+%$\ldots$
+
+Os comandos de empilhar e desempilhar o estado da tartaruga \texttt{[}
+e \texttt{]}, devem ser interpretados do lado do sistema não gráfico.
+Para atingir este objetivo tem que existir uma pilha que guarda
+uma estrutura do estado atual da tartaruga (posição (x,y), orientação,
+comprimento da reta desenhada e cor).
+Além disso, os comandos de desenhar uma reta (F) e se mover sem
+desenhar (G) têm que ser quebradas em unidades elementares,
+pois o retorno para um estado anterior requer a inicialização
+do caminho atual (\texttt{newpath} do Postscript).
+
+Dessa maneira a string final gerada deve ser convertida
+para uma string de tartaruga composta por
+comandos básicos com a seguinte sintaxe:\\
+\texttt{
+   n x0 y0 m x1 x2 l s\\
+}
+onde \texttt{(x0,y0)} e \texttt{(x1,y1)} são os pontos
+iniciais e finais de uma reta 
+\texttt{n} significa \texttt{newpath}, \texttt{l lineto},
+\texttt{m moveto} e \texttt{s stroke}
+e são diretamente interpretado pelo Postscript.
+   
+Exemplo que desenha um triângulo:
+
+\texttt{n   0   0 m 100 100 l s\\
+n 100 100 m 200   0 l s\\
+n 200   0 m   0   0 l s\\
+}
+
+A quebra de linha não precisa aparecer na string, portanto
+a seguinte chamada da função \texttt{genpsTurtle},
+providenciada na interface, com a combinação de comandos acima 
+desenha o triângulo:
+  
+\texttt{genpsTurtle( 4.0, 2, 0.0,\\
+"n 0 0 m 100 100 l s n 100 100 m 200 0 l s n 200 0 m 0 0 l s",
+"triangulo.ps" );
+}
+ 
+Ajuda: É necessário guardar o estado gráfico em uma pilha
+(Sem mudar a cor e o tamanho da reta,
+pelo menos a posição (x,y) e orientação).
+Encontrando o símbolo \texttt{+}, a orientação deve
+ser incrementada pelo ângulo base, \texttt{-} decrementa.
+Quando aparecer \texttt{[}, deve empilhar o estado,
+com \texttt{]} desempilhar, ou seja restabelecer
+a posição e orientação. Quando aparecer \texttt{F},
+um comando básico da tartaruga deve ser acrescentado ao
+string da tartaruga.
+A nova posição deve ser calculada da seguinte maneira
+\begin{equation*}
+x_{1} = x_{0} + z \cos(\alpha),\hspace{0.5cm}
+y_{1} = y_{0} + z \sin(\alpha),
+\end{equation*}
+onde $z$ é o comprimento da reta (\emph{stroke length})
+e $\alpha$ é a orientação atual. Cuidado: As funções
+trigonométricas do C exigem os argumentos em radianos.
+
+
+%$\ldots$ a ser continuado em breve $\ldots$
+
+%\textbf{Parte III (1 Ponto):}
+%$\ldots$
+
+
+
+\textbf{Exemplo de executável:}
+
+
+\textbf{Elaboração:}
+%A pasta do código contém um projeto completo, menos
+%as partes a serem desenvolvidas. O \texttt{Makefile}
+%precisa de arquivo(s) de código fonte \texttt{*.c} que devem ser
+%desenvolvidos. Pode-se modificar o projeto, por exemplo
+%dividir o código que falta em vários arquivos
+%e modificar o \texttt{Makefile} em correspondência.
+O resultado deve ser um executável que lê um arquivo de entrada
+com a especificação da gramatica e produz dois arquivos de
+saída Postscript com os resultados,
+por exemplo \texttt{lsystem test.lsy test.ps testTurtle.ps}.
+Os alunos obrigatoriamente devem fornecer arquivos de exemplos
+testados. O usuário (neste caso o professor) não deve ter o trabalho
+de digitar nada, além da linha de comando.
+Uma interface para o Postscript está sendo fornecido,
+a função \texttt{genps} que gera o arquivo com a string
+diretamente produzida pelo L-Sistema e a função
+\texttt{genpsTurtle} da parte II do trabalho que gera
+o arquivo com a string de comandos básicos,
+convertidos da string original.
+
+O produto final deve ser um arquivo no formato \texttt{zip}
+com a seguinte sintaxe:
+\texttt{aluno1+aluno2.zip}.
+Atenção: Nenhum executável ou código objeto pode estar dentro do projeto,
+pois os serviços de e-mail, como, por exemplo, Hotmail
+recusam o transporte de tais arquivos por razões de segurança.
+O aluno se responsabiliza pelo envio e recepção correta.
+Em caso de problemas maiores de tráfego de rede (serviços UFES fora do ar),
+o aluno deve mandar novamente o arquivo original (encaminhamento
+da mensagem original) quando o serviço voltar.
+O arquivo deve conter uma {\bf única} pasta
+com o nome \texttt{aluno1+aluno2}. Duas subpastas devem conter
+o código fonte (sem código compilado e executável) e a documentação do projeto.
+O código deve ter um \texttt{Makefile} que me permite a compilação
+facilitada. Devem-se produzir vários arquivos de teste.
+O arquivo \texttt{aluno1+aluno2.zip} deve ser mandado como
+anexo {\bf exclusivamente} copiando a hiperligação seguinte no browser
+ou cliente de E-mail:\\
+
+\urlemail{thomas@inf.ufes.br}{Estruturas de Dados I: Entrega de trabalho}\\
+
+
+A documentação deve ser em forma de descrição de projeto com os,
+preferencialmente gerado por \LaTeX, contendo os
+seguintes tópicos:
+\begin{itemize}
+\item Capa do Projeto
+	\begin{itemize}
+	\item Título
+	\item Autoria
+	\item Data
+	\item Resumo
+	\end{itemize}
+
+\item Introdução
+\item Objetivos
+\item Metodologia
+\item Resultados e Avaliação
+\item Referências Bibliográficas
+\end{itemize}
+
+
+\textbf{Rigidez na administração da memória dinamicamente alocada:} 
+Recomenda-se fortemente usar a ferramenta \texttt{valgrind},
+e consequentemente o sistema operacional Unix.
+Acusa o vazamento de memória o que constitui uma degradação de qualidade
+do software e se refletirá na avaliação do trabalho.
+
+Além disso, o programa deve ser robusto em relação a erros de sintaxe
+do arquivo de entrada. Por exemplo uma sintaxe inválida deve causar
+uma exceção que deve ser tratada. Nesse caso o programa
+deve acusar esse erro e sair (também nesse caso limpando a memória).
+
+
+
+%\textbf{Obs.}
+%\begin{itemize}
+%\item
+%bla
+
+%\end{itemize}
+
+
+
+\vspace{1cm} \textit{Bom trabalho!}
+\bibliographystyle{plain}
+\bibliography{ed15at2}
+\end{document}
+

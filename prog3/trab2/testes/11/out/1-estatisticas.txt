@@ -1,0 +1,20 @@
+Horas consumidas: 2450 minutos
+Horas a consumir: 891 minutos
+
+Mídias por gênero:
+	Comédia: 5
+	Drama: 5
+	Animação: 2
+	Aventura: 2
+	Biografia: 1
+	Ficção Científica: 1
+	Novela: 1
+	Romance: 1
+	Sátira: 1
+	Western: 1
+
+Temporadas por série:
+	Avatar: The Last Airbender: 1 assistidas, 0 a assistir
+	Narcos: 1 assistidas, 0 a assistir
+	The Office: 2 assistidas, 0 a assistir
+	True Detective: 0 assistidas, 1 a assistir

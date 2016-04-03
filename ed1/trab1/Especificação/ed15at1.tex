@@ -1,0 +1,348 @@
+\documentclass{article}
+
+\usepackage[brazil]{babel}    %%% Muda variáveis, ex. Abstract ---> Resumo
+\usepackage[latin1]{inputenc} %%% Substitui acentuação por TeX puro
+                              %%% Permite escrever com acentos, til e cedilha
+\usepackage[mmddyyyy,24hr]{datetime}	% Must come after 'babel' package
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{amsbsy}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{pstricks,pst-plot}
+\newcommand{\f}{\footnotesize}
+
+\newcommand{\transpose}{{^{\mathsf{T}}}}
+
+\newcommand{\aalpha}{{\boldsymbol{\alpha}}}
+\newcommand{\bbeta}{{\boldsymbol{\beta}}}
+\newcommand{\bb}{{\mathbf{b}}}
+\newcommand{\cc}{{\mathbf{c}}}
+\newcommand{\CC}{{\mathbf{C}}}
+\newcommand{\ee}{{\mathbf{e}}}
+\newcommand{\ff}{{\mathbf{f}}}
+\newcommand{\FF}{{\mathbf{F}}}
+\newcommand{\mm}{{\boldsymbol{{\mu}}}}
+\newcommand{\SSigma}{{\mathbf{{\Sigma}}}}
+\newcommand{\nnabla}{{\mathbf{{\nabla}}}}
+\newcommand{\mmm}{{\mathbf{m}}}
+\newcommand{\OO}{{\mathbf{O}}}
+\newcommand{\boldZero}{{\mathbf{0}}}
+\newcommand{\uu}{{\mathbf{u}}}
+\newcommand{\pp}{{\mathbf{p}}}
+\newcommand{\qq}{{\mathbf{q}}}
+\newcommand{\vv}{{\mathbf{v}}}
+\newcommand{\JJ}{{\mathbf{J}}}
+\newcommand{\jj}{{\mathbf{j}}}
+\newcommand{\hh}{{\mathbf{h}}}
+\newcommand{\ww}{{\mathbf{w}}}
+\newcommand{\ttau}{{\boldsymbol{{\tau}}}}
+\newcommand{\ttheta}{{\boldsymbol{{\theta}}}}
+\newcommand{\tb}{{\mathbf{t}}}
+\newcommand{\TT}{{\mathbf{T}}}
+\newcommand{\xx}{{\mathbf{x}}}
+\newcommand{\XX}{{\mathbf{X}}}
+\newcommand{\yy}{{\mathbf{y}}}
+
+\newcommand{\refeq}[1]{(\ref{eq:#1})}
+\newcommand{\reffig}[1]{fig.~\ref{fig:#1}}
+\newcommand{\refFig}[1]{Fig.~\ref{fig:#1}}
+\newcommand{\reftab}[1]{tabela~\ref{tab:#1}}
+\newcommand{\refTab}[1]{Tabela~\ref{tab:#1}}
+\newcommand{\refsection}[1]{seção~\ref{sec:#1}}
+\newcommand{\refSection}[1]{Seção~\ref{sec:#1}}
+
+
+
+\parindent=0pt
+
+% English
+\hyphenation{pi-xel pi-xels}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[obeyspaces]{url}% http://ctan.org/pkg/url
+\usepackage{hyperref}% http://ctan.org/pkg/hyperref
+\usepackage{etoolbox}
+\makeatletter
+\newcommand\urlemail[2]{%                %\newcommand\tpj@compose@mailto[3]{%
+\edef\@tempa{mailto:#1?subject=#2 }%
+\edef\@tempb{\expandafter\html@spaces\@tempa\@empty}%
+\mbox{\url{\@tempb}}}
+
+\catcode\%=11
+\def\html@spaces#1 #2{#1%20\ifx#2\@empty\else\expandafter\html@spaces\fi#2}
+\catcode\%=14
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\usepackage{geometry}
+\geometry{verbose,a4paper,tmargin=1.8cm,bmargin=1.8cm,lmargin=1.8cm,rmargin=1.8cm}
+\setlength{\parskip}{10pt}	% Vertical distance between two paragraphs
+
+
+\begin{document}
+\typeout{-------------------- L a T e X\space\space\space P A R A M E T E R S}
+\typeout{Paper height              = \the\paperheight}
+\typeout{Paragraph skip            = \the\parskip}
+\typeout{---------------------------------------------------}
+
+
+\begin{center}\textbf{
+\large UFES - CENTRO TECNOLÓGICO\\ DEPARTAMENTO DE INFORMÁTICA\\
+\normalsize Prof. Thomas W. Rauber\\
+Estruturas de Dados I -- Engenharia de Computação \& Ciência da Computação}
+\end{center}
+
+% \textordfeminine
+\textbf{1\textordmasculine\ Trabalho 2015/1} --
+\textbf{Administração de Leitura de Consumo de Energia Elétrica}\\
+
+%\vspace{1cm}
+Última atualização: \today, \currenttime\\
+Data de entrega: veja \url{www.inf.ufes.br/~thomas}
+
+
+Linguagem de Programação para Implementação: C\\
+%Engenharia de Computação: C ou C++\\
+%Estatística: Octave\\
+%Octave/Matlab, preferencialmente código que seja compatível com os dois ambientes\\
+%C\\
+Grupo de até dois alunos
+
+
+\section{Objetivo}
+%\textbf{Objetivo:} 
+Representação e manipulação de informação estruturada por linguagem
+de programação de alto nível.\\
+Como aplicação considere a rotina de um leiturista de uma
+empresa de energia elétrica. Existem cidades com bairros,
+ruas, casas e/ou prédios com apartamentos.
+A empresa tem que administrar o cadastro dos consumidores
+e medir o consumo através do leiturista que percorre um
+roteiro programado.
+
+
+
+\section{Estrutura do Sistema}
+
+
+\subsection{Organização da Infraestrutura}
+A identificação das unidades envolvidas é ilustrada
+na \reftab{unidades}. Cada unidade tem que ser identificável
+sem ambiguidade por um identificador numérico
+e conter informações complementares úteis.
+Como simplificação assume-se que não existam prédios
+com múltiplas unidades, somente casas com um único
+consumidor.
+
+A estrutura das unidades é hierárquica.
+Uma cidade tem vários bairros.
+Um bairro tem várias ruas, uma rua
+tem várias casas. Como simplificação assume-se que não existam
+ligações entre casas de diferentes ruas e ruas entre diferentes bairros.
+
+\begin{table*}[!ht]
+\centering
+\begin{tabular}{{ll}}
+\hline
+       \bf Unidade & \bf Parâmetros  \\
+\hline
+%\multicolumn{3}{c}{TRANSFORMAÇÕES}\\
+%\hline
+Bairro	&	id, Nome \\
+Rua	&	id, Nome \\
+Casa	&	id do consumidor, Número de casa, Consumo, Nome do consumidor \\
+\hline
+\end{tabular}
+\caption{Unidades do sistema de medição de energia. id = Identificador}
+\label{tab:unidades}
+\end{table*}
+
+
+
+\subsection{Funções} 
+O sistema deve providenciar funcionalidades administrativas
+e operacionais. Por exemplo como administração,
+deve ser possível incluir uma nova
+rua dentro de um bairro
+(supõe-se que as cidades e bairros sejam invariantes),
+ou uma nova casa dentro de uma rua de um determinado bairro.
+Como função operacional deve ser possível,
+por exemplo, medir o consumo de um consumidor, rua,
+bairro e da cidade no total.
+
+A funcionalidade das unidades envolvidas é ilustrada
+na \reftab{funcoes}, separado por operações administrativas
+e funções operacionais. Quando uma casa for introduzida
+no sistema, a ordem da enumeração deve ser preservada,
+por exemplo se existirem as casas com os números 12 e 18,
+e a casa 16 for introduzida, deve ser entre as duas existentes.
+O sistema deve ser robusto em relação à inconsistências,
+por exemplo retornar uma mensagem de erro, se uma unidade
+não existir, ou já existir na inclusão.
+
+\begin{table*}[!ht]
+\centering
+\begin{tabular}{{lll}}
+\hline
+       \bf Unidade & \bf Função  & \bf Parâmetros \\
+\hline
+\multicolumn{3}{c}{ADMINISTRATIVAS}\\
+\hline
+Bairro	&	Incluir na cidade (somente na inicialização)	&	veja \reftab{unidades} \\
+Rua	&	Incluir no bairro	&	id bairro, id rua, nome \\
+Rua	&	Eliminar do bairro	&	id bairro, id rua \\
+Casa	&	Incluir na rua		&	id bairro, id rua, e \reftab{unidades} (consumo inicial zerado) \\
+Casa	&	Eliminar da rua		&	id bairro, id rua, id casa \\
+\hline
+\hline
+\multicolumn{3}{c}{OPERACIONAIS}\\
+\hline
+Casa	&	Consumir		&	id bairro, id rua, id casa, Consumo \\
+Casa	&	Medir consumo		&	id bairro, id rua, id casa \\
+Rua	&	Medir consumo		&	id bairro, id rua \\
+Bairro	&	Medir consumo		&	id bairro \\
+Cidade	&	Medir consumo		&	-- \\
+\hline
+\end{tabular}
+\caption{Funcionalidades das unidades.}
+\label{tab:funcoes}
+\end{table*}
+
+
+\section{Representação de Informação}
+
+As unidades cidade, bairro e rua devem ser organizadas
+como listas encadeadas, ou seja, a cidade é uma
+lista de bairros encadeados, um bairro é uma lista de
+ruas, uma rua uma lista de casas.
+Ajuda: Cada unidade poderia ser implementada como
+estrutura que tem as componentes da \reftab{unidades}
+e eventualmente tem ponteiros para unidades do mesmo
+tipo subunidades. A cidade pode ser implementada facilmente
+como ponteiro para bairro. A inicialização da cidade, inserindo
+vários bairros pode ser uma função de inicialização fixa,
+pois os bairros não mudam neste modelo.
+
+
+\section{Interface}
+
+Toda a interação deve funcionar através de arquivos de entrada e saída.
+A sintaxe dos comandos do arquivo de entrada deve ser conforme a \reftab{funcoes}.
+Cada comando tem uma composição fixa da forma \\
+
+\texttt{
+<Unidade> <Ação> <Parâmetros> \\
+\\
+Exemplos:\\
+\\
+rua incluir 17 3 "Av. Fernando Ferrari" \\
+casa eliminar 17 23 8 \\
+casa consumir 17 23 8 255 \\
+bairro medir 17 \\
+cidade medir\\
+}
+
+Os elementos da linha de comando são separados
+por espaço em branco ou caracter de tabulação
+(' ' ou '\t') na linguagem C. Nomes em forma de
+cadeias de caracteres devem aparecer
+entre aspas, como no exemplo acima.
+O arquivo de saída deve emitir uma confirmação
+ou rejeição, em caso de inconsistência, para cada
+comando. Por exemplo o pedido de medir o consumo
+de uma rua deve retornar, em caso de comando válido,
+Nome e id do bairro, nome e id da rua, número de
+casas e consumo total.
+
+
+
+\section{Elaboração e Documentação}
+
+
+A pasta do código contém uma moldura para ser estendida.
+Pode-se modificar o projeto, por exemplo
+dividir o código que falta em vários arquivos
+e modificar o \texttt{Makefile} em correspondência.
+O resultado deve ser um sistema que lê um arquivo de entrada
+com a lista de comandos, um por linha, e produz o arquivo de
+saída.
+%em PostScript, usando a função \texttt{genps}.
+%A utilização do trabalho poderia ser por exemplo:
+%\texttt{ufesdraw fig.ufd}.
+
+O produto final deve ser um arquivo no formato \texttt{zip}
+com a seguinte sintaxe:
+\texttt{aluno1+aluno2.zip}.
+Atenção: Nenhum executável ou código objeto pode estar dentro do projeto,
+pois os serviços de e-mail, como, por exemplo, Hotmail
+recusam o transporte de tais arquivos por razões de segurança.
+O aluno se responsabiliza pelo envio e recepção correta.
+Em caso de problemas maiores de tráfego de rede (serviços UFES fora do ar),
+o aluno deve mandar novamente o arquivo original (encaminhamento
+da mensagem original) quando o serviço voltar.
+O arquivo deve conter uma {\bf única} pasta
+com o nome \texttt{aluno1+aluno2}.
+Duas subpastas devem conter
+o código fonte e a documentação do projeto.
+O código deve ter um \texttt{Makefile} que me permite a compilação
+facilitada. Devem-se produzir vários desenhos para testar as
+qualidades do software desenvolvido (subpasta \texttt{fig}).
+O arquivo \texttt{aluno1+aluno2.zip} deve ser mandado como
+anexo {\bf exclusivamente} copiando a hiperligação seguinte no browser
+ou cliente de E-mail:\\
+
+\urlemail{thomas@inf.ufes.br}{Estruturas de Dados I: Entrega de trabalho}\\
+
+A documentação deve ser em forma de descrição de projeto,
+preferencialmente gerado por \LaTeX, contendo os
+seguintes tópicos:
+\begin{itemize}
+\item Capa do Projeto
+	\begin{itemize}
+	\item Título
+	\item Autoria
+	\item Data
+	\item Resumo
+	\end{itemize}
+
+\item Introdução
+\item Objetivos
+\item Metodologia
+\item Resultados e Avaliação
+\item Referências Bibliográficas
+\end{itemize}
+
+
+\textbf{Rigidez na administração da memória dinamicamente alocada:} 
+Recomenda-se fortemente usar a ferramenta \texttt{valgrind},
+e consequentemente uma variação do sistema operacional Unix.
+O vazamento e/ou violação de memória constitui uma degradação de qualidade
+do software e se refletirá na avaliação do trabalho.
+
+%Além disso, o programa deve ser robusto em relação a erros de sintaxe
+%do arquivo de entrada.
+%Por exemplo após o reconhecimento da palavra chave \texttt{begin} não pode aparecer outro \texttt{begin}.
+%Nesse caso o programa
+%deve acusar esse erro e sair (também nesse caso limpando a memória).
+
+
+
+%\textbf{Obs.}
+%\begin{itemize}
+%\item
+%bla
+
+%\end{itemize}
+
+
+
+\vspace{1cm} \textit{Bom trabalho!}
+
+\end{document}
+
+%\vspace{5cm}

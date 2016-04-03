@@ -1,0 +1,21 @@
+Código;Nome;Tipo;Diretor;A(u)tores;Tamanho;Gênero;Série;Temporada;Possui?;Consumiu?;Deseja?;Preço
+1;As Crônicas de Nárnia – Volume único;L;;1;752;AV;;;x;x;;39,9
+2;Jurrasic World;F;6;2,3,4,5;124;FC;;;;;;29,9
+3;Sense 8 – 1ª Temporada;S;7;8,9,10,11,12,13,14,15;720;FC;Sense 8;1;;x;x;22,5
+4;Cloud Atlas;F;7;18,16,17;171;FC;;;;;x;55,9
+5;Forrest Gump;F;19;20,16;142;CR;;;;x;x;27
+6;O Hobbit;L;;21;328;AV;;;x;x;;38,9
+7;Star Wars – Episódio I;F;22;23,24;133;FC;;;x;x;;29,4
+8;Star Wars – Episódio II;F;22;23,24;142;FC;;;;x;;29,4
+9;Star Wars – Episódio III;F;22;23,24;140;FC;;;;x;x;22
+10;Star Wars – Episódio IV;F;22;25,26;124;FC;;;x;x;;28,9
+11;Star Wars – Episódio V;F;22;25,26;131;FC;;;;x;;28,9
+12;Star Wars – Episódio VI;F;22;25,26;136;FC;;;x;x;;28,9
+13;O Hobbit - Uma Jornada Inesperada;F;27;29,30,28;169;AV;;;;;x;39,9
+14;O Hobbit - A Desolação de Smaug;F;27;29,30,28;161;AV;;;;;x;39,9
+15;O Hobbit - A Batalha dos Cinco Exércitos;F;27;29,30,28;144;AV;;;;;x;39,9
+16;Sherlock – 1ª Temporada;S;31;28,30;270;DP;Sherlock;1;;x;;20
+17;Sherlock – 2ª Temporada;S;31;28,30;270;DP;Sherlock;2;;x;x;20
+18;Sherlock – 3ª Temporada;S;31;28,30;270;DP;Sherlock;3;;;;20
+19;Up;F;32;;96;AN;;;;;x;19
+20;A Insustentável Leveza do Ser;L;;33;120;RO;;;;x;;25

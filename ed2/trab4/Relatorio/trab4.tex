@@ -1,0 +1,550 @@
+% -------------------------------------------------- %
+% -------------------------------------------------- %
+% Relatório do Trabalho 4 de Estrutura de Dados II   %
+% Autor: André Barreto                               %
+% -------------------------------------------------- %
+% -------------------------------------------------- %
+
+\documentclass[
+	11pt,
+	oneside,
+	a4paper,
+	english,
+	brazil,
+	]{article}
+
+
+% ---
+% PACOTES
+% ---
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+\usepackage{nomencl}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{makeidx}
+\usepackage{multirow,tabularx}
+\usepackage{multicol}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{url}
+\usepackage[brazilian]{babel}
+\usepackage[brazilian,hyperpageref]{backref}
+
+\usepackage{lipsum}
+% ---
+
+% ---
+% Configurações de aparência do PDF final
+% ---
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	filecolor=magenta,
+	urlcolor=blue,
+	bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% ---
+% Compila o indice
+% ---
+\makeindex
+% ---
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+%\setlength{\parindent}{1.3cm}
+\setlength{\parskip}{0.1cm}
+% ---
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+% Seleciona o idioma do documento (conforme pacotes do babel)
+\selectlanguage{brazil}
+
+% página de titulo
+\begin{titlepage}
+	\centering
+	{\scshape \large Universidade Federal do Espírito Santo\par}
+	{\large Departamento de Informática\par}
+	\vspace{1cm}
+	{\large André Barreto Silveira\par}
+	
+	\vfill
+	{\LARGE \bfseries Algoritmos de Ordenação\par}
+	\vspace{1cm}
+	{\large Trabalho 4 de Estrutura de Dados II\par}
+
+	\vfill
+
+	{\large Vitória\par}
+	{\large 2015\par}
+	\thispagestyle{empty}
+\end{titlepage}
+
+\clearpage
+\setcounter{page}{2}
+
+% ----------------------------------------------------------------------------
+% Introdução
+% ----------------------------------------------------------------------------
+\section{Introdução}
+Ordenação de dados é um processo sistemático de separação de informações em 
+uma determinada sequência. Este é um processo comum à muitas aplicações em
+diversas áreas, e muito relevante na Computação. Por isto, foram
+desenvolvidos diversos algoritmos para ordenar elementos de forma 
+eficiente \cite{sorting}.
+
+Dentre outros, sequências ordenadas possibilitam:
+\begin{itemize}
+ \item Buscar por informações específicas de forma eficiente;
+ \item Unir dados de forma eficiente.
+\end{itemize}
+
+Devido à importância da ordenação, este trabalho tem como objetivo implementar
+e analisar algoritmos de ordenação, realizando comparações de eficiência entre
+os métodos avaliados.
+
+% ----------------------------------------------------------------------------
+% Algoritmos considerados
+% ----------------------------------------------------------------------------
+\section{Algoritmos Considerados}
+Os algoritmos de ordenação selecionados para a comparação são os
+seguintes: \textit{bubblesort, shakesort, insertionsort, shellsort, 
+selectionsort, ranksort, quicksort, mergesort, heapsort, radixsort} e 
+\textit{radixsort binário}, implementados em linguagem C.
+
+Estes foram implementados com referência, principalmente, o \textit{site} 
+\textit{Rosseta Code} \cite{rosetta}. A seguir seguem considerações sobre
+cada um dos algoritmos mencionados.
+
+\subsection{Bubblesort}
+O \textit{bubble sort}, ou ordenação por flutuação, é um algoritmo
+de ordenação dos mais simples. A ideia é percorrer o vetor diversas
+vezes, a cada passagem fazendo flutuar para o topo o maior elemento
+da sequência \cite{bubble}.
+
+\noindent \textbf{Considerações sobre o algoritmo:}
+\begin{itemize}
+ \item Complexidade: $ O(n^2) $
+ \item O melhor caso ocorre caso a sequência já esteja ordenada,
+ neste caso, realizado em complexidade linear.
+ \item Algoritmo fácil de implementar porém não é recomendado devido ao
+ grande número de movimentações se o conjunto de entrada é grande.
+ \item O algoritmo é estável.
+\end{itemize}
+
+\subsection{Shakesort}
+\textit{Shake sort} ou \textit{Cocktail sort}, é uma variação do
+\textit{bubble sort} que é tanto um algoritmo de ordenação estável
+quanto uma ordenação por comparação. O algoritmo difere do
+\textit{bubble sort} pelo fato de ordenar em ambas as direções
+em cada passagem através da lista \cite{shake}.
+
+\noindent \textbf{Considerações sobre o algoritmo:}
+\begin{itemize}
+ \item Complexidade: $ O(n^2) $
+ \item Não melhora significantemente o algoritmo da bolha. A
+ complexidade assintótica permanece quadrática.
+ \item Algoritmo mais complicado se comparado com \textit{bubble}.
+ \item O algoritmo é estável.
+\end{itemize}
+
+\subsection{Selectionsort}
+A ordenação por seleção é um algoritmo de ordenação baseado em se passar
+sempre o menor valor do vetor para a primeira posição (ou o maior
+dependendo da ordem requerida), depois o de segundo menor valor para a 
+segunda posição, e assim é feito sucessivamente com os (n-1) elementos 
+restantes, até os últimos dois elementos. \cite{selection}
+
+\noindent \textbf{Considerações sobre o algoritmo:}
+\begin{itemize}
+ \item Complexidade: $ O(n^2) $
+ \item Custo linear para o número de movimentos de registros.
+ \item É um algoritmo interessante a ser utilizado para arquivos com
+registros muito grandes devido à propriedade anterior.
+ \item O fato de o arquivo já estar ordenado não ajuda em nada, pois o 
+custo continua quadrático.
+ \item O algoritmo não é estável.
+\end{itemize}
+
+\subsection{Insertionsort}
+\textit{Insertion sort}, ou ordenação por inserção, é um simples algoritmo
+de ordenação, eficiente quando aplicado a um pequeno número de elementos. 
+Em termos gerais, ele percorre um vetor de elementos da esquerda para 
+a direita e à medida que avança vai deixando os elementos mais à esquerda
+ordenados. \cite{insertion}
+
+\noindent \textbf{Considerações sobre o algoritmo:}
+\begin{itemize}
+ \item Complexidade: $ O(n^2) $
+ \item O número mínimo de comparações e movimentos ocorre quando os
+itens estão originalmente em ordem.
+ \item O número máximo ocorre quando os itens estão originalmente na
+ordem reversa.
+ \item É o método a ser utilizado quando o arquivo está ``quase'' ordenado.
+ \item É um bom método quando se deseja adicionar uns poucos itens a um
+arquivo ordenado, pois o custo é linear.
+ \item O algoritmo de ordenação por inserção é estável.
+\end{itemize}
+
+\subsection{Shellsort}
+Criado por Donald Shell em 1959, publicado pela Universidade de Cincinnati,
+\textit{Shell sort} é o mais eficiente algoritmo de classificação dentre os
+de complexidade quadrática. É um refinamento do método de inserção direta.
+O algoritmo difere do método de inserção direta pelo fato de no lugar de
+considerar o \textit{array} a ser ordenado como um único segmento, ele
+considera vários segmentos sendo aplicado o método de inserção direta em
+cada um deles. \cite{shell}
+
+\begin{itemize}
+ \item A razão da eficiência do algoritmo ainda não é conhecida.
+ \item Shellsort é uma ótima opção para arquivos de tamanho moderado.
+ \item Sua implementação é simples e requer uma quantidade de código pequena.
+ \item O tempo de execução do algoritmo é sensível à ordem inicial do arquivo.
+ \item O método não é estável.
+\end{itemize}
+
+\subsection{Quicksort}
+O Quicksort adota a estratégia de divisão e conquista. A estratégia
+consiste em rearranjar as chaves de modo que as chaves ``menores''
+precedam as chaves ``maiores''. Em seguida é ordenado as duas
+sublistas de chaves menores e maiores recursivamente até que a lista
+completa se encontre ordenada \cite{quick}.
+
+\noindent \textbf{Considerações sobre o algoritmo:}
+\begin{itemize}
+ \item Complexidade caso médio e melhor caso: $ \theta(n log n) $
+ \item Complexidade no pior caso: $ O(n^2) $
+ \item O pior caso ocorre quando, sistematicamente, o pivô é escolhido como
+sendo um dos extremos de um vetor já ordenado.
+ \item É extremamente eficiente para ordenar arquivos de dados.
+ \item Necessita de apenas uma pequena pilha como memória auxiliar.
+ \item O algoritmo não é estável.
+\end{itemize}
+
+\subsection{Mergesort}
+O \textit{merge sort}, ou ordenação por mistura, é um exemplo de algoritmo de
+ordenação do tipo dividir-para-conquistar. Sua ideia básica consiste em
+Dividir(o problema em vários sub-problemas e resolver esses sub-problemas
+através da recursividade) e Conquistar(após todos os sub-problemas terem
+sido resolvidos ocorre a conquista que é a união das resoluções dos
+sub-problemas). Como o algoritmo do \textit{Merge Sort} usa a recursividade
+em alguns problemas esta técnica não é muito eficiente devido ao alto consumo
+de memória e tempo de execução \cite{merge}.
+
+\noindent \textbf{Considerações sobre o algoritmo:}
+\begin{itemize}
+ \item Complexidade caso médio: $ \theta(n log n) $
+ \item Não possui um pior caso como o Quicksort.
+ \item É um algoritmo muito eficiente para ordenação.
+ \item Necessita o dobro de memória para realizar a ordenação.
+ \item O algoritmo é estável.
+\end{itemize}
+
+\subsection{Heapsort}
+É um algoritmo de ordenação que pode ser considerado como um refinamento do
+\textit{selection sort}. Utiliza da estrutura de uma \textit{Heap} para
+realizar a ordenação, reduzindo significantemente a quantidade de repetições
+do algoritmo \cite{heap}.
+
+\noindent \textbf{Considerações sobre o algoritmo:}
+\begin{itemize}
+ \item Complexidade: $ O(n log n) $ para todos os casos
+ \item O anel interno do algoritmo é bastante complexo se comparado
+com o do \textit{Quicksort}.
+ \item O algoritmo não é estável.
+ \item Não é recomendado para arquivos com poucos registros, por causa
+do tempo necessário para construir o \textit{heap}.
+\end{itemize}
+
+
+\subsection{Ranksort}
+O \textit{Rank sort} ou \textit{Counting sort} é um algoritmo de ordenação
+de acordo com chaves representadas por números inteiros pequenos. Ou seja,
+é um algoritmo de ordenação de inteiros. Ele opera contando o número de
+objetos que possuem chaves diferentes, e usa aritmética para determinar as
+posições de cada valor na saída. É frequentemente usado como subrotina para
+algoritmos como o \textit{radix sort} \cite{rank}.
+
+\noindent \textbf{Considerações sobre o algoritmo:}
+\begin{itemize}
+ \item Complexidade: $ O(n + k) $
+ \item O algoritmo não é estável.
+\end{itemize}
+
+\subsection{Radixsort}
+\textit{Radix sort} é um algoritmo de ordenação que ordena inteiros processando 
+dígitos individuais. Como os inteiros podem representar strings compostas de 
+caracteres (como nomes ou datas) e pontos flutuantes especialmente formatados, 
+\textit{radix sort} não é limitado somente a inteiros \cite{radix}.
+
+\noindent \textbf{Considerações sobre o algoritmo:}
+\begin{itemize}
+ \item Complexidade: $ O(nw) $
+ \item Utiliza o \textit{bucket sort} no algoritmo.
+ \item Possui 10 filas (0-9) para armazenar os números no processo.
+ \item O algoritmo é estável.
+\end{itemize}
+
+\subsection{Radixsort binário}
+Possui a mesma ideia do \textit{Radix sort}, porém adaptado especialmente
+para número binários. Isto é, não serão necessárias 10 filas e alguns
+cálculos são feitos de forma mais prática para o tipo de dado alvo.
+
+\noindent \textbf{Considerações sobre o algoritmo:}
+\begin{itemize}
+ \item Complexidade: $ O(nw) $
+ \item Utiliza o \textit{bucket sort} no algoritmo.
+ \item Possui 2 filas (0 e 1) para armazenar os números no processo.
+ \item O algoritmo é estável.
+\end{itemize}
+
+% ----------------------------------------------------------------------------
+% Comparação entre algoritmos
+% ----------------------------------------------------------------------------
+\section{Comparação entre algoritmos}
+Nesta seção serão feitas comparações entre os algoritmos e uma análise dos
+mesmos a fim de estabelecer parâmetros de eficiência e usabilidade dos métodos
+considerados.
+
+Para isto, os algoritmos serão testados com registros em três ordens
+diferentes ($10^3$, $10^5$ e $10^6$), cada qual com três características
+desiguais: registros gerados \textit{aleatoriamente}, em ordem
+\textit{crescente} e em ordem \textit{decrescente}.
+
+Nas comparações de velocidade de processamento, foi estabelecido um tempo
+limite para os algoritmos. Caso este exceda \textit{1 minuto} para completar a
+ordenação, o processo é interrompido e será dito que ele levou tempo
+$\infty$ para ser finalizado.
+
+\textbf{Obs.:} os tempos foram registrados desconsiderando o tempo de impressão
+da resposta. Ou seja, apenas o tempo utilizado pelo algoritmo de ordenação foi 
+contado.
+
+\subsection{Comparação de complexidade}
+Veja na tabela \ref{tab:cmplx} a comparação de complexidade entre os
+algoritmos.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lc}
+\hline 
+\textbf{Algoritmo} & \textbf{Complexidade} \\
+\hline
+Bubblesort   	& $ O(n^2) $  	 \\ 
+Shakesort  		& $ O(n^2) $  	 \\ 
+Selectionsort	& $ O(n^2) $  	 \\
+Insertionsort  	& $ O(n^2) $  	 \\
+Shellsort 		& - 			 \\
+Quicksort 		& $ O(n log n) $ \\
+Mergesort 		& $ O(n log n) $ \\
+Heapsort 		& $ O(n log n) $ \\
+Ranksort 		& $ O(n + k) $ 	 \\
+Radixsort 		& $ O(nw) $ 	 \\
+Radixsort Bin 	& $ O(nw) $ 	 \\
+\hline
+\end{tabular}
+\caption{Complexidade dos algoritmos}
+\label{tab:cmplx}
+\end{table}
+
+\subsection{Registros gerados aleatoriamente}
+Veja na tabela \ref{tab:a} os tempos de processamento dos algoritmos submetidos
+à diferentes ordens de registros gerados aleatoriamente.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lccc}
+\hline 
+\textbf{Algoritmo} & \textbf{1 000} & \textbf{100 000} &  \textbf{1 000 000}  \\
+\hline
+Bubblesort   	& 0.007s & 36.595s  & $\infty$   \\
+Shakesort  		& 0.005s & 21.579s  & $\infty$   \\
+Selectionsort	& 0.004s & 11.088s  & $\infty$   \\
+Insertionsort  	& 0.002s & 5.861s   & $\infty$   \\
+Shellsort 		& 0.001s & 0.031s   & 0.475s     \\
+QuickPrim		& 0.001s & 0.045s   & 0.302s     \\
+QuickMedia3		& 0.001s & 0.044s   & 0.290s     \\
+QuickCentral	& 0.001s & 0.046s   & 0.291s     \\
+QuickRandom		& 0.001s & 0.047s   & 0.310s     \\
+Mergesort 		& 0.002s & 0.027s   & 0.358s     \\
+Heapsort 		& 0.001s & 0.026s   & 0.370s     \\
+Ranksort 		& 0.006s & 0.012s   & 0.151s     \\
+Radixsort 		& 0.002s & 0.079s   & 1.097s     \\
+RadixsortBin 	& 0.003s & 0.111s   & 3.288s     \\
+\hline
+\end{tabular}
+\caption{Testes em ordem aleatória}
+\label{tab:a}
+\end{table}
+
+Vemos que para registros aleatórios, os algoritmos mantém um padrão
+esperado. Os quadráticos são significantemente mais lentos que os de 
+complexidade menor.
+
+Os primeiros quatro algoritmos, os de complexidade $O(n^2)$ não são
+recomendados para estes casos de ordenação, enquanto todos os outros
+são aplicáveis.
+
+\subsection{Registros gerados em ordem crescente}
+Veja na tabela \ref{tab:c} os tempos de processamento dos algoritmos submetidos
+à diferentes ordens de registros gerados crescentemente.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lccc}
+\hline 
+\textbf{Algoritmo} & \textbf{1 000} & \textbf{100 000} &  \textbf{1 000 000}  \\
+\hline
+Bubblesort   	& 0.001s & 0.020s   & 0.156s     \\
+Shakesort  		& 0.001s & 0.009s   & 0.087s     \\
+Selectionsort	& 0.002s & 11.146s  & $\infty$   \\
+Insertionsort  	& 0.001s & 0.019s   & 0.154s     \\
+Shellsort 		& 0.001s & 0.013s   & 0.143s     \\
+QuickPrim		& 0.001s & 8.898s   & $\infty$   \\
+QuickMedia3		& 0.001s & 0.030s   & 0.212s     \\
+QuickCentral	& 0.001s & 0.030s   & 0.214s     \\
+QuickRandom		& 0.001s & 0.047s   & 0.312s     \\
+Mergesort 		& 0.001s & 0.019s   & 0.207s     \\
+Heapsort 		& 0.001s & 0.022s   & 0.239s     \\
+Ranksort 		& 0.003s & 0.012s   & 0.144s     \\
+Radixsort 		& 0.002s & 0.083s   & 1.104s     \\
+RadixsortBin 	& 0.001s & 0.111s   & 3.277s     \\
+\hline
+\end{tabular}
+\caption{Testes em ordem crescente}
+\label{tab:c}
+\end{table}
+
+Nesta leva de testes podemos ver casos especiais dos algoritmos. O
+\textit{Bubblesort} e o \textit{shakesort} apresentam um desempenho 
+inicialmente e talvez naturalmente não esperado, enquanto o \textit{quicksort} 
+com pivô primeiro demonstra um processamento bastante lento. O
+\textit{insertionsort} também possui este caso como seu melhor, similar
+ao \textit{bubble}.
+
+Isto ocorre devido às características dos algoritmos. A ordem de dados crescente, 
+ou já ordenada, é o melhor  caso do algoritmo \textit{bubblesort} e, 
+consequentemente, o \textit{shakesort}, resultando em uma complexidade 
+resultante $\theta(n)$. Já o \textit{quicksort} com o pivô selecionando o 
+primeiro elemento é seu pior caso se os elementos  estão em ordem crescente 
+ou decrescente. O que resulta em uma complexidade $\theta(n^2)$.
+
+Os outros algoritmos de \textit{quicksort} contornam este pior caso com uma
+seleção mais inteligente do pivô.
+
+\subsection{Registros gerados em ordem decrescente}
+Veja na tabela \ref{tab:d} os tempos de processamento dos algoritmos submetidos
+à diferentes ordens de registros gerados de forma decrescente.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lccc}
+\hline 
+\textbf{Algoritmo} & \textbf{1 000} & \textbf{100 000} &  \textbf{1 000 000}  \\
+\hline
+Bubblesort   	& 0.004s & 30.458s  & $\infty$   \\
+Shakesort  		& 0.004s & 30.562s  & $\infty$   \\
+Selectionsort	& 0.002s & 17.144s  & $\infty$   \\
+Insertionsort  	& 0.002s & 11.740s  & $\infty$   \\
+Shellsort 		& 0.001s & 0.016s   & 0.168s     \\
+QuickPrim		& 0.001s & 7.413s   & $\infty$   \\
+QuickMedia3		& 0.001s & 0.033s   & 0.219s     \\
+QuickCentral	& 0.001s & 0.033s   & 0.214s     \\
+QuickRandom		& 0.001s & 0.036s   & 0.245s     \\
+Mergesort 		& 0.001s & 0.020s   & 0.208s     \\
+Heapsort 		& 0.001s & 0.022s   & 0.237s     \\
+Ranksort 		& 0.003s & 0.012s   & 0.096s     \\
+Radixsort 		& 0.006s & 0.087s   & 1.090s     \\
+RadixsortBin 	& 0.001s & 0.112s   & 3.200s     \\
+\hline
+\end{tabular}
+\caption{Testes em ordem decrescente}
+\label{tab:d}
+\end{table}
+
+Como nos casos de teste em ordem crescente, neste é notável que o
+\textit{quicksortprimeiro} também tem seu pior caso. Ou seja, este algoritmo é 
+recomendável apenas quando sabe-se que a entrada de dados difere de uma
+crescente ou decrescente.
+
+Porém, distinto do caso crescente, registros gerados em ordem decrescente
+acarretam nos casos esperados dos algoritmos \textit{bubblesort}/\textit{shakesort}
+e \textit{insertionsort}. Ou seja, estes são ineficientes para casos de ordem
+elevadas.
+
+\subsection{Considerações gerais}
+A respeito dos testes realizados, podemos chegar à algumas afirmativas. Dentre
+elas, vale ressaltar que:
+
+\begin{itemize}
+ \item Para casos pequenos, todos os algoritmos considerados possuem resultados
+ em tempos muito próximos. Implicando que não é necessário desenvolver um
+ procedimento complexo de ordenação caso sua entrada de dados for pequena.
+ \item Os algoritmos quadráticos (\textit{bubble, shake, selection e insertion})
+ possuem características diferentes que permitem aplicações desiguais mesmo
+ sendo eles todos da mesma complexidade.
+ \item Os \textit{quicksorts} podem ser considerados melhores que os anteriores,
+ porém deve-se analisar com atenção a forma de se escolher um pivô, pois isto
+ pode levar a resultados ruins, tanto quanto o pior caso do algoritmo
+ \textit{bubble}. Isto ocorreu claramente com o \textit{quicksort} que seleciona
+ o primeiro elemento como pivô. Por isto, é recomendável sempre utilizar outra
+ técnica de seleção do pivô.
+ \item Dentre os algoritmos de \textit{quicksort} avaliados, podemos dizer que
+ o método de seleção do pivô como primeiro elemento é ruim. Enquanto os outros
+ possuem resultados melhores. Dentre estes, vemos que a seleção aleatória não é
+ tão boa quanto o central e a mediana de três. E entre estes dois últimos,
+ pode-se dizer que a mediana de três é mais interessante, pois sempre apresenta
+ um resultado bom e, na maioria dos testes realizados, mais rápido.
+ \item O \textit{mergesort}, diferente do \textit{quick}, não possui um pior
+ caso. Porém requisita o dobro de armazenamento de memória, o que limita sua
+ aplicação em casos de ordens muito elevadas de registros.
+ \item \textit{Heapsort, shellsort, ranksort, radixsort} são algoritmos muito
+ bons de ordenação, apresentando resultados similares ao \textit{quicksort} e o
+ \textit{mergesort}.
+\end{itemize}
+
+% ----------------------------------------------------------------------------
+% Conclusão
+% ----------------------------------------------------------------------------
+\section{Conclusão}
+Existem diversos algoritmos de ordenação já conhecidos com variações
+significativas de complexidade. Além da análise de complexidade, deve-se
+conhecer a entrada a qual deve ser ordenada, pois isto influencia diretamente
+na escolha do algoritmo.
+
+Como visto nos testes apresentados, alguns algoritmos que são considerados
+``ruins'' podem ser tão bons quanto os chamados ``ótimos'', dependendo da
+entrada de dados que se trabalha. Neste casos, é mais vantajoso utilizar
+estes mais simples, justamente por sua simplicidade de implementação e
+manutenção.
+
+Em casos mais gerais, porém, é seguro escolher algoritmos como o
+\textit{quicksort}, \textit{heapsort} e \textit{radixsort}, que são muito 
+eficientes na maioria dos casos.
+
+% ----------------------------------------------------------------------------
+% Referências bibliográficas
+% ----------------------------------------------------------------------------
+\bibliography{trab4}{}
+\bibliographystyle{ieeetr}
+\addcontentsline{toc}{section}{Referências}
+
+\end{document}

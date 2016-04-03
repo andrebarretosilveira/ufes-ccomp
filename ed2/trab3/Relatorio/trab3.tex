@@ -1,0 +1,502 @@
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+% Relatório de Trabalho 3 de Estrutura de Dados II
+% Autores: André Barreto e Igor Ventorim
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+
+\documentclass[
+	11pt,				% tamanho da fonte
+	oneside,			% para impressão apenas no verso. Oposto a twoside
+	a4paper,			% tamanho do papel. 
+	english,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	]{article}
+
+
+% ---
+% PACOTES
+% ---
+\usepackage{lmodern}			% Usa a fonte Latin Modern
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{nomencl} 			% Lista de simbolos
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{microtype} 			% para melhorias de justificação
+\usepackage{makeidx}			% Gerar índice
+\usepackage[portuguese,linesnumbered,vlined]{algorithm2e}	% Gerar pseudo-códigos
+\usepackage{multirow,tabularx}
+\usepackage{multicol}
+\usepackage{listings}			% Include the listings-package
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{url}
+\usepackage[brazilian]{babel}
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+
+\usepackage{lipsum}
+% ---
+
+% ---
+% Configurações do pacote listings
+% ---
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstset{
+	backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+	basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+	breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+	breaklines=true,                 % sets automatic line breaking
+	captionpos=b,                    % sets the caption-position to bottom
+	commentstyle=\color{mygreen},    % comment style
+	deletekeywords={...},            % if you want to delete keywords from the given language
+	escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+	extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+	keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+	keywordstyle=\color{blue},       % keyword style
+	language=C,                      % the language of the code
+	otherkeywords={*,...},           % if you want to add more keywords to the set
+	numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+	numbersep=5pt,                   % how far the line-numbers are from the code
+	numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+	rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+	showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+	showstringspaces=false,          % underline spaces within strings only
+	showtabs=false,                  % show tabs within strings adding particular underscores
+	stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+	stringstyle=\color{mymauve},     % string literal style
+	tabsize=2,	                   % sets default tabsize to 2 spaces
+	title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+% ---
+	
+% ---
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% ---
+\title{\textbf{Escalonamento de \textit{Jobs}}}
+\author{
+André Barreto e Igor Ventorim\\\\
+\normalsize Universidade Federal do Espírito Santo\\
+\normalsize Vila Velha, Espírito Santo
+}
+\date{03 de Novembro de 2015}
+% ---
+
+% ---
+% Configurações de aparência do PDF final
+% ---
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+	pdftitle={\@title}, 
+	pdfauthor={\@author},
+	pdfsubject={Escalonamento de Jobs},
+	pdfcreator={LaTeX with abnTeX2},
+	pdfkeywords={abnt}{latex}{abntex}{abntex2}{atigo científico}, 
+	colorlinks=true,       		% false: boxed links; true: colored links
+	linkcolor=blue,          	% color of internal links
+	citecolor=blue,        		% color of links to bibliography
+	filecolor=magenta,      	% color of file links
+	urlcolor=blue,
+	bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% ---
+% Compila o indice
+% ---
+\makeindex
+% ---
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+\setlength{\parindent}{1.3cm}
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+% ---
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+% Seleciona o idioma do documento (conforme pacotes do babel)
+\selectlanguage{brazil}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing
+
+% página de titulo
+\begin{titlepage}
+	\centering
+	{\scshape \large Universidade Federal do Espírito Santo \par}
+	\vspace{1cm}
+	{\large André Barreto e Igor Ventorim\par}
+	
+	\vfill
+	{\LARGE \bfseries Escalonamento de \textit{Jobs}\par}
+	\vspace{1cm}
+	{\large Trabalho 3 de Estrutura de Dados II\par}
+
+	\vfill
+
+% Bottom of the page
+	{\large Vitória\par}
+	{\large 2015\par}
+\end{titlepage}
+
+% ----------------------------------------------------------
+% Introdução
+% ----------------------------------------------------------
+\section{Introdução}
+Este trabalho tem como objetivo solucionar o problema de sequenciamento de \textit{jobs} ou processos visando obter a melhor sequência possível. \textit{Jobs} são considerados tarefas a serem realizadas na qual cada tarefa possui um tempo para realizá-la, um tempo limite no qual ela precisa ser concluída e uma penalidade final caso o \textit{job} não seja realizado dentro do tempo limite.
+
+Para a realização desse escalonamento de foram utilizados dois algoritmos onde ambos tem o objetivo de obter um menor custo, porém com abordagens de solução diferentes e, consequentemente, resultados distintos. Com isto, deve ser analisado qual a prioridade desejada para poder ser tomada a escolha de qual algoritmo ser adotado.
+
+De modo geral, podemos observar que o escalonamento de \textit{jobs} pode ter diversas aplicações, desde selecionador de processos de um CPU \cite{jobs} até encontrar melhores caminhos para, por exemplo, um problema de Caixeiro Viajante.
+
+% ----------------------------------------------------------
+% Algoritmos considerados
+% ----------------------------------------------------------
+\section{Algoritmos considerados}
+Para a solução do problema de escalonamento de \textit{jobs}, foram utilizados dois algoritmos: \textit{Beam Search} e \textit{Branch and Bound}.
+
+\subsection{\textit{Beam Search}}
+Em Ciência da Computação, \textit{beam search} é um algoritmo de busca heurístico no qual explora um grafo, expandindo os W nós mais promissores  de um nível de uma árvore de decisões, onde eles são guardados na memória para serem visitados e expandidos, enquanto os demais nós são descartados permanentemente \cite{bs}. Sendo ele um método para resolver problemas de otimização combinatória muito eficaz, devido a uma grande parte dos nós serem descartados, isto é, somente alguns poucos nós são selecionados para serem analisados, o tempo de execução do método é polinomial com relação ao tamanho do problema, e garantindo boas soluções devido aos W nós mais promissores selecionados.
+
+Em resumo pode ser dizer que o algoritmo \textit{beam search} é uma técnica de busca em árvores, na qual em cada nível da árvore é analisado um número fixo de nós e, por consequência um número fixo de possíveis soluções, lembrando que quanto maior for o seu W, menos nós serão cortados, e consequentemente mais análises serão feitas, o que levará a mais tempo de processamento. O número de nós analisados em cada nível é chamado de largura de busca e é denotado de W. Caso seja procurado a melhor solução possível, não se é recomendado o algoritmo do tipo \textit{beam search}, pois não fornece garantia de que a solução encontrada é a melhor.
+
+\subsection{\textit{Branch and Bound}}
+\textit{Branch and bound} é um algoritmo para encontrar soluções ótimas para vários problemas de otimização \cite{bb}, especialmente em otimização combinatório como, por exemplo, o problema do Caixeiro Viajante. O algoritmo \textit{branch and bound} consiste em uma enumeração sistemática de todos os candidatos em uma árvore de decisões e é passado uma solução aleatória para ele com limite superior e inferior, o algoritmo explora ramos desta árvore, que representam subconjuntos do conjunto solução.
+
+Antes de enumerar as possíveis soluções geradas por um nó, os nós filhos são verificados em relação ao limite superior e inferior estimados até o momento pelo algoritmo, e é descartado caso não possa produzir uma solução melhor do que o melhor encontrado até o momento. Desta forma podemos observar que quanto melhor for a solução inicial passada como parâmetro mais cortes os algoritmo irá realizar, conseguindo encontrar a solução exata em um tempo aceitável.
+
+No caso do problema do caixeiro viajante, caso seja utilizado o algoritmo, dependendo do caminho passado como parâmetro para ele, resultará em um resultado imediato e não fatorial. Entretanto dependendo da entrada passada para este algoritmo ele pode chegar a tempo fatorial, devido a não realizar poucos ou nenhum corte.
+
+% ----------------------------------------------------------
+% Implementação
+% ----------------------------------------------------------
+\section{Implementação}
+Nesta seção serão apresentadas as implementações dos algoritmos descritos, estruturas utilizadas e principais funções em linguagem C.
+
+\subsection{Estruturas utilizadas}
+Estas são as principais estruturas utilizadas em ambos os algoritmos que auxiliaram na solução do problema.
+
+\subsubsection{\textit{Job}}
+A estrutura \textit{Job} é responsável por armazenar as informações de entrada para facilitar a manipulação e recuperação destes dados básicos.
+
+\begin{lstlisting}[language=C, caption=Estrutura \textit{Job}]
+ typedef struct job {
+     int id;            // Identificador do Job
+     int tempo;         // Tempo de processamento
+     int deadline;      // Tempo limite sem penalidade
+     int penalidade;    // Penalidade ao exceder o deadline
+ } Job;
+\end{lstlisting}
+
+\subsubsection{\textit{Path}}
+\textit{Path} é uma \textit{struct} que representa um ``caminho'' realizado até determinado momento. Por exemplo, caso tenham sido realizados os processos 0, 4 e 7, nesta sequência, uma estrutura \textit{path} respectiva teria armazenado: o custo deste caminho; o pior caso possível em questão de penalidade (no caso do \textit{beam search} será sempre 0); o tempo gasto desta sequência, uma lista de inteiros: 0, 4, 7; e o último \textit{job} da sequência.
+
+\begin{lstlisting}[language=C, caption=Estrutura \textit{Path}]
+ typedef struct path {
+     int pathCost;      // Custo ou Lower Bound
+     int ub;            // Upper Bound
+     int tempoGasto;
+     typeList *caminho;
+     Job *job;
+ } Path;
+\end{lstlisting}
+
+\subsubsection{\textit{Skew Heap}}
+Para simular a árvore de possibilidades de ambos algoritmos, utilizamos a estrutura \textit{Skew Heap}. Em cada nível, são computados os possíveis próximos \textit{jobs} a serem realizados, criam-se \textit{paths} de acordo e estes são armazenados em uma \textit{skew heap}, que permite rapidamente recuperar o melhor caminho a se seguir \cite{sh}, onde o ``melhor'' é computado de forma diferente dependendo de qual dos algoritmos está sendo utilizado.
+
+\begin{lstlisting}[language=C, caption=Estrutura \textit{SkewHeap}]
+ typedef struct skewHeap
+ {
+     Path *path;             // Path armazenado
+     struct skewHeap *lc;    // LeftChild
+     struct skewHeap *rc;    // RightChild
+ } SkewHeap;
+\end{lstlisting}
+
+\subsection{\textit{Beam Search}}
+O algoritmo \textit{beam search} tem como função principal \textit{beamSearch} que retorna uma estrutura \textit{Path}, onde existe um caminho de solução boa. Após a declaração de variáveis utilizadas, na linha 8 criamos o primeiro caso, gerando todas as possibilidades possíveis no primeiro momento, e são inseridas dentro da \textit{skew heap}.
+
+Na linha 19, executaremos o \textit{loop} do algoritmo N-1 vezes, que é o nível da arvore de possibilidades. Percorreremos um laço enquanto não removermos os W melhores caminhos da \textit{skew heap} ou enquanto a skew heap não estiver vazia, onde em cada rodada retiraremos o menor \textit{Path} de dentro da \textit{skew heap} e colocaremos todas as possibilidades que estes caminhos geraram mesclados dentro de uma \textit{skew heap}. Após N-1 iterações, teremos uma \textit{skew heap} com os W melhores custos encontrados de forma gulosa até o momento. Na linha 24 removeremos o melhor caminho dentro destes W, no qual será o caminho bom encontrado pelo \textit{Beam Search}.
+
+Desta forma será retornado esta estrutura \textit{Path}, com um caminho bom, que pode até mesmo ser encontrado o caminho ótimo, tudo dependendo de sua entrada e do parâmetro W fornecido para a função.
+
+\subsubsection{Principais funções}
+\begin{lstlisting}[language=C, caption=Função beamSearch]
+Path *beamSearch(Job **jobs, const int N, const int W)
+{
+    int i, j;
+    SkewHeap *sh = NULL, *shAtual;
+    Path *path, *minPath;
+
+    // Primeiro caso
+    path = criaPath(NULL, 0, 0, 0, createList());
+    shAtual = mergeSkewHeap(NULL, geraPossibilidades(jobs, path, N));
+    sh = shAtual;
+    
+    // Demais casos
+    for(i = 1; i < N; i++) {
+        shAtual = NULL;
+        j = 0;
+        while(j < W && sh != NULL) {
+            path = removeMin(&sh);
+            shAtual = mergeSkewHeap(shAtual, geraPossibilidades(jobs, path, N));
+            j++;
+        }
+        freeSkewHeap(sh);
+        sh = shAtual;
+    }
+    minPath = removeMin(&sh);
+    freeSkewHeap(sh);
+    return(minPath);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=C, caption=Função geraPossibilidades]
+SkewHeap *geraPossibilidades(Job** jobs, Path *p, const int N)
+{
+    int i, custo, tempo;
+    SkewHeap *sh = NULL;
+    Path *newPath;
+    typeList *newList;
+
+    for(i = 0; i < N; i++) {
+        if(!isElementList(p->caminho, i)) {
+            custo = p->pathCost + calculaLB(jobs,p,N,i);
+            tempo = p->tempoGasto + jobs[i]->tempo;
+            newList = dupList(p->caminho);
+            insertList(newList, i);
+            newPath = criaPath(jobs[i], custo, 0, tempo, newList);
+            sh = mergeSkewHeap(sh, criaSkewHeap(newPath));
+        }
+    }
+    freePath(p);
+    return sh;
+}
+\end{lstlisting}
+
+\subsection{\textit{Branch and Bound}}
+O algoritmo \textit{branch and bound}, tem como função principal a \textit{branchBound} que retorna uma estrutura \textit{Path}, onde temos o caminho de solução ótima.
+
+Após a declaração de variáveis utilizadas, na linha 7 executamos o algoritmo \textit{beamSearch}, e guardamos o caminho que este nos fornece como o menor caminho até o momento e o menor custo. Também calculamos a maior multa que pode ser paga no início e a menor multa que se pode ter desde o começo. Após armazenado os dados iniciais necessários, encontraremos as primeiras possibilidades que podem ser geradas, iniciando um \textit{Path} vazio, e o passando para a função \textit{geraPossibilidades}, que retorna uma \textit{skew heap} com todas as possibilidades de sequência a partir deste primeiro momento com seus devidos \textit{lower bound}, \textit{upper bound} e caminho atualizados.
+
+Na linha 19, executaremos o laço do algoritmo N-1 vezes, que é o nível da árvore de possibilidades, em que se retira o caminho de menor custo. Após isso será analisado este caminho, verificando se o \textit{lower bound} do \textit{Path} atual é menor que o menor caminho que temos armazenado, caso não for, podemos descartar, porque ele nunca diminuirá, caso seja verificamos se seu \textit{upper bound} é igual seu \textit{lower bound}. Caso seja, todas as possibilidades terão o mesmo custo, então podemos preencher o caminho, e substituiremos o menor caminho por este. Caso o \textit{upper bound} seja diferente do \textit{lower bound} então colocaremos na \textit{skew heap} todas as possibilidades que \textit{geraPossibilidades} pode gerar a partir daquele caminho e removemos o melhor deles e fazemos o mesmo processo.
+
+Se no final dos \textit{loops} não for encontrado nenhum outro melhor caminho então será retornado o caminho exato encontrado pelo \textit{beam search}, caso contrário será encontrado o caminho exato e o retornará.
+
+\subsubsection{Principal função}
+\begin{lstlisting}[language=C, caption=Função branchBound]
+Path *branchBound(Job **jobs, const int N, const int W)
+{
+    int i, j, minCost, ubMax,lbMin;
+    SkewHeap *sh = NULL, *shAtual;
+    Path *path, *minPath, *menorCaminhoBS;
+
+    menorCaminhoBS = beamSearch(jobs, N, W);
+    minPath = menorCaminhoBS;
+    minCost = menorCaminhoBS->pathCost;
+    ubMax = penalidadeTotal(jobs, N);
+    lbMin = penalidadeMinima(jobs, N);
+
+    // Primeiro caso
+    path = criaPath(NULL, lbMin, ubMax, 0, createList());
+    shAtual = geraPossibilidadesBB(jobs, path, N);
+    sh = shAtual;
+
+    // Demais casos
+    for(i = 1; i < N; i++) {
+        shAtual = NULL;
+        path = removeMin(&sh); // Caminho a ser avaliado
+        
+		while(path != NULL && path->pathCost < minCost) {
+            if(path->pathCost == path->ub) {
+                for(j = 0; j < N; j++) {
+                    // Preenchendo o caminho
+                    if(!isElementList(path->caminho, j))
+						insertList(path->caminho, j); 
+                }
+                //Atualizando menor caminho
+                freePath(minPath);
+                minPath = path;
+                minCost = path->ub;
+            }
+            else
+                shAtual = mergeSkewHeap(shAtual, geraPossibilidadesBB(jobs, path, N));
+            
+            path = removeMin(&sh);
+        }
+        if(path != NULL) freePath(path);
+        freeSkewHeap(sh);
+        sh = shAtual;
+    }
+    return(minPath);
+}
+\end{lstlisting}
+
+% ----------------------------------------------------------
+% Análise
+% ----------------------------------------------------------
+\section{Análise}
+Com o programa funcional, podemos verificar os aspectos técnicos da solução obtida. Para isto, foram realizados estudos e uma série de testes presentes nesta seção.
+
+\subsection{Estudo sobre o \textit{beam width}}
+\label{sec:w}
+O \textit{beam width} é o parâmetro \textit{W} como já referenciado neste documento em seções anteriores. É fundamental um estudo sobre este valor para a resolução do problema, pois implica diretamente na resposta final do \textit{beam search}. A saída do \textit{beam search} é redirecionada como entrada para o \textit{branch and bound}, afetando diretamente em seu tempo de execução. Por isto foram feitos diversos testes em relação ao W para que fosse obtido o melhor custo benefício (Tempo X Qualidade da resposta) para alcançar as soluções esperadas.
+
+Em primeiro momento o algoritmo \textit{beam search} realizava um cálculo de multa verificando somente se o tempo gasto era menor do que o \textit{deadline} do \textit{job} a ser observado. Caso não fosse era acrescentado a multa do \textit{job}, no custo do caminho, onde o algoritmo selecionava os W melhores custos naquele momento. Haviam vários casos de empate de \textit{lower bound} em estágios iniciais, sucedendo em formas diferentes em que a \textit{skew heap} era montada de acordo com o tamanho do W.
+
+Devido à situação descrita, o aumento de W em vários casos não significava alcançar resultados melhores, pois para cada W tínhamos uma \textit{skew heap} diferente. Desta forma o \textit{beam width} era um parâmetro inconsistente, podendo gerar resultados melhores ou piores, não sendo uma regra, quanto maior o W melhor o resultado, como é o esperado.
+
+No entanto, uma solução observada também devido a retirar esse enorme número de empates de custos a serem pagos, foi realizando um custo mais específico, não sendo verificado somente o \textit{job} observado, mas sim todos aqueles ao qual ultrapassaram o seu deadline com o tempo já gasto, desta forma eliminamos o caso de vários empates dentro de nossa \textit{skew heap}, sendo assim um critério certo de que quanto maior o nosso W melhor será o resultado de nosso \textit{beam search}, porém com isso foi pago o preço de verificar se os \textit{jobs} que ainda não foram visitados, já pagaram multa naquele instante. Porém devido a mais cálculos afetou diretamente ao tempo gasto quanto maior for o W.
+
+Uma solução encontrada foi realizando um custo mais específico, não sendo verificado somente o \textit{job} observado, mas sim todos aqueles ao qual ultrapassaram o seu \textit{deadline} com o tempo já gasto. Assim eliminando o caso de vários empates dentro da \textit{skew heap}, resultando em um critério certo de que quanto maior for W, melhor será o resultado do \textit{beam search}.
+
+Veja na tabela \ref{tab:w} as alterações devidas à variação do parâmetro \textit{W}. Esta análise foi feita executando o arquivo de entrada \textit{in100} (ver Seção \ref{sec:arqvtestes}) variando somente o valor de \textit{W}.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{cccc}
+\hline 
+\textbf{W} & \textbf{Resultado} & \textbf{Tempo de execução} \\
+\hline
+2   & 522 & 0.168s  \\ 
+10  & 506 & 0.592s  \\ 
+50  & 506 & 2.823s  \\
+100 & 506 & 6.086s  \\
+200 & 506 & 13.094s \\
+\hline
+\end{tabular}
+\caption{Parâmetro W}
+\label{tab:w}
+\end{table}
+
+Após os relatos, podemos verificar que quanto maior o W, mais precisa será a solução do \textit{beam search} comparado com o caminho exato, porém não necessariamente o resultado melhora, como pode ser visto na tabela. Com o aumento do parâmetro W, temos garantia que a solução está melhor ou igual. Além da possível melhoria da solução do algoritmo, temos um aumento sempre crescente de tempo de execução, de tal forma que, em certo momento, não vale a pena utilizar um W grande, pois o tempo gasto cresce muito mas a solução melhora muito pouco ou permanece estática.
+
+Por meio dos testes, foi decidido o valor \textit{30} para \textit{W}, pois é um valor que garante uma boa solução se comparado com valores inferiores e ainda tem um tempo de execução quase instantâneo.
+
+É importante utilizar um valor de W adequado pois quanto mais próxima da ótima for a solução obtida, mais cortes o \textit{branch and bound} poderá realizar e menos cálculos serão feitos para encontrar a solução ótima. O que reduz significantemente o tempo necessário pelo algoritmo exato.
+
+\subsection{Arquivos de testes}
+\label{sec:arqvtestes}
+Para verificar a integridade dos algoritmos implementados, foram realizados diversos testes com entradas de tamanhos e formatos variados.
+
+Os arquivos de teste foram criados automaticamente por um programa gerador, cujo código é o seguinte:
+
+\begin{lstlisting}[language=C, caption=Gerador de Jobs]
+void createFileJobs(int qtdJobs)
+{
+	int tempo,penalidade,multa;
+	FILE *arq = fopen("jobs.txt","w");
+
+	int i;
+	srand( (unsigned)time(NULL) );
+
+	for(i = 0; i < qtdJobs; i++)
+	{
+		tempo = rand()%qtdJobs+1;
+		penalidade = tempo + rand()%qtdJobs + 1;
+		multa = rand()%10+1; 
+		fprintf(arq,"%d %d %d\n",tempo,penalidade,multa);
+	}
+	
+	fclose(arq);
+}
+\end{lstlisting}
+
+As entradas utilizadas nos testes da seção \ref{sec:comp} estão caracterizadas na tabela \ref{tab:ins}. Devido ao tamanho dos arquivos, foram mostrados apenas os somatórios de cada um dos parâmetros. Ou seja, a soma de todos os tempos de execução, todos os \textit{deadlines} e a soma das penalidades.
+
+Os arquivos são identificados como \textit{in} seguido pela \textit{quantidade de jobs}. Por exemplo, \textit{in50} seria um arquivo de entrada com 50 \textit{jobs} a serem processados.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{cccc}
+\hline 
+\textbf{Arquivo} & \textbf{Tempo} & \textbf{\textit{Deadline}} & \textbf{Penalidade} \\      
+\hline
+in20  & 168    & 366    & 101  \\
+in35  & 633    & 1202   & 184  \\ 
+in40  & 776    & 1527   & 227  \\
+in100 & 5130   & 10170  & 580  \\
+in200 & 20420  & 40219  & 1072 \\
+in500 & 122983 & 251422 & 2700 \\
+\hline
+\end{tabular}
+\caption{Arquivos de entrada}
+\label{tab:ins}
+\end{table}
+
+\subsection{Comparação entre os algoritmos}
+\label{sec:comp}
+Veja na tabela \ref{tab:results} os resultados da execução dos testes de entradas desiguais apresentadas na seção \ref{sec:arqvtestes}. Cada teste foi realizado utilizando o \textit{beam width} $W = 30$, como definido e explicado na seção \ref{sec:w}.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{cccc}
+\hline 
+\textbf{Algoritmo} & \textbf{Arquivo} & \textbf{Resultado} & \textbf{Tempo de execução} \\
+\hline
+\multirow{3}{*}{Beam Search} &
+  in20  & 52   & 0.014s    \\ 
+& in35  & 147  & 0.066s    \\ 
+& in40  & 192  & 0.099s    \\
+& in100 & 506  & 1.679s    \\
+& in200 & 993  & 27.661s   \\
+& in500 & 2526 & 1139.692s \\
+\hline
+\multirow{3}{*}{Branch and Bound} &
+  in20 & 52  & 0.0850s \\ 
+& in35 & 132 & 11.191s \\ 
+& in40 & 171 & 49.529s \\
+& in50 & 230 & 29.317s \\
+& in51 & 244 & 27.459s \\
+\hline
+\end{tabular}
+\caption{Resultados e comparação}
+\label{tab:results}
+\end{table}
+
+Com os dados apresentados, podemos claramente observar a diferença entre os algoritmos considerados.
+
+O \textit{Beam Search} é significantemente mais rápido que o outro. Isto é esperado, uma vez que é caracterizado como uma heurística, ou seja, tem como objetivo se aproximar da solução exata, perdendo a precisão mas ganhando em tempo de execução.
+
+O \textit{Branch and Bound}, por sua vez, garante a melhor resposta possível, deixando em segundo plano a velocidade de resposta. Mesmo assim, este algoritmo é consideravelmente rápido se comparado com um procedimento de permutação simples, pois utiliza o resultado do \textit{beam search} para prever e eliminar sequências ruins que existem durante o decorrer do algoritmo.
+
+Uma observação importante é que a velocidade em que o algoritmo \textit{branch and bound} encontra a solução depende muito da entrada. Como pode ser visto pelos testes \textit{in40}, \textit{in50} e \textit{in51}, que, nesta ordem, reduziram o tempo de processamento. Assertivamente, nestes testes com maior número de \textit{jobs}, ocorreram mais situações em que pode ser eliminado diversas possibilidades, ganhando assim em tempo de execução.
+
+% ----------------------------------------------------------
+% Conclusão
+% ----------------------------------------------------------
+\section{Conclusão}
+Ambos os algoritmos implementados são eficientes dependendo da aplicação. Caso o objetivo não requira uma exatidão e/ou a quantidade de dados a serem processadas é vasta, seria mais apropriado a utilização do \textit{Beam Search}. Por outro lado, se for necessário uma solução ótima para o problema, então deve-se preparar e executar o \textit{Branch and Bound}.
+
+
+% ----------------------------------------------------------
+% Referências bibliográficas
+% ----------------------------------------------------------
+\bibliography{trab3}{}
+\bibliographystyle{ieeetr}
+\addcontentsline{toc}{section}{Referências}
+
+%https://en.wikipedia.org/wiki/Beam_search
+%https://pt.wikipedia.org/wiki/Pesquisa_tabu
+%https://pt.wikipedia.org/wiki/Branch_and_bound
+%https://en.wikipedia.org/wiki/Branch_and_bound
+%http://revista.feb.unesp.br/index.php/gepros/article/viewFile/567/486
+
+\end{document}

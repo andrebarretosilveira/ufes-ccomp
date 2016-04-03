@@ -1,0 +1,654 @@
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+% abnTeX2: Modelo de Artigo Acadêmico em conformidade com
+% ABNT NBR 6022:2003: Informação e documentação - Artigo em publicação 
+% periódica científica impressa - Apresentação
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+
+\documentclass[
+	% -- opções da classe memoir --
+	article,			% indica que é um artigo acadêmico
+	11pt,				% tamanho da fonte
+	oneside,			% para impressão apenas no verso. Oposto a twoside
+	a4paper,			% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE % títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	sumario=tradicional
+	]{abntex2}
+
+
+% ---
+% PACOTES
+% ---
+\usepackage{lmodern}			% Usa a fonte Latin Modern
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{nomencl} 			% Lista de simbolos
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{microtype} 			% para melhorias de justificação
+\usepackage{makeidx}			% Gerar índice
+\usepackage[portuguese,linesnumbered,vlined]{algorithm2e}	% Gerar pseudo-códigos
+\usepackage{lipsum}				% para geração de dummy text
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+\usepackage{listings}			% Include the listings-package
+\usepackage{color}
+\usepackage{url}
+\usepackage{cite}
+\usepackage[brazilian,hyperpageref]{backref}
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+% ---
+
+% ---
+% Configurações de Listings
+% ---
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstset{
+	backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+	basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+	breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+	breaklines=true,                 % sets automatic line breaking
+	captionpos=b,                    % sets the caption-position to bottom
+	commentstyle=\color{mygreen},    % comment style
+	deletekeywords={...},            % if you want to delete keywords from the given language
+	escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+	extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+	keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+	keywordstyle=\color{blue},       % keyword style
+	language=C,                      % the language of the code
+	otherkeywords={*,...},           % if you want to add more keywords to the set
+	numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+	numbersep=5pt,                   % how far the line-numbers are from the code
+	numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+	rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+	showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+	showstringspaces=false,          % underline spaces within strings only
+	showtabs=false,                  % show tabs within strings adding particular underscores
+	stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+	stringstyle=\color{mymauve},     % string literal style
+	tabsize=2,	                   % sets default tabsize to 2 spaces
+	title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+% ---
+
+% ---
+% Correção do algorithm2e em português
+% ---
+\SetKwFor{Para}{para}{fa\c{c}a}{fim para}
+% ---
+
+
+% ---
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% ---
+\titulo{\textbf{Resolução de Sistemas Lineares Esparsos}}
+\autor{André Barreto, Igor Venturini e Vinicius Arruda\\\\Universidade Federal do Espírito Santo\\Departamento de Informática}
+\local{Vila Velha, Espírito Santo}
+\date{11 de Outubro, 2015}
+% ---
+
+% ---
+% Configurações de aparência do PDF final
+
+% alterando o aspecto da cor azul
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+	%pagebackref=true,
+	pdftitle={\@title}, 
+	pdfauthor={\@author},
+	pdfsubject={Modelo de artigo científico com abnTeX2},
+	pdfcreator={LaTeX with abnTeX2},
+	pdfkeywords={abnt}{latex}{abntex}{abntex2}{atigo científico}, 
+	colorlinks=true,       		% false: boxed links; true: colored links
+	linkcolor=blue,          	% color of internal links
+	citecolor=blue,        		% color of links to bibliography
+	filecolor=magenta,      		% color of file links
+	urlcolor=blue,
+	bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% ---
+% compila o indice
+% ---
+\makeindex
+% ---
+
+% ---
+% Altera as margens padrões
+% ---
+\setlrmarginsandblock{3cm}{3cm}{*}
+\setulmarginsandblock{3cm}{3cm}{*}
+\checkandfixthelayout
+% ---
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.3cm}
+
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% Espaçamento simples
+\SingleSpacing
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+% Seleciona o idioma do documento (conforme pacotes do babel)
+\selectlanguage{brazil}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing 
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+
+% página de titulo
+\maketitle
+
+% resumo em português
+\begin{resumoumacoluna}
+Neste trabalho será abordado a resolução de sistemas lineares esparsos, apresentando métodos e algoritmos e, por fim, resultados numéricos através de testes. Para isto, serão utilizados métodos de compactação de matrizes esparsas e algoritmos de resolução de sistemas lineares adaptados para a utilização destas matrizes.
+
+\textbf{Keywords}: sistemas lineares. matriz esparsa.
+\end{resumoumacoluna}
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+\textual
+
+% ----------------------------------------------------------
+% Introdução
+% ----------------------------------------------------------
+\section*{Introdução}
+\addcontentsline{toc}{section}{Introdução}
+
+Um sistema linear é uma abstração matemática de forma representar um problema ou situação real de diversas áreas do conhecimento. Em muitos casos, estes sistemas são esparsos e de ordem elevada. Um sistema esparso é tal que seus coeficientes não nulos são em número pequeno. Ou seja, uma matriz deste sistema teria zeros em grande quantidade e poucos coeficientes relevantes ao processo. \cite{sparse}
+
+Existem vários algoritmos de resolução de sistemas lineares eficientes. Porém, se o sistema é esparso e de grande porte, estes algoritmos, simplesmente utilizados, perdem muito a eficiência, uma vez que são poucos os coeficientes que precisam ser avaliados.
+
+Portanto, trataremos ao longo deste material métodos de resolução de sistemas lineares com a utilização de técnicas de armazenamento de matrizes esparsas. Mais especificamente, serão implementados em linguagem C o algoritmo de eliminação de Gauss e o algoritmo SOR, ambos utilizando destas técnicas.
+
+% ----------------------------------------------------------
+% Seção de explicações
+% ----------------------------------------------------------
+\section{Referencial Teórico}
+Nesta seção serão abordados os métodos de resolução dos sistemas lineares propostos e os métodos de armazenamento de sistemas lineares esparsos implementados.
+
+Serão apresentados pseudo-códigos em subseções, onde foram tomadas as seguintes convenções:
+\begin{itemize}
+  \item \textit{A}: matriz de coeficientes
+  \item \textit{U}: matriz triangular superior de coeficientes
+  \item \textit{b}: vetor de termos independentes
+  \item \textit{n}: ordem da matriz
+  \item \textit{x}: vetor solução do sistema
+  \item \textit{$\omega$}: fator de relaxação
+\end{itemize}
+
+\subsection{Eliminação de Gauss}
+A Eliminação de Gauss é um método direto de resolução que consiste em transformar um sistema linear em um sistema triangular superior equivalente por meio de operações l-elementares. Em seguida, aplica-se o algoritmo de substituições retroativas para encontrar a solução dos sistema.
+
+Operações l-elementares são operações aplicadas a linhas (ou colunas) da matriz que resultam em uma matriz equivalente a anterior. Estas são:
+\begin{itemize}
+  \item Trocar uma linha com outra:\\ $ R_i \leftrightarrow R_j $
+  \item Multiplicar uma linha por uma constante não nula:\\ $ kR_i \rightarrow R_i,\ \mbox{where } k \neq 0 $
+  \item Trocar uma linha por esta linha somado com um múltiplo de outra:\\ $ R_i + kR_j \rightarrow R_i,\ \mbox{where } i \neq j $
+\end{itemize}
+
+De acordo com as definições acima, temos o \hyperlink{a1}{Algoritmo 1}, que corresponde ao Método de Gauss. Como entrada, recebe uma matriz de coeficientes \textit{A}, um vetor de termos independentes \textit{b} e a ordem da matriz \textit{n}. Retorna uma matriz triangular superior \textit{U} e o vetor de termos independentes modificado \textit{b}.
+
+\hypertarget{a1}{
+\begin{algorithm}
+	\Entrada{$A, b, n$}
+	\Saida{$U, b$}
+	\Inicio {
+		\Para{$k \longleftarrow 1$ \Ate $n-1$}{
+			\Para{$i \longleftarrow k+1$ \Ate $n$}{
+				$m \longleftarrow - \left(\frac{A_{ik}}{A_{kk}} \right)$\;
+				\Para{$j \longleftarrow k$ \Ate $n$}{
+				$A_{ij} \longleftarrow A_{ij} + mA_{kj}$\;
+				}
+				$b_{i} \longleftarrow b_{i} + mb_{k}$\;
+			}
+		}
+	}
+	\caption{Eliminação de Gauss}
+\end{algorithm}
+}
+
+\subsection{Sucessive Over Relaxation}
+O método de sucessivos sobre-relaxamento (SOR) é uma variante do método de Gauss-Seidel para resolver um sistema de equações lineares, resultando em convergência mais rápida. Um método similar pode ser usado para qualquer processo iterativo lentamente convergente, desta forma podendo acelerar a convergência do sistema linear.
+
+A convergência do método SOR depende do parâmetro ômega ($\omega$) e é necessário que $\omega$ seja $0 < \omega < 2$ para garantir a convergência. Usualmente, utiliza-se $\omega$ entre 1 e 2, porém não sendo necessariamente uma regra, particularmente para $\omega = 1$, a recorrência para a resolução do sistema de modo iterativo se torna equivalente a de Gauss-Seidel.
+
+Veja o \hyperlink{a2}{Algoritmo 2} que corresponde ao Método de SOR.
+
+\hypertarget{a2}{
+\begin{algorithm}
+	\Entrada{$A, b, n, \omega$}
+	\Saida{$x$}
+	\Inicio {
+		$x \longleftarrow 0$\;
+		\Repita{convergência}{
+			\Para{$i \longleftarrow 1$ \Ate $n$}{
+				$\phi \longleftarrow 0$\;
+				\Para{$j \longleftarrow 1$ \Ate $n$}{
+					\Se{$j \neq i$}{
+						$\phi \longleftarrow \phi + A_{ij} x_j$\;
+					}
+					$x_i \longleftarrow (1-\omega)x_i + \left(\frac{\omega}{A_{ii}} \right)(b_i - \phi)$\;
+				}
+			}
+		}
+	}
+	\caption{Método SOR}
+\end{algorithm}
+}
+
+\subsection{Métodos de Armazenamento}
+Como explicitado anteriormente, torna-se essencial criar uma forma adequada de armazenamento das informações do sistema linear esparso, de tal forma reduzir a complexidade dos algoritmos de resolução de sistemas.
+
+Serão abordados a seguir dois métodos que foram implementados para alcançar o objetivo deste trabalho.
+
+\subsubsection{CSR}
+O \textit{Compressed Sparse Row} (CSR) é uma forma de armazenamento de sistemas esparsos. Este, como todos os outros, evitam o armazenamento de valores nulos ou zeros, uma vez que são dispensáveis no processo de resolução. \cite{crs}
+
+O CSR possui, essencialmente, três vetores que armazenam informações sobre os valores, o índice em que ocorrem e os índices que indicam onde se inicia uma nova linha da matriz. Nesta implementação, foi incluído um vetor com os valores da diagonal principal e um vetor dos valores independentes do sistema. Resultando na seguinte forma:
+
+\begin{itemize}
+  \item \textit{values}: lista encadeada de valores não nulos da matriz
+  \item \textit{column\_index}: vetor de índices das colunas para cada valor da lista de valores
+  \item \textit{row\_index}: vetor de posições de onde na lista de valores representa uma nova linha
+  \item \textit{diagonal}: vetor de valores da diagonal da matriz de coeficientes.
+  \item \textit{b}: vetor de termos independentes do sistema.
+\end{itemize}
+
+Este método foi adotado para a resolução do algoritmo SOR.
+    
+\subsubsection{Sparse}
+Através de tentativas de resolução com o método de Gauss, percebemos que o \textit{CSR} não era apropriado, pois resultava em um algoritmo de complexidade cúbica, chegando a ser pior do que o método direto sem armazenamento esparso. Isto se devia ao fato de não haver uma forma rápida de acessar os elementos não nulos, sendo necessário iterar, de uma forma indireta, em todos os elementos da matriz.
+
+Dado o problema encontrado, foi-se desenvolvido outra forma de armazenamento. Esta nomeamos simplesmente de \textit{Sparse}. Com o objetivo de agilizar o acesso aos elementos relevantes da matriz da forma proposta pelo algoritmo de Gauss, foi criado a seguinte estrutura:
+
+\begin{itemize}
+  \item \textit{matrix}: vetor de ponteiros para listas encadeadas que armazenam os valores não nulos. Cada posição \textit{i} da \textit{matrix} representa a coluna \textit{i} da matriz de coeficientes.
+  \item \textit{diagonal}: vetor de valores da diagonal da matriz de coeficientes.
+  \item \textit{b}: vetor de termos independentes do sistema.
+  \item \textit{n}: tamanho de cada vetor descrito acima.
+\end{itemize}
+
+A variável \textit{matrix} é um vetor de listas encadeadas que substitui o vetor de valores presente no CSR, visando reduzir o custo computacional da manipulação das informações durante o procedimento da eliminação de Gauss. Estas listas são compostas de valores em uma mesma coluna, facilitando a iteração de busca de valores não nulos para o cálculo de \textit{m} e combinação de linhas.
+
+\section{Implementação}
+A seguir serão apresentados os códigos relativos à implementação dos métodos considerados. Foi escolhido a linguagem C para a codificação.
+
+\subsection{CSR}
+
+\subsubsection{Estrutura}
+\begin{lstlisting}[language=C, caption=Estrutura da CSR]
+typedef struct 
+{
+    size_t n;					// Ordem da matriz
+    size_t nnz;					// Numero de valores nao nulos
+    size_t* column_index;		// Vetor de indices das colunas de A
+    size_t* row_ptr;			// Vetor de posicoes de novas linhas
+    double* A;					// Vetor de valores nao nulos
+    double* d;					// Vetor de valores da diagonal
+    double* b;					// Vetor de termos independentes
+} CSR;
+\end{lstlisting}
+
+\subsubsection{Principais funções}
+Reserva espaço no heap para uma estrutura do tipo CSR e retorna o ponteiro para a memória alocada.
+\begin{lstlisting}[language=C, caption=Função alocar memória CSR]
+#define get_memory(ptr, size) ((ptr) = malloc(size));if((ptr) == NULL){fprintf(stderr, "Out of memory.\n");exit(EXIT_FAILURE);}
+
+CSR* new_csr(size_t n, size_t nnz)
+{
+	CSR* new;
+	get_memory(new, sizeof(CSR));
+	new->n = n;
+	new->nnz = nnz;
+	get_memory(new->column_index, nnz * sizeof(size_t));
+	get_memory(new->row_ptr, (n + 1) * sizeof(size_t));
+	get_memory(new->A, nnz * sizeof(double));
+	new->d = NULL;
+	new->b = NULL;
+	
+	return new;
+}
+\end{lstlisting}
+
+Inicialmente cria uma estrutura temporária do tipo COO e lê do arquivo a matriz, armazenando os índices da linha e  da coluna de cada valor e o próprio valor para esta estrutura. Após a leitura, cria-se uma estrutura do tipo CSR e faz um processamento da estrutura COO através da função \textit{coo2csr} que converte a estrutura COO para o formato CSR. A memória ocupado pela COO é liberada e é retornado a estrutura CSR preenchida com os valores da matriz. 
+\begin{lstlisting}[language=C, caption=Função gerar CSR]
+CSR* get_csr(const char* file_name)
+{
+	FILE* stream;
+	COO* coo;
+	size_t i, j, x, y, n, nnz;
+	double temp_A;
+
+	stream  = fopen(file_name, "r");
+	if(stream == NULL) {
+		fprintf(stderr, "Error while opening file %s.\n", file_name);
+		exit(EXIT_FAILURE);
+	}
+	fscanf(stream, "%lu %lu %lu", &n, &n, &nnz);
+	coo = new_coo(n, nnz);
+	i = j = 0;
+	while(nnz > 0) {
+		nnz--;
+		fscanf(stream, "%lu %lu %lf", &x, &y, &temp_A);
+		if(x == y) coo->d[i++] = temp_A;
+		else {
+			coo->row_index[j] = x - 1;
+			coo->column_index[j] = y - 1;
+			coo->A[j++] = temp_A;
+		}
+	}
+	for(i = 0; i < n; i++) 
+		fscanf(stream, "%lf", &coo->b[i]);
+	
+	fclose(stream);
+	return coo2csr(coo);
+}
+\end{lstlisting}
+
+\subsection{Sparse}
+
+\subsubsection{Estrutura}
+\begin{lstlisting}[language=C, caption=Estrutura da Sparse]
+typedef struct list
+{
+	double value;
+	size_t row;
+	struct list* next;
+} List;
+
+typedef struct
+{
+	size_t n;
+	double* diagonal;
+	double* b;
+	List** matrix;
+} Sparse;
+\end{lstlisting}
+
+\subsubsection{Principais funções}
+A função \textit{getSparse} é a responsável por criar a estrutura. Recebendo como parâmetro a nome do documento a ser lido, abre este documento e inicia-se a leitura. Inicialmente lê-se a ordem da matriz e o número de valores não nulos. Com isto, cria-se o espaço necessário para a estrutura. Após isto é iniciado a leitura de acordo com o padrão estabelecido dos arquivos. Cada informação de valor lida é armazenada na estrutura. Se $ i = j $, o valor será armazenado na \textit{diagonal}, o vetor de valores da diagonal da matriz. Caso contrário, estes serão inseridos na \textit{matrix}.
+\begin{lstlisting}[language=C, caption=Função gerar Sparse]
+Sparse* getSparse(const char* fileName)
+{
+	FILE* stream;
+	Sparse* sparse;
+	size_t n, nnz, i, j;
+	double temp_A;
+
+	stream = fopen(fileName, "r");
+	if(stream == NULL) {
+		fprintf(stderr, "Error while opening file %s.\n", fileName);
+		exit(EXIT_FAILURE);
+	}
+	fscanf(stream, "%lu %lu %lu", &n, &n, &nnz);
+	get_memory(sparse, sizeof(Sparse));
+	sparse->n = n;
+	get_memory(sparse->diagonal, n * sizeof(double));
+	get_memory(sparse->b, n * sizeof(double));
+	get_memory(sparse->matrix, n * sizeof(List *));
+	
+	for(i = 0; i < n; i++) sparse->matrix[i] = NULL;
+
+	while(nnz > 0) {
+		fscanf(stream, "%lu %lu %lf", &i, &j, &temp_A);
+		i--; j--;
+		if(i == j) sparse->diagonal[j] = temp_A;
+		else insert(&sparse->matrix[j], temp_A, i);
+		nnz--;
+	}
+	for(i = 0; i < n; i++) fscanf(stream, "%lf", &sparse->b[i]);
+		
+	fclose(stream);
+	return sparse;
+}
+\end{lstlisting}
+
+A função \textit{get} recupera o valor dado a linha \textit{i} e coluna \textit{j} recebidas como parâmetros. Se $ i = j $, será feito um acesso O(1) no vetor diagonal. Caso contrário é realizado uma busca O(n) na estrutura de listas encadeadas.
+\begin{lstlisting}[language=C, caption=Função recuperar valor]
+double get(Sparse* sparse, size_t i, size_t j)
+{
+	List* column;
+	if(i == j) return sparse->diagonal[j];
+	else {
+		column = sparse->matrix[j];
+		while(column != NULL) {
+			if(column->row == i)
+				return column->value;
+				
+			column = column->next;
+		}
+	}
+	return 0.0;
+}
+\end{lstlisting}
+
+\subsection{Eliminação de Gauss}
+A Eliminação de Gauss para matriz esparsa armazenada na estrutura \textit{sparse}, a lógica de procedimento é visualmente similar se comparado ao algoritmo normal. A importante mudança é que não é necessário avaliar todas as linhas abaixo do pivô atual para realizar as combinações lineares. Com a estrutura criada, acessamos diretamente o próximo elemento não nulo na coluna em questão. \cite{sparseGauss}
+
+\subsubsection{Principais funções}
+A função \textit{elimGauss} recebe como parâmetro um ponteiro para a estrutura \textit{sparse}. São executados as iterações e modificações como indicadas no algoritmo abaixo. A função imprime na tela o tempo de execução do algoritmo e o vetor solução.
+
+\subsection{SOR}
+Para o desenvolvimento do algoritmo SOR através de diversas pesquisas, pode ser constatado que em média a melhor forma de armazenamento com bons resultados para trabalhar com matrizes esparsas para métodos de iterações é o método de armazenamento CSR, porém para a adequação do método de entrada fornecida foi necessário usar um método de armazenamento auxiliar o COO ao qual usa três vetores para armazenar a matriz, logo armazenado no método COO pode ser convertido para o método de armazenamento CSR, ao qual foi desenvolvido o algoritmo SOR para trabalhar com este método de armazenamento.
+
+O algoritmo para a resolução de matriz esparsas por método iterativo SOR, foi construído na função SOR, ao qual recebe como parâmetro de entrada a matriz armazenada no modo CSR, o fator de relaxação, a tolerância de erro e o número máximo de iterações, após invocada a função, ela constrói o vetor solução recebendo o vetor independente e dividindo pela diagonal correspondente a linha do vetor independente. Após o vetor solução construído é hora de realizar as iterações onde se conta a iteração, e o erro, desta forma as iterações são realizadas através de \textit{loops} que descartam os valores nulos percorrendo através da estrutura CSR para calcular os valores de Xi de modo eficiente, a cada \textit{loop} de iteração é calculado o erro para decidir se a tolerância aceita o erro ou não, e também é calculado a iteração para verificar se a iteração está dentro do limite máximo de iterações. A função SOR tem como saída o vetor solução do sistema fornecido como entrada.
+
+\begin{lstlisting}[language=C, caption=Função SOR]
+Enquanto ERRO > e faca
+ERRO=0
+NORMAX = 0
+Para i=1,...,n
+    INICIO = PNTA(i)
+    FIM = PNTA(i+1)−1
+    Se INICIO ≤ FIM faca
+        SOMA = b(i)
+        Para k = INICIO,...,FIM
+            SOMA = SOMA − VALA (k) × X (INDA(k))
+        SOMA = SOMA/ DIAGA(i)
+    aux = ω × SOMA + (1 − ω) × X(i)
+    Se|aux| > NORMAX, faca NORMAX =|aux|
+    Se|aux−X(i)|>ERRO, faca ERRO =|aux−X(i)|
+    X(i)=aux
+aux = 1
+Se NORMAX > 1, faca aux = NORMAX
+ERRO=ERRO/aux
+
+ONDE 
+VALA = VETOR CORRESPONDENTE AOS VALORES NÃO NULOS E NÃO DIAGONAIS DA MATRIZ
+DIAGA = VETOR CORRESPONDENTE AOS VALORES DA DIAGONAL PRINCIPAL DA MATRIZ
+PNTA = VETOR QUE ARMAZENA O INDICE ONDE COMEÇA CADA LINHA DA MATRIZ
+INDA = VETOR ONDE ARMAZENA A COLUNA ONDE ESTÁ ARMAZENADO CADA ELEMENTO NÃO NULO E NÃO DIAGONAL DA MATRIZ
+\end{lstlisting}
+
+\subsubsection{Principais funções}
+\begin{lstlisting}[language=C, caption=Pseudo código SOR]
+double *sor(CSR* matrix,double omega,double toler, size_t iterMax)
+{
+	struct timespec Start,End;
+	clock_gettime(CLOCK_MONOTONIC,&Start);
+	
+	double *x;
+	double soma,normax,aux,Elapsed_Time,erro;
+	size_t i,k,iter,inicio,fim;
+
+	x = calloc(matrix->n,sizeof(double));
+
+	iter = 0;
+	do{
+		erro = 0;
+		normax = 0;
+		iter++;
+		for(i = 0; i < matrix->n; i++) {
+			inicio = matrix->row_ptr[i];
+			fim = matrix->row_ptr[i+1]-1;
+			soma = matrix->b[i];
+			if(inicio <= fim) {
+				for(k = inicio; k <= fim; k++)
+					soma -= matrix->A[k]* x[matrix->column_index[k]];
+			}
+			soma = soma / matrix->d[i];
+			aux = omega * soma + (1 - omega) * x[i];
+
+			if(fabs(aux) > normax)
+				normax = fabs(aux);
+				
+			if(fabs(aux - x[i]) > erro)
+				erro = fabs(aux - x[i]);
+				
+			x[i] = aux;
+		}
+		aux = 1;
+		if(normax > 1)
+			aux = normax;
+			
+		erro = erro/aux;
+
+	} while(erro > toler && iter < iterMax);
+	
+	printf("Iter: %lu - IterMax: %lu\n",iter,iterMax);
+
+	clock_gettime(CLOCK_MONOTONIC, &End);
+	Elapsed_Time = End.tv_sec - Start.tv_sec + 1e-9*(End.tv_nsec - Start.tv_nsec);
+	printf("O tempo de execucao gasto foi %g segundos\n",Elapsed_Time);
+	
+	return x;
+}
+\end{lstlisting}
+
+\section{Experimentos Numéricos}
+Foram realizados uma série de testes para verificar a velocidade e quantidade de memória utilizada para cada uma das estruturas. Oficialmente, foram propostas cinco matrizes diferentes com esforço computacional crescente foram anotados para se estabelecer uma comparação.
+Estes testes foram executados em uma máquina com as seguintes configurações:
+
+Linux Mint 17.2 Cinnamon 64-bit \\
+\indent Intel Core i7-3770 CPU @ 3.40GHz x 4 \\
+\indent 8GB de memória
+
+Veja na \hyperlink{t1}{Tabela 1} os resultados obtidos com os programas apresentados.
+
+\hypertarget{t1}{
+\begin{table}[ht]
+\centering
+\begin{tabular}{lcc|c|c|c|c|}
+\cline{4-7} 
+ &  &  & \textbf{Eliminação de Gauss} & \multicolumn{3}{ c| }{\textbf{Método SOR}} \\
+\hline 
+\multicolumn{1}{ |c  }{\textbf{Matriz}} & \multicolumn{1}{ |c  }{\textbf{n}} & \multicolumn{1}{ |c|  }{\textbf{nnz}} & \textbf{Tempo} & \textbf{Iterações} & \textbf{$\omega$} & \textbf{Tempo} \\
+\hline
+\multicolumn{1}{ |l  }{rdb968} & \multicolumn{1}{ |c  }{968} & \multicolumn{1}{ |c|  }{5632} & 1.188885s & 132302 & 0.0000059 & 3.93555s \\ 
+\hline 
+\multicolumn{1}{ |l  }{rail5177} & \multicolumn{1}{ |c  }{5177} & \multicolumn{1}{ |c|  }{35185} & 1.172265s & 2374 & 0.02 & 1.67600s \\ 
+\hline 
+\multicolumn{1}{ |l  }{aft01} & \multicolumn{1}{ |c  }{8205} & \multicolumn{1}{ |c| }{125567} & 210.353285s & 5069 & 1.9 & 2.38747s \\ 
+\hline 
+\multicolumn{1}{ |l  }{FEM3D\_thermal1} & \multicolumn{1}{ |c  }{17880} & \multicolumn{1}{ |c|  }{430740} & 1210.133500s & 112 & 0.5 & 0.168656s \\ 
+\hline 
+\multicolumn{1}{ |l  }{Dubcova2} & \multicolumn{1}{ |c  }{65025} & \multicolumn{1}{ |c|  }{1030225} & 11752.613021s & 5111 & 1 & 20.4685s \\ 
+\hline 
+\end{tabular}
+\caption{Resultados numéricos}
+\end{table}
+}
+
+Os testes do SOR foram executados com \textit{$ tolerância\ de\ erro = 10^{-5} $}.
+
+Para a realização de experimentos, testes e alcançar conclusões foram utilizados diversos métodos, a partir de pesquisas em artigos, livros, uso de softwares de \textit{debug} como \textit{gdb} e \textit{valgrind} e softwares matriciais como \textit{octave} e \textit{matlab}. 
+
+\textbf{Experimentos Gauss:}\\
+\indent
+Em respeito ao método de Gauss adaptado a matrizes esparsas, pode-se dizer que houve um ganho significante de velocidade e uma redução de espaço de memória utilizado. Porém não se compara com os métodos iterativos, que são muito facilmente aplicáveis a este tipo de sistema linear. O método de Gauss é apropriado para matrizes densas, por isto pode ser esperado a complexidade elevada.
+
+Infelizmente não foi possível testar todas as matrizes propostas por grande quantidade de tempo necessário.
+
+\textbf{Experimentos SOR:}\\
+\indent
+Através de testes realizados, pode ser constatado que existem sistemas que convergem para o método de SOR e não para o de Gauss-Seidel, e que segundo o teorema de convergência do raio espectral, pode ser visto que quanto mais próximo de 1 o módulo do maior auto valor da matriz M, mais lento será a convergência do sistema, desta forma muitas vezes o sistema terminando por número máximo de iterações e não de convergência, e que o fator de relaxação pode ajudar em uma convergência mais rápida do sistema, entretanto pode atrapalhar causando muitas vezes uma convergência mais lenta do que a comum equivalente ao método de Gauss-Seidel, também pode ser constatado em testes que mesmo muito próximo o valor do método iterativo do valor real, ele é uma aproximação não exata do resultado da resolução do sistema, porém sendo muito satisfatória o seu tempo de execução comparado ao método direto de gauss, convergindo matrizes extremamente grandes como as fornecidas com uma margem de erro aceitável em um tempo ótimo, comparado a um método direto.
+
+Em nosso método SOR, não foi possível alcançar o valor de alguns testes com precisão devido a lentidão de convergência, ou com a dimensão da divergência de forma ao erro a ser diminuído a cada iteração, mas não o suficiente para convergir antes que alcance o número máximo de iterações, desta forma não conseguindo alcançar com precisão alguns testes, porém em testes menores montados foram realizado de forma eficaz.
+
+
+% ---
+% Finaliza a parte no bookmark do PDF, para que se inicie o bookmark na raiz
+% ---
+%\bookmarksetup{startatroot}% 
+% ---
+
+% ---
+% Conclusão
+% ---
+\section*{Conclusão}
+\addcontentsline{toc}{section}{Conclusão}
+Através deste trabalho pode ser constatado na prática como funciona o método direto de gauss e o método iterativo SOR, para o trabalho com matrizes esparsas, pode ser visto que os métodos diretos não foram feitos para trabalhar com matrizes esparsas em seus modos simples de armazenamento como por exemplo o CSR, sendo de forma muito trabalhosa a adaptação deste método para este tipo de trabalho, porém, em caso contrário, o método iterativo SOR trabalha de forma muito satisfatória com os métodos de armazenamento para matriz esparsa, como por exemplo o CSR, logo pode ser visto que os resultados em relação a tempo foram vantajosos para o método iterativo, realizando a resolução de sistemas e tempo aceitável, porém o método direto fornecendo uma precisão melhor. Outro grande ponto a ser abordado com cuidado é em relação ao método direto existir sempre uma solução em todos os casos, porém já o método iterativo em alguns casos não convergir, desta forma sendo inviável a utilização dele nestes casos, através de todos os pontos observados pode ser concluir que o método a ser usada é relativo aos casos a serem trabalhados, desta forma sendo inviável uma recomendação de melhor modelo sem o estudo de que tipos de matrizes esparsas serão trabalhadas. Mas de modo geral, pode ser destacado que desde que as matrizes sejam convergentes para o método SOR, ele vantagem devido a tempo de resolução do sistema.
+
+% ----------------------------------------------------------
+% ELEMENTOS PÓS-TEXTUAIS
+% ----------------------------------------------------------
+\postextual
+
+% ---
+% Abstract: Título e resumo em língua estrangeira
+% ---
+
+\titulo{Solving Sparse Linear Systems}
+\emptythanks
+\maketitle
+
+% resumo em português
+\renewcommand{\resumoname}{Abstract}
+%\addcontentsline{toc}{section}{Abstract}
+\begin{resumoumacoluna}
+ \begin{otherlanguage*}{english}
+   In this research we will approach solving sparse linear systems, presenting methods and algorithms, and, at last, number results from a series of tests. For this matter, we will implement sparse compactation methods and linear systems resolutions for sparse matrix.
+
+   \vspace{\onelineskip}
+ 
+   \noindent
+   \textbf{Keywords}: sparse matrix. linear system.
+ \end{otherlanguage*}  
+\end{resumoumacoluna}
+
+
+% ----------------------------------------------------------
+% Referências bibliográficas
+% ----------------------------------------------------------
+\bibliographystyle{plain}
+\bibliography{relatorio}
+
+%http://www.netlib.org/utk/people/JackDongarra/etemplates/node373.html
+
+\end{document}

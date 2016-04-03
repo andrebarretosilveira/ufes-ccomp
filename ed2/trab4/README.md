@@ -1,0 +1,5 @@
+# ED2Trab4
+
+Pensando mais a longo prazo, a execução dos pontos do programa promove a alavancagem do orçamento setorial. No entanto, não podemos esquecer que a determinação clara de objetivos cumpre um papel essencial na formulação do levantamento das variáveis envolvidas. Evidentemente, a percepção das dificuldades auxilia a preparação e a composição das diversas correntes de pensamento. A certificação de metodologias que nos auxiliam a lidar com a complexidade dos estudos efetuados não pode mais se dissociar das novas proposições. 
+
+Neste sentido, o surgimento do comércio virtual ainda não demonstrou convincentemente que vai participar na mudança do fluxo de informações. A prática cotidiana prova que o desafiador cenário globalizado assume importantes posições no estabelecimento das direções preferenciais no sentido do progresso. Todavia, a constante divulgação das informações exige a precisão e a definição dos paradigmas corporativos. É importante questionar o quanto a competitividade nas transações comerciais representa uma abertura para a melhoria do investimento em reciclagem técnica.

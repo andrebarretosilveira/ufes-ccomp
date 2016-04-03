@@ -1,0 +1,138 @@
+Testes de tamanho 1000
+
+bubble
+0.004s + 0.000s
+
+insertion
+0.002s + 0.000s
+
+selection
+0.000s + 0.002s
+
+shake
+0.004s + 0.000s
+
+shell
+0.000s + 0.001s
+
+merge
+0.000s + 0.001s
+
+heap
+0.000s + 0.001s
+
+quickprimeiro
+0.000s + 0.001s
+
+quickcentral
+0.000s + 0.001s
+
+quickmediana3
+0.000s + 0.001s
+
+quickrandom
+0.000s + 0.001s
+
+rank
+0.003s + 0.000s
+
+radix
+0.000s + 0.006s
+
+radixbin
+0.001s + 0.000s
+
+====================
+
+Testes de tamanho 100000
+
+bubble
+30.454s + 0.004s
+
+insertion
+11.736s + 0.004s
+
+selection
+17.144s + 0.000s
+
+shake
+30.562s + 0.000s
+
+shell
+0.016s + 0.000s
+
+merge
+0.016s + 0.004s
+
+heap
+0.022s + 0.000s
+
+quickprimeiro
+7.409s + 0.004s
+
+quickcentral
+0.013s + 0.000s
+
+quickmediana3
+7.413s + 0.000s
+
+quickrandom
+3.331s + 0.004s
+
+rank
+0.008s + 0.004s
+
+radix
+0.087s + 0.000s
+
+radixbin
+0.112s + 0.000s
+
+====================
+
+Testes de tamanho 1000000
+
+bubble
+59.989s + 0.002s
+
+insertion
+59.998s + 0.001s
+
+selection
+59.994s + 0.005s
+
+shake
+59.998s + 0.001s
+
+shell
+0.167s + 0.001s
+
+merge
+0.207s + 0.001s
+
+heap
+0.232s + 0.005s
+
+quickprimeiro
+59.994s + 0.005s
+
+quickcentral
+0.130s + 0.005s
+
+quickmediana3
+59.994s + 0.005s
+
+quickrandom
+59.990s + 0.009s
+
+rank
+0.090s + 0.006s
+
+radix
+1.078s + 0.012s
+
+radixbin
+3.183s + 0.017s
+
+====================
+

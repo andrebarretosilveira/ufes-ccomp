@@ -1,0 +1,20 @@
+Horas consumidas: 1190 minutos
+Horas a consumir: 352 minutos
+
+Mídias por gênero:
+	Aventura: 5
+	Drama: 4
+	Monstros: 4
+	Super-Herói: 4
+	Ação: 3
+	Animação: 0
+	Comédia: 0
+	Documentário: 0
+	Ficção Científica: 0
+	Musical: 0
+	Terror: 0
+
+Temporadas por série:
+	Breaking Bad: 0 assistidas, 0 a assistir
+	Dexter: 0 assistidas, 0 a assistir
+	Narcos: 1 assistidas, 0 a assistir

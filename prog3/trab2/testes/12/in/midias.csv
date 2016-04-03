@@ -1,0 +1,21 @@
+﻿Código;Nome;Tipo;Diretor;A(u)tores;Tamanho;Gênero;Série;Temporada;Possui?;Consumiu?;Deseja?;Preço
+1;Django Livre;N;1;39, 40;165;WE;;;;x;x;22,9
+2;The Shawshank Redemption;F;2;3, 4, 5;142;DR;;;x;x;;15,9
+3;Grown Ups;F;6;7, 8;102;CO;;;x;;;9,9
+4;Grown Ups 2;F;6;7, 8, 9;101;CO;;;x;;;9,9
+5;Fight Club;F;10;11, 12;139;DR;;;x;x;;12,9
+6;The Lays of Beleriand;L;;13;400;AV;;;;;x;24,9
+7;Bilbo's Last Song;L;;13;32;AV;;;;;x;24,9
+8;The Office 3ª Temporada;S;14, 15, 16;17, 18, 19;506;CO;The Office;3;x;x;;11,9
+9;The Office 4ª Temporada;S;14, 15, 16;17, 18, 19;308;CO;The Office;4;x;x;;11,9
+10;The Office 5ª Temporada;S;14, 15, 16;17, 18, 19;572;CO;The Office;5;x;;;11,9
+11;O Pequeno Príncipe;L;;20;93;NO;;;;;x;26,9
+12;Animal Farm;L;;21;152;SA;;;x;x;;24,9
+13;Nineteen Eighty-Four;L;;21;416;FC;;;;;x;24,9
+14;True Detective 1ª Temporada;S;22;23, 24, 25;440;DR;True Detective;1;;;x;29,9
+15;Avatar: The Last Airbender 1ª Temporada;S;26, 27;28,29;460;AN;Avatar: The Last Airbender;1;x;x;;10,9
+16;Narcos 1ª Temporada;S;30;31;490;BI;Narcos;1;x;x;;18,9
+17;Wall-e;F;32;33;98;AN;;;;x;;16,9
+18;The Martian;F;34;35;144;DR;;;;;x;25
+19;Forrest Gump;F;36;37, 38;142;DR;;;;x;x;14,9
+20;À noite andamos em círculos;L;;41;320;RO;;;x;;;27,9

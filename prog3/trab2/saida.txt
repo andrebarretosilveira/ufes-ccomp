@@ -1,0 +1,460 @@
+Script de teste PROG3 2015/2 - Trabalho 2
+
+[I] Testando ....
+[I] Testando .: teste 01
+[E] Testando .: teste 01, diferenças em 1-estatisticas.txt (professor <- -> aluno):
+Horas consumidas: 2500 minutos																Horas consumidas: 2500 minutos
+Horas a consumir: 3815 minutos																Horas a consumir: 3815 minutos
+
+Mídias por gênero:																	Mídias por gênero:
+	Ficção Científica: 11															     |		Ação: 0
+	Aventura: 9																     <
+	Animação: 3																		Animação: 3
+	Épico: 2																     |		Aventura: 9
+	Fantasia: 2																     <
+	Terror (ou horror): 2															     <
+	Comédia: 1																		Comédia: 1
+	Drama: 1																     <
+	Ação: 0																	     <
+	Comédia romântica: 0																	Comédia romântica: 0
+	Documentários: 0																	Documentários: 0
+																		     >		Drama: 1
+																		     >		Épico: 2
+	Espionagem: 0																		Espionagem: 0
+																		     >		Fantasia: 2
+																		     >		Ficção Científica: 11
+	Guerra: 0																		Guerra: 0
+	Musical: 0																		Musical: 0
+	Policial: 0																		Policial: 0
+	Romance: 0																		Romance: 0
+	Suspense: 0																		Suspense: 0
+																		     >		Terror (ou horror): 2
+
+Temporadas por série:																	Temporadas por série:
+	Fringe: 1 assistidas, 1 a assistir													     |		Fringe: 0 assistidas, 0 a assistir
+	Twin Peaks: 0 assistidas, 1 a assistir													     |		Twin Peaks: 0 assistidas, 0 a assistir
+
+[E] Testando .: teste 01, diferenças em 2-porpessoa.csv (professor <- -> aluno):
+Pessoa;Produção																		Pessoa;Produção
+Adrienne Corri;Laranja Mecânica																Adrienne Corri;Laranja Mecânica
+Akemi Okamura;Porco Rosso - O Porquinho Voador														Akemi Okamura;Porco Rosso - O Porquinho Voador
+Akihiro Kitamura;A Centopéia Humana - Primeira Sequência												Akihiro Kitamura;A Centopéia Humana - Primeira Sequência
+Akio _tsuka;Porco Rosso - O Porquinho Voador														Akio _tsuka;Porco Rosso - O Porquinho Voador
+Anna Torv;Fringe - 1ª Temporada, Fringe - 2ª Temporada													Anna Torv;Fringe - 1ª Temporada, Fringe - 2ª Temporada
+Anthony Burgess;Laranja Mecânica															Anthony Burgess;Laranja Mecânica
+Arthur C. Clarke;2001: Uma Odisséia no Espaço, 2010: Uma Odisseia no Espaço 2, 2061: Uma Odisseia no Espaço 3, 3001: A Odisséia Final, The Last Theo |	Arthur C. Clarke;The Last Theorem, 2010: Uma Odisseia no Espaço 2, 2061: Uma Odisseia no Espaço 3, 2001: Uma Odisséia no Espaço, 3001: A Odisséia Fi
+Ashley C. Williams;A Centopéia Humana - Primeira Sequência												Ashley C. Williams;A Centopéia Humana - Primeira Sequência
+Ashlynn Yennie;A Centopéia Humana - Primeira Sequência													Ashlynn Yennie;A Centopéia Humana - Primeira Sequência
+Benedict Cumberbatch;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada			Benedict Cumberbatch;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada
+Blair Brown;Fringe - 1ª Temporada, Fringe - 2ª Temporada												Blair Brown;Fringe - 1ª Temporada, Fringe - 2ª Temporada
+Cate Blanchett;Senhor dos Anéis - A Sociedade do Anel, Senhor dos Anéis - As Duas Torres, Senhor dos Anéis - O Retorno do Rei				Cate Blanchett;Senhor dos Anéis - A Sociedade do Anel, Senhor dos Anéis - As Duas Torres, Senhor dos Anéis - O Retorno do Rei
+Chika Sakamoto;Meu Vizinho Totoro															Chika Sakamoto;Meu Vizinho Totoro
+Dakota Fanning;A Guerra dos Mundos															Dakota Fanning;A Guerra dos Mundos
+Dana Ashbrook;Twin Peaks - 1ª Temporada															Dana Ashbrook;Twin Peaks - 1ª Temporada
+Dieter Laser;A Centopéia Humana - Primeira Sequência													Dieter Laser;A Centopéia Humana - Primeira Sequência
+Douglas Rain;2001: Uma Odisséia no Espaço														Douglas Rain;2001: Uma Odisséia no Espaço
+Elijah Wood;Senhor dos Anéis - A Sociedade do Anel, Senhor dos Anéis - As Duas Torres, Senhor dos Anéis - O Retorno do Rei				Elijah Wood;Senhor dos Anéis - A Sociedade do Anel, Senhor dos Anéis - As Duas Torres, Senhor dos Anéis - O Retorno do Rei
+Frederik Pohl;The Last Theorem																Frederik Pohl;The Last Theorem
+Gary Lockwood;2001: Uma Odisséia no Espaço														Gary Lockwood;2001: Uma Odisséia no Espaço
+George C Scott;Dr. Fantástico																George C Scott;Dr. Fantástico
+Hayao Miyazaki;A Viagem de Chihiro, Meu Vizinho Totoro, Porco Rosso - O Porquinho Voador								Hayao Miyazaki;A Viagem de Chihiro, Meu Vizinho Totoro, Porco Rosso - O Porquinho Voador
+HG Wells;A Guerra dos Mundos																HG Wells;A Guerra dos Mundos
+Hitoshi Takagi;Meu Vizinho Totoro															Hitoshi Takagi;Meu Vizinho Totoro
+Homero;Ilíada, Odisséia																     |	Homero;Odisséia, Ilíada
+Ian McKellen;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada, Senhor dos Anéis - A Soci	Ian McKellen;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada, Senhor dos Anéis - A Soci
+Jasika Nicole;Fringe - 1ª Temporada, Fringe - 2ª Temporada												Jasika Nicole;Fringe - 1ª Temporada, Fringe - 2ª Temporada
+JJ Abrams;Star Trek Into Darkness															JJ Abrams;Star Trek Into Darkness
+John Noble;Fringe - 1ª Temporada, Fringe - 2ª Temporada													John Noble;Fringe - 1ª Temporada, Fringe - 2ª Temporada
+Joseph Cotten;Cidadão Kane																Joseph Cotten;Cidadão Kane
+Joshua Jackson;Fringe - 1ª Temporada, Fringe - 2ª Temporada												Joshua Jackson;Fringe - 1ª Temporada, Fringe - 2ª Temporada
+Justin Chatwin;A Guerra dos Mundos															Justin Chatwin;A Guerra dos Mundos
+Keir Dullea;2001: Uma Odisséia no Espaço														Keir Dullea;2001: Uma Odisséia no Espaço
+Kirk Acevedo;Fringe - 1ª Temporada, Fringe - 2ª Temporada												Kirk Acevedo;Fringe - 1ª Temporada, Fringe - 2ª Temporada
+Kubrick;2001: Uma Odisséia no Espaço, Dr. Fantástico, Laranja Mecânica										     |	Kubrick;2001: Uma Odisséia no Espaço, Laranja Mecânica, Dr. Fantástico
+Kyle MacLachlan;Twin Peaks - 1ª Temporada														Kyle MacLachlan;Twin Peaks - 1ª Temporada
+Lance Reddick;Fringe - 1ª Temporada, Fringe - 2ª Temporada												Lance Reddick;Fringe - 1ª Temporada, Fringe - 2ª Temporada
+Lara Flynn Boyle;Twin Peaks - 1ª Temporada														Lara Flynn Boyle;Twin Peaks - 1ª Temporada
+Leonard Nimoy;Fringe - 1ª Temporada, Fringe - 2ª Temporada												Leonard Nimoy;Fringe - 1ª Temporada, Fringe - 2ª Temporada
+Liv Tyler;Senhor dos Anéis - A Sociedade do Anel, Senhor dos Anéis - As Duas Torres, Senhor dos Anéis - O Retorno do Rei				Liv Tyler;Senhor dos Anéis - A Sociedade do Anel, Senhor dos Anéis - As Duas Torres, Senhor dos Anéis - O Retorno do Rei
+Mädchen Amick;Twin Peaks - 1ª Temporada														     <
+Malcolm McDowell;Laranja Mecânica															Malcolm McDowell;Laranja Mecânica
+Mari Natsuki;A Viagem de Chihiro															Mari Natsuki;A Viagem de Chihiro
+Mark Valley;Fringe - 1ª Temporada, Fringe - 2ª Temporada												Mark Valley;Fringe - 1ª Temporada, Fringe - 2ª Temporada
+Martin Freeman;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada				Martin Freeman;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada
+Michael Ontkean;Twin Peaks - 1ª Temporada														Michael Ontkean;Twin Peaks - 1ª Temporada
+Miranda Otto;A Guerra dos Mundos															Miranda Otto;A Guerra dos Mundos
+Miriam Karlim;Laranja Mecânica																Miriam Karlim;Laranja Mecânica
+Miyu Irino;A Viagem de Chihiro																Miyu Irino;A Viagem de Chihiro
+																		     >	Mädchen Amick;Twin Peaks - 1ª Temporada
+Noriko Hidaka;Meu Vizinho Totoro															Noriko Hidaka;Meu Vizinho Totoro
+Orlando Bloom;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada				Orlando Bloom;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada
+Orson Welles;Cidadão Kane															     |	Orson Welles;Cidadão Kane, Cidadão Kane
+Patrick Magee;Laranja Mecânica																Patrick Magee;Laranja Mecânica
+Peter Jackson;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada, Senhor dos Anéis - A Soc	Peter Jackson;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada, Senhor dos Anéis - A Soc
+Peter Selles;Dr. Fantástico																Peter Selles;Dr. Fantástico
+Richard Armitage;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada				Richard Armitage;O Hobbit - A Batalha dos Cinco Exércitos, O Hobbit - A Desolação de Smaug, O Hobbit - Uma Jornada Inesperada
+Richard Beymer;Twin Peaks - 1ª Temporada														Richard Beymer;Twin Peaks - 1ª Temporada
+Rumi Hiragi;A Viagem de Chihiro																Rumi Hiragi;A Viagem de Chihiro
+Sean Astin;Senhor dos Anéis - A Sociedade do Anel, Senhor dos Anéis - As Duas Torres, Senhor dos Anéis - O Retorno do Rei				Sean Astin;Senhor dos Anéis - A Sociedade do Anel, Senhor dos Anéis - As Duas Torres, Senhor dos Anéis - O Retorno do Rei
+Sherilyn Fenn;Twin Peaks - 1ª Temporada															Sherilyn Fenn;Twin Peaks - 1ª Temporada
+Shigesato Itoi;Meu Vizinho Totoro															Shigesato Itoi;Meu Vizinho Totoro
+Shuichiro Moriyama;Porco Rosso - O Porquinho Voador													Shuichiro Moriyama;Porco Rosso - O Porquinho Voador
+Steven Spielberg;A Guerra dos Mundos															Steven Spielberg;A Guerra dos Mundos
+Tim Robbins;A Guerra dos Mundos																Tim Robbins;A Guerra dos Mundos
+Tokiko Kato;Porco Rosso - O Porquinho Voador														Tokiko Kato;Porco Rosso - O Porquinho Voador
+Tolkien;O Hobbit, O Silmarílion, Senhor dos Anéis (volume único)										     |	Tolkien;Senhor dos Anéis (volume único), O Hobbit, O Silmarílion
+Tom Cruise;A Guerra dos Mundos																Tom Cruise;A Guerra dos Mundos
+Tom Six;A Centopéia Humana - Primeira Sequência														Tom Six;A Centopéia Humana - Primeira Sequência
+Viggo Mortensen;Senhor dos Anéis - A Sociedade do Anel, Senhor dos Anéis - As Duas Torres, Senhor dos Anéis - O Retorno do Rei				Viggo Mortensen;Senhor dos Anéis - A Sociedade do Anel, Senhor dos Anéis - As Duas Torres, Senhor dos Anéis - O Retorno do Rei
+Warren Frost;Twin Peaks - 1ª Temporada															Warren Frost;Twin Peaks - 1ª Temporada
+William Sylvester;2001: Uma Odisséia no Espaço														William Sylvester;2001: Uma Odisséia no Espaço
+
+[E] Testando .: teste 01, diferenças em 3-emprestimos.csv (professor <- -> aluno):
+Data;Tomador;Atrasado?;Dias de Atraso															Data;Tomador;Atrasado?;Dias de Atraso
+01/11/2015;Spok;Não;0																     |	30/11/2015;Spok;Sim;5
+29/09/2015;Bilbo Baggins;Sim;28															     |	20/10/2015;Teseu da Silva;Sim;39
+28/09/2015;Teseu da Silva;Sim;17														     |	09/10/2015;Bilbo Baggins;Sim;38
+
+[I] Testando .: teste 01, tudo OK em 4-wishlist.csv
+[I] Testando .: teste 04
+[E] Testando .: teste 04, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 05
+[E] Testando .: teste 05, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 06
+[E] Testando .: teste 06, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 07
+[E] Testando .: teste 07, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 08
+[E] Testando .: teste 08, diferenças em 1-estatisticas.txt (professor <- -> aluno):
+Horas consumidas: 1651 minutos																Horas consumidas: 1651 minutos
+Horas a consumir: 1651 minutos																Horas a consumir: 1651 minutos
+
+Mídias por gênero:																	Mídias por gênero:
+	Aventura: 11																     <
+	Romance: 6																     <
+	Comédia Dramática: 5															     <
+	Ação: 1																			Ação: 1
+																		     >		Aventura: 11
+	Biográfico: 1																		Biográfico: 1
+	Denúncia Social: 1															     |		Comédia Dramática: 5
+	Drama Épico: 1																		Drama Épico: 1
+	Drama Romântico: 1																	Drama Romântico: 1
+																		     >		Denúncia Social: 1
+	Faroeste: 1																		Faroeste: 1
+	Infanto-juvenil: 1																	Infanto-juvenil: 1
+	Não-Ficção: 1																		Não-Ficção: 1
+																		     >		Romance: 6
+
+Temporadas por série:																	Temporadas por série:
+
+[E] Testando .: teste 08, diferenças em 2-porpessoa.csv (professor <- -> aluno):
+Pessoa;Produção																		Pessoa;Produção
+Alain-Fournier;O Bosque das Ilusões Perdidas														Alain-Fournier;O Bosque das Ilusões Perdidas
+Albert Camus;O Estrangeiro																Albert Camus;O Estrangeiro
+Alfonso Cuarón;Harry Potter e o Prisioneiro de Azkaban 													Alfonso Cuarón;Harry Potter e o Prisioneiro de Azkaban 
+Antoine de Saint-Exupèry;O Pequeno Príncipe														Antoine de Saint-Exupèry;O Pequeno Príncipe
+Barkhad Abdi;Capitão Phillips																Barkhad Abdi;Capitão Phillips
+Bradley Cooper;O Lado bom da Vida, Trapaça														Bradley Cooper;O Lado bom da Vida, Trapaça
+Cate Blanchett;Blue Jasmine																Cate Blanchett;Blue Jasmine
+Chiwetel Ejiofor;12 Anos de Escravidão															Chiwetel Ejiofor;12 Anos de Escravidão
+Chris Columbus;Harry Potter e a Câmara Secreta , Harry Potter e a Pedra Filosofal 									Chris Columbus;Harry Potter e a Câmara Secreta , Harry Potter e a Pedra Filosofal 
+Christian Bale;Trapaça																	Christian Bale;Trapaça
+Daniel Radcliffe;Harry Potter e a Câmara Secreta , Harry Potter e a Ordem da Fênix , Harry Potter e a Pedra Filosofal , Harry Potter e as Relíquias  |	Daniel Radcliffe;Harry Potter e as Relíquias da Morte: Parte 2, Harry Potter e a Câmara Secreta , Harry Potter e a Pedra Filosofal , Harry Potter e 
+David O. Russell;O Lado bom da Vida, Trapaça														David O. Russell;O Lado bom da Vida, Trapaça
+David Yates;Harry Potter e a Ordem da Fênix , Harry Potter e as Relíquias da Morte: Parte 1, Harry Potter e as Relíquias da Morte: Parte 2, Harry Po |	David Yates;Harry Potter e as Relíquias da Morte: Parte 2, Harry Potter e a Ordem da Fênix , Harry Potter e as Relíquias da Morte: Parte 1, Harry Po
+Emma Thompson;Walt nos Bastidores de Mary Poppins													Emma Thompson;Walt nos Bastidores de Mary Poppins
+Emma Watson;Harry Potter e a Câmara Secreta , Harry Potter e a Ordem da Fênix , Harry Potter e a Pedra Filosofal , Harry Potter e as Relíquias da Mo |	Emma Watson;Harry Potter e as Relíquias da Morte: Parte 2, Harry Potter e a Câmara Secreta , Harry Potter e a Pedra Filosofal , Harry Potter e o Pri
+Ernest Hemingway;Por Quem os Sinos Dobram														Ernest Hemingway;Por Quem os Sinos Dobram
+Ethan Hawke;Antes da Meia Noite																Ethan Hawke;Antes da Meia Noite
+Franz Kafka;O Processo																	Franz Kafka;O Processo
+Hannah Arendt;A condição humana																Hannah Arendt;A condição humana
+Ian Murray McKellen;O Hobbit: A Desolação de Smaug, O Hobbit: Uma Jornada Inesperada									Ian Murray McKellen;O Hobbit: A Desolação de Smaug, O Hobbit: Uma Jornada Inesperada
+Idina Menzel;Frozen: Uma Aventura Congelante														Idina Menzel;Frozen: Uma Aventura Congelante
+Jamie Foxx;Django Livre																	Jamie Foxx;Django Livre
+Jennifer Lawrence;O Lado bom da Vida															Jennifer Lawrence;O Lado bom da Vida
+Jennifer Michelle Lee;Frozen: Uma Aventura Congelante													Jennifer Michelle Lee;Frozen: Uma Aventura Congelante
+Joaquin Phoenix;Ela																	Joaquin Phoenix;Ela
+John Lee Hancock;Walt nos Bastidores de Mary Poppins													John Lee Hancock;Walt nos Bastidores de Mary Poppins
+John Steinbeck;As Vinhas da Ira																John Steinbeck;As Vinhas da Ira
+Julie Delpy;Antes da Meia Noite																Julie Delpy;Antes da Meia Noite
+Krisen Bell;Frozen: Uma Aventura Congelante														Krisen Bell;Frozen: Uma Aventura Congelante
+Leonardo DiCaprio;Django Livre, O Lobo de Wallstreet												     |	Leonardo DiCaprio;O Lobo de Wallstreet, Django Livre
+Louis-Ferdinand Céline;Viagem ao fim da noite														Louis-Ferdinand Céline;Viagem ao fim da noite
+Lupita Nyong'o;12 Anos de Escravidão															Lupita Nyong'o;12 Anos de Escravidão
+Marcel Proust;No caminho de Swann															Marcel Proust;No caminho de Swann
+Margot Robbie;O Lobo de Wallstreet															Margot Robbie;O Lobo de Wallstreet
+Martin John Christopher Freeman;O Hobbit: A Desolação de Smaug, O Hobbit: Uma Jornada Inesperada							Martin John Christopher Freeman;O Hobbit: A Desolação de Smaug, O Hobbit: Uma Jornada Inesperada
+Martin Scorsese;O Lobo de Wallstreet															Martin Scorsese;O Lobo de Wallstreet
+Mike Newell;Harry Potter e o Cálice de Fogo 														Mike Newell;Harry Potter e o Cálice de Fogo 
+Paul Greengrass;Capitão Phillips															Paul Greengrass;Capitão Phillips
+Peter Jackson;O Hobbit: A Desolação de Smaug, O Hobbit: Uma Jornada Inesperada										Peter Jackson;O Hobbit: A Desolação de Smaug, O Hobbit: Uma Jornada Inesperada
+Quentin Tarantino;Django Livre																Quentin Tarantino;Django Livre
+Richard Linklater;Antes da Meia Noite															Richard Linklater;Antes da Meia Noite
+Rupert Grint;Harry Potter e a Câmara Secreta , Harry Potter e a Ordem da Fênix , Harry Potter e a Pedra Filosofal , Harry Potter e as Relíquias da M |	Rupert Grint;Harry Potter e as Relíquias da Morte: Parte 2, Harry Potter e a Câmara Secreta , Harry Potter e a Pedra Filosofal , Harry Potter e o Pr
+Sally Hawkins;Blue Jasmine																Sally Hawkins;Blue Jasmine
+Scarlett Johansson;Ela																	Scarlett Johansson;Ela
+Spike Jonze;Ela																		Spike Jonze;Ela
+Steve McQueen;12 Anos de Escravidão															Steve McQueen;12 Anos de Escravidão
+Tom Hanks;Capitão Phillips, Walt nos Bastidores de Mary Poppins											     |	Tom Hanks;Walt nos Bastidores de Mary Poppins, Capitão Phillips
+Woody Allen;Blue Jasmine																Woody Allen;Blue Jasmine
+
+[E] Testando .: teste 08, diferenças em 3-emprestimos.csv (professor <- -> aluno):
+Data;Tomador;Atrasado?;Dias de Atraso															Data;Tomador;Atrasado?;Dias de Atraso
+05/11/2015;Leonardo Zamprogno;Não;0														     |	05/12/2015;Leonardo Zamprogno;Sim;1
+01/11/2015;Alberto Santos Dumont;Não;0														     |	01/12/2015;Alberto Santos Dumont;Sim;5
+20/10/2015;Enrico Silvestre;Não;0														     |	20/11/2015;Enrico Silvestre;Sim;17
+06/10/2015;Andresa Maria;Não;0															     |	06/11/2015;Andresa Maria;Sim;31
+02/10/2015;Bill Murray da Silva;Sim;4														     |	02/11/2015;Bill Murray da Silva;Sim;35
+01/09/2015;Thomas Edson;Sim;36															     |	01/10/2015;Thomas Edson;Sim;66
+01/05/2014;Daniel Frasson;Sim;544														     |	11/05/2014;Daniel Frasson;Sim;554
+
+[I] Testando .: teste 08, tudo OK em 4-wishlist.csv
+[I] Testando .: teste 09
+[E] Testando .: teste 09, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 10
+[E] Testando .: teste 10, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 11
+[E] Testando .: teste 11, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 12
+[E] Testando .: teste 12, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 13
+[E] Testando .: teste 13, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 14
+[E] Testando .: teste 14, diferenças em 1-estatisticas.txt (professor <- -> aluno):
+Horas consumidas: 1726 minutos																Horas consumidas: 1726 minutos
+Horas a consumir: 1874 minutos																Horas a consumir: 1874 minutos
+
+Mídias por gênero:																	Mídias por gênero:
+	Ação: 5																			Ação: 5
+	Guerra: 3																     <
+	Fantasia: 2																     <
+	Ficção: 2																     <
+	Terror: 2																     <
+	Comédia: 1																		Comédia: 1
+	Comédia Romântica: 1																	Comédia Romântica: 1
+	Dança: 1																		Dança: 1
+	Drama: 1																		Drama: 1
+																		     >		Fantasia: 2
+																		     >		Ficção: 2
+	Infantil: 1																		Infantil: 1
+	Luta: 1																			Luta: 1
+																		     >		Terror: 2
+																		     >		Guerra: 3
+
+Temporadas por série:																	Temporadas por série:
+	Dois homens e meio: 0 assistidas, 1 a assistir												     |		Dois homens e meio: 0 assistidas, 0 a assistir
+	Sobrenatural: 1 assistidas, 0 a assistir												     |		Sobrenatural: 0 assistidas, 0 a assistir
+	Vikings: 0 assistidas, 0 a assistir															Vikings: 0 assistidas, 0 a assistir
+
+[E] Testando .: teste 14, diferenças em 2-porpessoa.csv (professor <- -> aluno):
+Pessoa;Produção																		Pessoa;Produção
+Anne Fletcher;Ela dança, eu danço e dando a volta por cima												Anne Fletcher;Ela dança, eu danço e dando a volta por cima
+Ben Affleck;Demolidor																	Ben Affleck;Demolidor
+Brad Brid;Os Incríveis																	Brad Brid;Os Incríveis
+Brad Pitt;Clube da Luta, Corações de Ferro														Brad Pitt;Clube da Luta, Corações de Ferro
+Channing Taum;Ela dança, eu danço e dando a volta por cima												Channing Taum;Ela dança, eu danço e dando a volta por cima
+Charlie Sheen;Dois homens e meio – primeira temporada													Charlie Sheen;Dois homens e meio – primeira temporada
+Christian Bale;Batman: O Cavaleiro das Trevas, Batman: O Cavaleiro das Trevas Ressurge, Batman: o Inicio, O vencedor, Sobrenatural – primeira tempor |	Christian Bale;Batman: O Cavaleiro das Trevas Ressurge, Batman: o Inicio, Batman: O Cavaleiro das Trevas, O vencedor, Sobrenatural – terceira tempor
+Christopher Nolan;A Origem, Batman: O Cavaleiro das Trevas, Batman: O Cavaleiro das Trevas Ressurge, Batman: o Inicio				     |	Christopher Nolan;Batman: O Cavaleiro das Trevas Ressurge, Batman: o Inicio, Batman: O Cavaleiro das Trevas, A Origem
+Daniel Filho;Se eu fosse você																Daniel Filho;Se eu fosse você
+David Ayer;Corações de Ferro																David Ayer;Corações de Ferro
+David Fincher;Clube da Luta																David Fincher;Clube da Luta
+David O.Russell;O vencedor																David O.Russell;O vencedor
+Duncan Jones;Warcraft: The Beginning															Duncan Jones;Warcraft: The Beginning
+Frank Miller;O Cavaleiro das Trevas															Frank Miller;O Cavaleiro das Trevas
+Glória Pires;Se eu fosse você																Glória Pires;Se eu fosse você
+Heath Ledger;Batman: O Cavaleiro das Trevas														Heath Ledger;Batman: O Cavaleiro das Trevas
+J. K. Rowling;Harry Potter e as relíquias da morte													J. K. Rowling;Harry Potter e as relíquias da morte
+Jared Padalecki;Sobrenatural – primeira temporada, Sobrenatural – terceira temporada								     |	Jared Padalecki;Sobrenatural – terceira temporada, Sobrenatural – primeira temporada
+Jenna Dewan;Ela dança, eu danço e dando a volta por cima												Jenna Dewan;Ela dança, eu danço e dando a volta por cima
+Jhon T.  Jones;Dois homens e meio – primeira temporada													Jhon T.  Jones;Dois homens e meio – primeira temporada
+Leonardo DiCaprio;A Origem																Leonardo DiCaprio;A Origem
+Mark Steven;Demolidor																	Mark Steven;Demolidor
+Mark Wahlberg;O vencedor																Mark Wahlberg;O vencedor
+Morgan Freeman;Batman: O Cavaleiro das Trevas, Batman: O Cavaleiro das Trevas Ressurge, Batman: o Inicio					     |	Morgan Freeman;Batman: O Cavaleiro das Trevas Ressurge, Batman: o Inicio, Batman: O Cavaleiro das Trevas
+Patrick Rothfuss;O Nome do Vento															Patrick Rothfuss;O Nome do Vento
+Rodrigo Santoro;300																	Rodrigo Santoro;300
+Tony Ramos;Se eu fosse você																Tony Ramos;Se eu fosse você
+Travis Filmmel;Warcraft: The Beginning															Travis Filmmel;Warcraft: The Beginning
+Zack Synder;300																		Zack Synder;300
+
+[E] Testando .: teste 14, diferenças em 3-emprestimos.csv (professor <- -> aluno):
+Data;Tomador;Atrasado?;Dias de Atraso															Data;Tomador;Atrasado?;Dias de Atraso
+30/10/2015;Cainã Jucá;Não;0															     |	30/12/2015;Cainã Jucá;Sim;7
+04/08/2015;Jefferson Santos;Sim;33														     |	04/10/2015;Jefferson Santos;Sim;94
+08/07/2015;Alais Oliveira;Sim;59														     |	08/09/2015;Alais Oliveira;Sim;121
+20/06/2015;Enrico Ferreira;Sim;78														     |	20/08/2015;Enrico Ferreira;Sim;139
+06/05/2015;Igor Siqueira;Sim;123														     |	06/07/2015;Igor Siqueira;Sim;184
+
+[E] Testando .: teste 14, diferenças em 4-wishlist.csv (professor <- -> aluno):
+Tipo;Mídia;Gênero;Preço																	Tipo;Mídia;Gênero;Preço
+Filme;Batman: O Cavaleiro das Trevas Ressurge;Ação;R$ 59,99												Filme;Batman: O Cavaleiro das Trevas Ressurge;Ação;R$ 59,99
+																		     >	Filme;Batman: o Inicio;Ação;R$ 59,99
+																		     >	Filme;300;Guerra;R$ 39,99
+Filme;Warcraft: The Beginning;Guerra;R$ 39,99														Filme;Warcraft: The Beginning;Guerra;R$ 39,99
+																		     >	Filme;Clube da Luta;Luta;R$ 24,90
+																		     >	Filme;Os Incríveis;Infantil;R$ 20,00
+Filme;A Origem;Ficção;R$ 15,00																Filme;A Origem;Ficção;R$ 15,00
+Filme;Corações de Ferro;Guerra;R$ 11,00															Filme;Corações de Ferro;Guerra;R$ 11,00
+																		     >	Livro;Harry Potter e as relíquias da morte;Fantasia;R$ 79,99
+Livro;O Cavaleiro das Trevas;Ação;R$ 79,99														Livro;O Cavaleiro das Trevas;Ação;R$ 79,99
+																		     >	Livro;O Nome do Vento;Fantasia;R$ 59,99
+Série;Dois homens e meio – primeira temporada;Comédia;R$ 24,90												Série;Dois homens e meio – primeira temporada;Comédia;R$ 24,90
+
+[I] Testando .: teste 15
+[E] Testando .: teste 15, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 16
+[E] Testando .: teste 16, erro na execução!  (Make exit code 2)
+[I] Testando .: teste 17
+[E] Testando .: teste 17, diferenças em 1-estatisticas.txt (professor <- -> aluno):
+Horas consumidas: 1190 minutos																Horas consumidas: 1190 minutos
+Horas a consumir: 352 minutos																Horas a consumir: 352 minutos
+
+Mídias por gênero:																	Mídias por gênero:
+	Aventura: 5																     <
+	Drama: 4																     <
+	Monstros: 4																     <
+	Super-Herói: 4																     <
+	Ação: 3																			Ação: 3
+	Animação: 0																		Animação: 0
+																		     >		Aventura: 5
+	Comédia: 0																		Comédia: 0
+																		     >		Drama: 4
+	Documentário: 0																		Documentário: 0
+	Ficção Científica: 0																	Ficção Científica: 0
+																		     >		Monstros: 4
+	Musical: 0																		Musical: 0
+																		     >		Super-Herói: 4
+	Terror: 0																		Terror: 0
+
+Temporadas por série:																	Temporadas por série:
+	Breaking Bad: 0 assistidas, 0 a assistir														Breaking Bad: 0 assistidas, 0 a assistir
+	Dexter: 0 assistidas, 0 a assistir															Dexter: 0 assistidas, 0 a assistir
+	Narcos: 1 assistidas, 0 a assistir													     |		Narcos: 0 assistidas, 0 a assistir
+
+[E] Testando .: teste 17, diferenças em 2-porpessoa.csv (professor <- -> aluno):
+Pessoa;Produção																		Pessoa;Produção
+Bryan Cranston;Breaking Bad, Godzilla (2014)													     |	Bryan Cranston;Godzilla (2014), Breaking Bad
+C. S. Lewis;As Crônicas de Nárnia O Leão a Feiticeira e o Guarda-Roupa, As Crônicas de Nárnia Príncipe Caspian						C. S. Lewis;As Crônicas de Nárnia O Leão a Feiticeira e o Guarda-Roupa, As Crônicas de Nárnia Príncipe Caspian
+Charlie Hunnam;Círculo de Fogo																Charlie Hunnam;Círculo de Fogo
+Charlize Theron;Mad Max: Estrada da Fúria														Charlize Theron;Mad Max: Estrada da Fúria
+Chris Evans;Os Vingadores																Chris Evans;Os Vingadores
+Chris Hemsworth;Os Vingadores																Chris Hemsworth;Os Vingadores
+Christian Bale;Batman Begins																Christian Bale;Batman Begins
+Christopher Nolan;Batman Begins																Christopher Nolan;Batman Begins
+Dan Brown;O Código Da Vinci																Dan Brown;O Código Da Vinci
+Gareth Edwards;Godzilla (2014)																Gareth Edwards;Godzilla (2014)
+Gary Oldman;Batman Begins																Gary Oldman;Batman Begins
+George Miller;Mad Max: Estrada da Fúria															George Miller;Mad Max: Estrada da Fúria
+George R. R. Martin;As Crônicas de Gelo e Fogo A Game of Thrones											George R. R. Martin;As Crônicas de Gelo e Fogo A Game of Thrones
+Guillermo del Toro;Círculo de Fogo															Guillermo del Toro;Círculo de Fogo
+Guy Ritchie;Sherlock Holmes (filme de 2009)														Guy Ritchie;Sherlock Holmes (filme de 2009)
+J. K. Rowling;Harry Potter e a Pedra Filosofal														J. K. Rowling;Harry Potter e a Pedra Filosofal
+James Cameron;Avatar, Titanic																James Cameron;Avatar, Titanic
+James Dashner;The Maze Runner Correr ou Morrer														James Dashner;The Maze Runner Correr ou Morrer
+Jeremy Renner;Os Vingadores																Jeremy Renner;Os Vingadores
+Jon Favreau;Homem de Ferro																Jon Favreau;Homem de Ferro
+Joss Whedon;Os Vingadores																Joss Whedon;Os Vingadores
+Leonardo DiCaprio;Titanic																Leonardo DiCaprio;Titanic
+Mark Ruffalo;Os Vingadores																Mark Ruffalo;Os Vingadores
+Michael C. Hall;Dexter																	Michael C. Hall;Dexter
+Michael Caine;Batman Begins																Michael Caine;Batman Begins
+Morgan Freeman;Batman Begins																Morgan Freeman;Batman Begins
+Robert Downey Jr.;Homem de Ferro, Os Vingadores, Sherlock Holmes (filme de 2009)									Robert Downey Jr.;Homem de Ferro, Os Vingadores, Sherlock Holmes (filme de 2009)
+Sam Raimi;Homem-Aranha																	Sam Raimi;Homem-Aranha
+Sam Worthington;Avatar																	Sam Worthington;Avatar
+Scarlett Johansson;Os Vingadores															Scarlett Johansson;Os Vingadores
+Suzanne Collins;The Hunger Games															Suzanne Collins;The Hunger Games
+Tobey Maguire;Homem-Aranha																Tobey Maguire;Homem-Aranha
+Tom Hardy;Mad Max: Estrada da Fúria															Tom Hardy;Mad Max: Estrada da Fúria
+Wagner Moura;Narcos																	Wagner Moura;Narcos
+
+[E] Testando .: teste 17, diferenças em 3-emprestimos.csv (professor <- -> aluno):
+Data;Tomador;Atrasado?;Dias de Atraso															Data;Tomador;Atrasado?;Dias de Atraso
+04/11/2015;Beltrano;Não;0															     |	01/12/2015;Jão;Sim;3
+03/11/2015;Jão;Não;0																     |	24/11/2015;Beltrano;Sim;2
+12/10/2015;Fulano;Sim;7																     |	01/11/2015;Luke;Sim;1854
+03/09/2015;Cicrano;Sim;36															     |	30/10/2015;Fulano;Sim;25
+09/10/2010;Luke;Sim;5																     |	01/10/2015;Cicrano;Sim;64
+
+[E] Testando .: teste 17, diferenças em 4-wishlist.csv (professor <- -> aluno):
+Tipo;Mídia;Gênero;Preço																	Tipo;Mídia;Gênero;Preço
+Filme;Avatar;Drama;R$ 65,89																Filme;Avatar;Drama;R$ 65,89
+																		     >	Filme;Círculo de Fogo;Monstros;R$ 50,43
+																		     >	Filme;Godzilla (2014);Monstros;R$ 32,76
+																		     >	Livro;As Crônicas de Nárnia O Leão a Feiticeira e o Guarda-Roupa;Aventura;R$ 300,00
+
+[I] Testando .: teste 18
+[E] Testando .: teste 18, diferenças em 1-estatisticas.txt (professor <- -> aluno):
+Horas consumidas: 2203 minutos																Horas consumidas: 2203 minutos
+Horas a consumir: 647 minutos																Horas a consumir: 647 minutos
+
+Mídias por gênero:																	Mídias por gênero:
+	Comédia: 4																     <
+	Romance: 4																     <
+	Drama: 3																     <
+	Musical: 3																     <
+	História: 2																     <
+	Aventura: 1																		Aventura: 1
+	Biografia: 1																		Biografia: 1
+																		     >		Comédia: 4
+																		     >		Drama: 3
+	Esporte: 1																		Esporte: 1
+	Faroeste: 1																		Faroeste: 1
+																		     >		História: 2
+	Horror: 0																		Horror: 0
+																		     >		Musical: 3
+																		     >		Romance: 4
+
+Temporadas por série:																	Temporadas por série:
+	Friends: 0 assistidas, 0 a assistir															Friends: 0 assistidas, 0 a assistir
+	Narcos: 1 assistidas, 0 a assistir													     |		Narcos: 0 assistidas, 0 a assistir
+
+[E] Testando .: teste 18, diferenças em 2-porpessoa.csv (professor <- -> aluno):
+Pessoa;Produção																		Pessoa;Produção
+Alphonse Daudet;Cartas do meu Moinho															Alphonse Daudet;Cartas do meu Moinho
+Audrey Hepburn;My Fair Lady																Audrey Hepburn;My Fair Lady
+Chris Evans;Os Vingadores																Chris Evans;Os Vingadores
+Claudia Cardinale;Era uma Vez no Oeste															Claudia Cardinale;Era uma Vez no Oeste
+Clint Eastwood;Invictus																	Clint Eastwood;Invictus
+David Lean;Doutor Jivago																David Lean;Doutor Jivago
+Debbie Reynolds;Cantando na Chuva															Debbie Reynolds;Cantando na Chuva
+Donald Connor;Cantando na Chuva																Donald Connor;Cantando na Chuva
+Eça de Queirós;A Capital, O Primo Basílio, Os Maias												     <
+Eleanor Porter;Pollyana Moça																Eleanor Porter;Pollyana Moça
+Gene Kelly;Cantando na Chuva, Sinfonia de Paris													     |	Eça de Queirós;A Capital, Os Maias, O Primo Basílio
+																		     >	Gene Kelly;Sinfonia de Paris, Cantando na Chuva
+George Cukor;Driving Miss Daisy, My Fair Lady														George Cukor;Driving Miss Daisy, My Fair Lady
+Jennifer Aniston;Friends - 1ª Temporada, Friends - 2ª Temporada, Friends - 3ª Temporada									Jennifer Aniston;Friends - 1ª Temporada, Friends - 2ª Temporada, Friends - 3ª Temporada
+Joss Whedon;Os Vingadores																Joss Whedon;Os Vingadores
+Julie Christie;Doutor Jivago																Julie Christie;Doutor Jivago
+Ken Kwapis;Ele não está tão afim de você														Ken Kwapis;Ele não está tão afim de você
+Lima Barreto;Triste Fim de Policarpo Quaresma														Lima Barreto;Triste Fim de Policarpo Quaresma
+Matt Damon;Invictus																	Matt Damon;Invictus
+Matt Leblanc;Friends - 1ª Temporada, Friends - 2ª Temporada, Friends - 3ª Temporada									Matt Leblanc;Friends - 1ª Temporada, Friends - 2ª Temporada, Friends - 3ª Temporada
+Morgan Freeman;Driving Miss Daisy, Invictus														Morgan Freeman;Driving Miss Daisy, Invictus
+Omar Sharif;Doutor Jivago																Omar Sharif;Doutor Jivago
+Rex Harrison;My Fair Lady																Rex Harrison;My Fair Lady
+Robert Downey Junior;Os Vingadores															Robert Downey Junior;Os Vingadores
+Samuel Jackson;Os Vingadores																Samuel Jackson;Os Vingadores
+Scarlett Johansson;Ele não está tão afim de você, Os Vingadores											     |	Scarlett Johansson;Os Vingadores, Ele não está tão afim de você
+Sempé Goscinny;Novas Aventura do Pequeno Nicolau													Sempé Goscinny;Novas Aventura do Pequeno Nicolau
+Sergio Leone;Era uma Vez no Oeste															Sergio Leone;Era uma Vez no Oeste
+Stanley Donen;Cantando na Chuva																Stanley Donen;Cantando na Chuva
+Vincente Minelli;Sinfonia de Paris															Vincente Minelli;Sinfonia de Paris
+Wagner Moura;Narcos																	Wagner Moura;Narcos
+
+[E] Testando .: teste 18, diferenças em 3-emprestimos.csv (professor <- -> aluno):
+Data;Tomador;Atrasado?;Dias de Atraso															Data;Tomador;Atrasado?;Dias de Atraso
+10/12/2015;Gildo Gomes;Não;0															     |	15/12/2015;Gildo Gomes;Não;0
+02/12/2015;Clara Monteiro;Não;0															     |	06/12/2015;Clara Monteiro;Não;0
+30/11/2015;Salete Almeida;Não;0															     |	05/12/2015;Salete Almeida;Não;0
+08/11/2015;Pedro Carlos;Não;0															     |	11/11/2015;Pedro Carlos;Não;0
+07/11/2015;Patrícia Cristina;Não;0														     |	10/11/2015;Patrícia Cristina;Não;0
+
+[I] Testando .: teste 18, tudo OK em 4-wishlist.csv
+[I] Testando .: teste 19
+[E] Testando .: teste 19, erro na execução!  (Make exit code 2)
+[I] Testando .: pronto!
+
+

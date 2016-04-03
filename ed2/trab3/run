@@ -1,0 +1,1 @@
+valgrind --track-origins=yes --leak-check=full ./$1 $2 $3 $4

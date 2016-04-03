@@ -1,0 +1,18 @@
+Horas consumidas: 2203 minutos
+Horas a consumir: 647 minutos
+
+Mídias por gênero:
+	Comédia: 4
+	Romance: 4
+	Drama: 3
+	Musical: 3
+	História: 2
+	Aventura: 1
+	Biografia: 1
+	Esporte: 1
+	Faroeste: 1
+	Horror: 0
+
+Temporadas por série:
+	Friends: 0 assistidas, 0 a assistir
+	Narcos: 1 assistidas, 0 a assistir

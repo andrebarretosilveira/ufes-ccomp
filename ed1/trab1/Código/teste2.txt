@@ -1,0 +1,11 @@
+rua incluir 17 3 "Av. Fernando Ferrari"
+rua incluir 17 3 "Av. Fernando Ferrari"
+rua incluir 13 3 "Rua Carlos Martins"
+rua incluir 13 7 "Av. Munir Hilal"
+rua eliminar 13 7
+rua eliminar 13 7
+rua incluir 13 7 "Av. Munir Hilal"
+casa eliminar 17 23 8
+casa consumir 17 23 8 255
+bairro medir 17
+cidade medir

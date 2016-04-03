@@ -1,0 +1,586 @@
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+% abnTeX2: Modelo de Artigo Acadêmico em conformidade com
+% ABNT NBR 6022:2003: Informação e documentação - Artigo em publicação 
+% periódica científica impressa - Apresentação
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+
+\documentclass[
+	% -- opções da classe memoir --
+	11pt,				% tamanho da fonte
+	oneside,			% para impressão apenas no verso. Oposto a twoside
+	a4paper,			% tamanho do papel. 
+	english,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	]{article}
+
+
+% ---
+% PACOTES
+% ---
+\usepackage{lmodern}			% Usa a fonte Latin Modern
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{nomencl} 			% Lista de simbolos
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{microtype} 			% para melhorias de justificação
+\usepackage{makeidx}			% Gerar índice
+\usepackage[portuguese,linesnumbered,vlined]{algorithm2e}	% Gerar pseudo-códigos
+\usepackage{multirow,tabularx}
+\usepackage{multicol}
+\usepackage{listings}			% Include the listings-package
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{url}
+\usepackage[brazilian]{babel}
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+% ---
+
+% ---
+% Configurações do pacote listings
+% ---
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstset{
+	backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+	basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+	breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+	breaklines=true,                 % sets automatic line breaking
+	captionpos=b,                    % sets the caption-position to bottom
+	commentstyle=\color{mygreen},    % comment style
+	deletekeywords={...},            % if you want to delete keywords from the given language
+	escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+	extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+	keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+	keywordstyle=\color{blue},       % keyword style
+	language=C,                      % the language of the code
+	otherkeywords={*,...},           % if you want to add more keywords to the set
+	numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+	numbersep=5pt,                   % how far the line-numbers are from the code
+	numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+	rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+	showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+	showstringspaces=false,          % underline spaces within strings only
+	showtabs=false,                  % show tabs within strings adding particular underscores
+	stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+	stringstyle=\color{mymauve},     % string literal style
+	tabsize=2,	                   % sets default tabsize to 2 spaces
+	title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+% ---
+	
+% ---
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% ---
+\title{\textbf{Máquinas de Busca}}
+\author{
+André Barreto e Igor Ventorim\\\\
+\normalsize Universidade Federal do Espírito Santo\\
+\normalsize Vila Velha, Espírito Santo
+}
+\date{12 de Outubro, 2015}
+% ---
+
+% ---
+% Configurações de aparência do PDF final
+% ---
+% alterando o aspecto da cor azul
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+	%pagebackref=true,
+	pdftitle={\@title}, 
+	pdfauthor={\@author},
+	pdfsubject={Máquinas de Busca},
+	pdfcreator={LaTeX with abnTeX2},
+	pdfkeywords={abnt}{latex}{abntex}{abntex2}{atigo científico}, 
+	colorlinks=true,       		% false: boxed links; true: colored links
+	linkcolor=blue,          	% color of internal links
+	citecolor=blue,        		% color of links to bibliography
+	filecolor=magenta,      		% color of file links
+	urlcolor=blue,
+	bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% ---
+% Compila o indice
+% ---
+\makeindex
+% ---
+
+% ---
+% Altera as margens padrões
+% ---
+%\setlrmarginsandblock{3cm}{3cm}{*}
+%\setulmarginsandblock{3cm}{3cm}{*}
+%\checkandfixthelayout
+% ---
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.3cm}
+
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% Espaçamento simples
+%\SingleSpacing
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+% Seleciona o idioma do documento (conforme pacotes do babel)
+\selectlanguage{brazil}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+
+% página de titulo
+\maketitle
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+
+%\textual
+
+% ----------------------------------------------------------
+% Introdução
+% ----------------------------------------------------------
+\section*{Introdução}
+\addcontentsline{toc}{section}{Introdução}
+Máquina de Busca é um sistema de recuperação de informação com o objetivo de recuperar informações armazenadas em um sistema computacional. É implementado para buscar por palavras-chave em uma base de dados de forma eficiente, retornando ao usuário onde se encontram as informações desejadas, de forma ranqueada ou não. Para isto, deve-se criar uma estrutura de dados apropriada pra guardar as informações de tal maneira que seja rápido recuperá-las. \cite{search}
+
+Neste trabalho, serão implementadas duas estruturas de dados para simular uma Máquina de Busca que se atenha a definição descrita acima.
+
+% ----------------------------------------------------------
+% Seção de implementações do trabalho
+% ----------------------------------------------------------
+\section{Implementação}
+Nesta seção serão apresentados as estruturas de dados utilizadas e suas implementações em linguagem C.
+
+Para criar as estruturas, primeiro é necessário analisar e processar os documentos recebidos para a leitura. Este processamento baseia-se em ler palavra por palavra, remover pontuações, acentos e outros carácteres não convenientes para serem armazenados. Por padrão, a linguagem C trabalha apenas com a tabela ASCII, que não contém muitos símbolos presentes em português. Em decorrência disto, para realizar o pre-processamento, será utilizado uma extensão do armazenamento de carácteres em C denominado \textit{wide char}, contido na biblioteca \textit{wchar.h}. \cite{wchar} Desta forma tornou-se mais viável a manipulação da entrada de dados do programa.
+
+Neste procedimento as palavras processadas são armazenadas em uma lista encadeada ordenada, onde é verificado pela repetição da mesma. Caso ela já exista, serão incluídas as informações na palavra. Se não, esta é inserida na lista.
+
+O módulo \textit{preProcess} é o responsável por realizar o algoritmo descrito acima.
+
+% -----------------------------
+% HASH implementation
+% -----------------------------
+\subsection{Hash}
+Tabela \textit{hash}, ou Tabela de dispersão, é um tipo de estrutura de dados especial, que associa chaves de pesquisa a valores, sendo seu principal objetivo, fazer buscas rápidas a partir de uma chave simples, desta forma conseguindo localizar o valor desejado. Na prática, a tabela de dispersão funciona da seguinte forma, informando um conteúdo através de uma função geradora simples e não muito custosa se gera um índice, ao qual será a posição em que será inserido o registro. Sendo assim muito fácil localizar onde está guardado este registro, colocando o conteúdo que foi usado para gerar a \textit{hash key}, conseguimos encontrar a chave onde foi armazenada este registro e assim conseguindo recuperar o registro. Um problema no uso de tabelas de dispersão é no caso de colisões ao qual o conteúdo de um registro gera uma chave na qual já foi inserido um registro, onde se pode contornar este problema de diversas maneiras, três maneiras serão apresentadas neste relatório que são elas: Encadeamento, Linear e Rehashing. \cite{pesqsec}
+
+Para a implementação da \textit{hash} foi utilizado um vetor de ponteiros do tipo estrutura palavra, ao qual foi criada a \textit{hash} através da função \textit{createHashTable}, na qual é passado para a ela o tamanho da \textit{hash}, no qual foi adquirido pela lista de palavras que foi montada e encontrando o número primo mais próximo do dobro de palavras contidas na lista ao qual é adquirido pela função gerarSizeHash, após a \textit{hash} criada é necessário preencher-la a função que popula é a função \textit{fillHash}, assim que a \textit{hash} é populada, é necessário exportá-la com a função \textit{exportHash}, desta forma terminando a indexação. No módulo de busca a \textit{hash} é importada através da função \textit{buscaHash} a qual recebe os parâmetros de busca, assim chamando função \textit{hashImport} e remontando a \textit{hash} e chamando as subfunções de buscas.
+
+\subsubsection{Hash por Encadeamento}
+ O tipo de tratamento de colisões com encadeamento funciona da seguinte forma: quando ocorrer uma colisão de índices na tabela, o elemento será armazenado em uma lista encadeada. Logo, para realizar a busca após encontrado o índice será necessário pesquisar o elemento na lista encadeada.
+ 
+PRÓS: Cálculo do índice feito uma única vez.
+
+CONTRA: Busca pode se tornar sequencial caso o tamanho da lista seja muito grande.
+
+\subsubsection{Hash Linear}
+O tipo de tratamento de colisões de modo linear funciona da seguinte forma: quando ocorrer uma colisão de índices na tabela, o elemento será armazenado no próximo índice, caso o próximo índice esteja ocupado, tentará sempre o índice mais um, até encontrar uma posição vazia. Desta forma, para realizar a busca, perguntará se o elemento de índice é o elemento que está sendo procurado, e buscando sempre o próximo sucessivamente, conforme a inserção.
+
+PRÓS: Simplicidade de implementação.
+
+CONTRA: Se ocorrer muitas colisões podem se agrupar muitos elementos em uma região, dificultando encontrar o elemento correto.
+
+\subsubsection{Hash por Rehashing}
+O tipo de tratamento de colisões de modo linear funciona de forma análoga a linear porém sendo necessário uma segunda função geradora de chave, a qual quando encontrada colisão será somada a função geradora de key e verificar se a nova posição não é uma colisão, caso seja, será somado o valor do resultado da segunda função geradora de key e assim sucessiva, até encontra uma posição vaga. De modo similar, podemos fazer a busca, tentando encontrar primeiramente o índice gerado pela função geradora de key, caso não seja, somaremos o valor gerado pela segunda função geradora de key ao índice e perguntar se o elemento é o procurado, fazendo assim sucessivamente até se encontrar o elemento.
+
+PRÓS: Ajuda no espalhamento dos elementos na hash.
+
+CONTRA: O índices podem está muito distantes uns dos outros podendo violar o príncipio de localidade.
+
+\subsubsection{Principais funções}
+A função \textit{hashKey} é a função responsável por gerar as chaves para a tabela \textit{hash}, sendo ela uma função com um espalhamento aceitável em relação as colisões, diferenciando palavras que são anagramas em suas \textit{keys}.
+\begin{lstlisting}[language=C, caption=Função hash key]
+int hashKey(char *word, const int sizeTable)
+{
+    int codigo = 1;
+    unsigned int i;
+
+    for(i = 0; i < strlen(word);i++)
+        codigo = (31*codigo + (int)word[i])%sizeTable;
+
+    return abs(codigo%sizeTable);
+}
+\end{lstlisting}
+
+A função \textit{insertWordHash} é a função responsável por inserir palavras na \textit{hash}. Após selecionado a \textit{key} correspondente a palavra é criada e inserida na posição correta, se adequando ao padrão da \textit{hash table}.
+\begin{lstlisting}[language=C, caption=Função inserir palavra na Hash]
+void insertWordHash(tpWord *word, wordList** list)
+{
+        wordList *new = malloc(sizeof(wordList));
+        new->word = word;
+        new->prox = *list;
+        *list = new;
+}
+\end{lstlisting}
+
+A função \textit{searchType} é a função principal de busca em relação as \textit{hashs}, sendo ela uma função seletora de buscas, na qual seleciona as funções \textit{searchHashE}, \textit{searchHashL}, \textit{searchHashR}, a qual fazem a busca de palavras de acordo com o seu tipo.
+\begin{lstlisting}[language=C, caption=Função de busca]
+wordList* searchType(wordList **hashTable, char *word,char type, int sizeHash)
+{
+	int key = hashKey(word,sizeHash);
+	wordList *aux = hashTable[key];
+	if(type == 'E')
+	{
+		aux = searchHashE(aux,word);
+		return aux;
+	}else
+	if(type == 'L')
+	{
+		aux = searchHashL(hashTable,sizeHash,word);
+		return aux;
+	}else
+	if (type == 'R')
+	{
+		aux = searchHashR(hashTable,sizeHash,word);
+		return aux;
+	}else
+		printf("Tipo informado invalido.");
+
+	return NULL;
+}
+\end{lstlisting}
+
+% -----------------------------
+% ARVORE B implementation
+% -----------------------------
+\subsection{Árvore B}
+Árvore B é uma estrutura de dados projetada para funcionar especialmente em memória secundária como um disco magnético ou outros dispositivos de armazenamento secundário. Dentre suas propriedades ela permite a inserção, remoção e busca de chaves numa complexidade de tempo logarítmica e, por esse motivo, é muito empregada em aplicações que necessitam manipular grandes quantidades de informação tais como um banco de dados ou um sistema de arquivos. \cite{pesqprim}
+
+Nesta implementação, trabalharemos apenas com memória, ou seja, a árvore B não estará fragmentada em memória secundária. Além disto, não ocorrerá remoções, portanto esta função não foi elaborada.
+
+No módulo de indexação, primeiramente é chamado a função \textit{fillHash} que recebe com parâmetro a árvore, neste ponto um ponteiro para \textit{NULL}, e a lista de palavras do documento processado. Esta função executa um laço para cada palavra da lista inserindo-as na árvore através da função \textit{insereArvB}. Esta, por sua vez, juntamente com a função \textit{insere} controla em qual situação e onde deverá ser inserido a palavra recebida por parâmetro. Quando encontrado esta posição, faz-se um deslocamento do vetor de palavras no nó e insere a palavra com a função \textit{insereWord}. Após completa a árvore, esta é exportada em um arquivo de texto indicado no momento da execução do programa através da função \textit{geraIndex}.
+
+No módulo de busca, é lido de um arquivo a árvore com a função \textit{importArvB}, que analisa as palavras lidas procurando pelos carácteres que indicam o que será lido. Após recuperado a árvore, executa-se a função \textit{buscaArvB}. Esta verifica se a busca a ser realizada é de uma palavra simples, múltiplas palavras ou de uma frase (palavras seguidas), chamando \textit{searchArvB}, \textit{multiSearchArvB} ou \textit{sentenceSearchArvB}, respectivamente.
+
+\subsubsection{Estrutura}
+Nesta Implementação de árvore B, foi escolhido, entre vários conceitos, que a ordem \textit{M} representa o número de ponteiros para subárvores na estrutura. Por conseguinte, teremos \textit{M-1} palavras armazenadas para cada nó da árvore. Além disto, o número mínimo de palavras será de $ \lfloor\frac{M}{2}\rfloor $. A variável \textit{n} representa o número de palavras já inseridas no nó atual; \textit{*word} é o vetor de palavras ordenado e \textit{*p} é o vetor de ponteiros para subárvores.
+
+\begin{lstlisting}[language=C, caption=Estrutura da Árvore B]
+#define M 1001	// Ordem da Arvore B
+
+typedef struct arvoreB ArvoreB;
+struct arvoreB {
+    int n;              // Numero de nos ativos
+    tpWord *word[M-1];  // Vetor de palavras
+    ArvoreB *p[M];      // Ponteiros para subarvores
+};
+\end{lstlisting}
+
+\subsubsection{Principais funções}
+Esta primeira função é a chamada quando deve-se inserir uma palavra em uma árvore. Recebendo como parâmetros um ponteiro para a raiz da árvore e um para a palavra, ela chama outra função. A \textit{insere} é uma função recursiva que descobre a posição onde deve ser inserido a palavra e analisa em que situação a árvore se encontra. Esta foi omitida por ser muito extensa.
+Inicialmente, quando a árvore é nula, será retornado $ h = 1 $ para que esta seja criada. Para cada situação, a variável \textit{h} será alterada para o controle dos casos.
+
+\begin{lstlisting}[language=C, caption=Função de inserção de palavras]
+ArvoreB *insereArvB(ArvoreB *raiz, tpWord *word)
+{
+    int h;
+    ArvoreB *filho_dir, *nova_raiz;
+    tpWord *wordReturn = NULL;
+
+    filho_dir = insere(raiz, word, &h, &wordReturn);
+    if(h) { // Aumetara a altura da arvore
+        nova_raiz = criaArvB();
+        nova_raiz->n = 1;
+        nova_raiz->word[0] = wordReturn;
+        nova_raiz->p[0] = raiz;
+        nova_raiz->p[1] = filho_dir;
+
+        return(nova_raiz);
+    }
+    else return(raiz);
+}
+\end{lstlisting}
+
+A função \textit{insereWord} obtém a posição certa no nó \textit{raiz} e o insere. A verificação de um possível \textit{split} é realizada na função \textit{insere}.
+\begin{lstlisting}[language=C, caption=Função inserir palavra em um nó]
+void insereWord(ArvoreB *raiz, tpWord *word, ArvoreB *filhodir)
+{
+    int k, pos;
+
+    k = raiz->n;
+    // Busca para obter a posicao ideal para inserir a nova palavra
+    pos = buscaBinaria(raiz, word->string);
+    if(raiz->word[pos] != NULL)
+        if(strcmp(raiz->word[pos]->string, word->string) < 0) pos++;
+
+    // Realiza o remanejamento para manter as palavras ordenadas
+    while (k > pos && strcmp(word->string, raiz->word[k-1]->string) < 0) {
+        raiz->word[k] = raiz->word[k-1];
+        raiz->p[k+1] = raiz->p[k];
+        k--;
+    }
+    // Insere a palavra na posicao ideal
+    raiz->word[pos] = word;
+    raiz->p[pos+1] = filhodir;
+    raiz->n++;
+}
+\end{lstlisting}
+
+Esta é a função de busca primordial. Dado um ponteiro para árvore e uma \textit{string} correspondente a uma palavra, é realizado uma busca recursiva da mesma. Se encontrou, retorna a referência da estrutura da palavra. Caso contrário, retorna \textit{NULL}.
+\begin{lstlisting}[language=C, caption=Função de busca]
+tpWord *searchArvB(ArvoreB *raiz, char *word)
+{
+    int pos;
+
+    if(raiz == NULL)
+        return NULL;
+
+    pos = buscaBinaria(raiz, word);
+
+    if(strcmp(raiz->word[pos]->string, word) == 0)
+        return raiz->word[pos]; // Palavra encontrada 
+
+    if(strcmp(raiz->word[pos]->string, word) > 0)
+        return searchArvB(raiz->p[pos], word); // Buscar a esquerda
+    else
+        return searchArvB(raiz->p[pos+1], word); // Buscar a direita 
+
+    return NULL;
+}
+\end{lstlisting}
+
+Para as buscas avançadas, existem outras duas funções: \textit{multiSearchArvB} e \textit{sentenceSearchArvB}, que buscam por várias palavras em um mesmo arquivo e por uma frase (palavras seguidas em um mesmo arquivo), respectivamente. Estas acabam por chamar a \textit{searchArvB}, para localizar a(s) palavra(s).
+
+Além disto, existe a \textit{buscaArvB} que é responsável pelo controle de qual das funções mencionadas acima devem ser convocadas.
+
+% ----------------------------------------------------------
+% Seção de análise e comparação das estruturas e funções
+% ----------------------------------------------------------
+\section{Análise}
+Foram realizados uma série de testes para verificar a velocidade e quantidade de memória utilizada para cada uma das estruturas. Oficialmente, três diferentes testes e com esforço computacional crescente foram anotados para se estabelecer uma comparação.
+Estes testes foram executados em uma máquina com as seguintes configurações:
+
+Linux Mint 17.2 Cinnamon 64-bit \\
+\indent Intel Core i7-3770 CPU @ 3.40GHz x 4 \\
+\indent 8GB de memória
+
+Os experimentos foram avaliados com três diferentes conjuntos de arquivos e um mesmo arquivo de busca.
+
+\textbf{Conjunto de arquivos:}
+
+\textbf{conj1}: doc1.txt + doc2.txt + doc3.txt \\
+\indent Tamanho e total de palavras: $\sim$80KB , 11184 palavras
+
+\textbf{conj2}: doc1.txt + doc2.txt + doc3.txt + BibliaSagrada.txt \\
+\indent Tamanho e total de palavras: $\sim$4MB , 743735 palavras
+
+\textbf{conj3}: doc1.txt + doc2.txt + doc3.txt + BibliaSagrada.txt + ProjectGutenberg.txt \\
+\indent Tamanho e total de palavras: $\sim$10.2MB , 1839430 palavras
+
+\textbf{Arquivo de busca:}
+
+\begin{multicols}{2}
+\indent 10 \\
+\indent teste \\
+\indent o \\
+\indent A \\
+\indent não sei \\
+\indent o paradigma \\
+\indent 10 a \\
+\indent paradigma o \\
+\indent Paradigma politico \\
+\indent Não \\
+\indent olá mundo \\
+\indent teste \\
+\indent Deus vivo \\
+\indent "olá mundo" \\
+\indent "joao ferreira" \\
+\indent "a 10" \\
+\indent "o não politico" \\
+\indent "o" \\
+\indent "o paradigma" \\
+\indent "João" \\
+\indent "Ferreira" \\
+\indent visão \\
+\indent Estratégias \\
+\end{multicols}
+
+\subsection{Hash}
+Veja na \hyperlink{t1}{Tabela 1} os resultados obtidos utilizando os três tipos de Hash implementados.
+
+\hypertarget{t1}{}
+\begin{table}[ht]
+\centering
+\begin{tabular}{cccc}
+\hline 
+\textbf{Tipo} & \textbf{Arquivos} & \textbf{Tempo de indexação} & \textbf{Tempo de busca} \\
+\hline
+\multirow{3}{*}{Hash E} &
+conj1   & 0m0.021s   & 0m0.006s \\ 
+& conj2 & 1m47.454s  & 0m0.310s \\ 
+& conj3 & 14m32.662s & 0m0.504s \\ 
+\hline
+\multirow{3}{*}{Hash L} &
+conj1   & 0m0.033s  & 0m0.005s \\ 
+& conj2 & 1m47.559s & 0m0.317s \\ 
+& conj3 & 19m3.836s & 0m0.490s \\ 
+\hline
+\multirow{3}{*}{Hash R} &
+conj1   & 0m0.032s   & 0m0.006s \\ 
+& conj2 & 1m47.560s  & 0m0.309s \\ 
+& conj3 & 16m13.631s & 0m0.516s \\ 
+\hline
+\end{tabular}
+\caption{Resultados hash}
+\end{table}
+\hypertarget{t1}{}
+
+\subsection{Árvore B}
+Veja na \hyperlink{t2}{Tabela 2} os resultados obtidos utilizando Árvore B.
+
+\hypertarget{t2}{}
+\begin{table}[ht]
+\centering
+\begin{tabular}{ccc}
+\hline 
+\textbf{Arquivos} & \textbf{Tempo de indexação} & \textbf{Tempo de busca} \\
+\hline
+conj1 & 0m0.038s   & 0m0.006s \\ 
+conj2 & 1m40.388s  & 0m0.294s \\ 
+conj3 & 31m35.121s & 0m0.469s \\ 
+\hline 
+\end{tabular}
+\caption{Resultados árvore B}
+\end{table}
+\hypertarget{t2}{}
+
+\subsection{Execução com Valgrind}
+Para verificar se o programa é robusto, rodamos o programa com \textit{valgrind}. A seguir estão as saídas para a indexação e busca de alguns dos módulos implementados.
+
+\subsubsection{Hash Encadeada}
+Teste de execução da indexação da Hash por Encadeamento utilizando os arquivos indicados por \textit{conj1}:
+\\\\
+\texttt{
+==12691== Memcheck, a memory error detector \\
+==12691== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al. \\
+==12691== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info \\
+==12691== Command: ./trab2 -i E documentos.txt index.txt \\
+==12691==  \\
+==12691==  \\
+==12691== HEAP SUMMARY: \\
+==12691==     in use at exit: 0 bytes in 0 blocks \\
+==12691==   total heap usage: 14,248 allocs, 14,248 frees, 247,082 bytes allocated \\
+==12691==  \\
+==12691== All heap blocks were freed -- no leaks are possible \\
+==12691==  \\
+==12691== For counts of detected and suppressed errors, rerun with: -v \\
+==12691== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+}
+
+Teste de execução de busca da Hash por Encadeamento utilizando o arquivo de busca indicado por previamente:
+\\\\
+\texttt{
+==13503== Memcheck, a memory error detector \\
+==13503== Copyright (C) 2002\-2013, and GNU GPL'd, by Julian Seward et al. \\
+==13503== Using Valgrind-3.10.0.SVN and LibVEX; rerun with \-h for copyright info \\
+==13503== Command: ./trab2 \-b E query.txt index.txt \\
+==13503==  \\
+o \\
+doc1.txt \\
+doc2.txt \\
+doc3.txt \\
+(...) \\
+==13503==  \\
+==13503== HEAP SUMMARY: \\
+==13503==     in use at exit: 0 bytes in 0 blocks \\
+==13503==   total heap usage: 13,864 allocs, 13,864 frees, 237,797 bytes allocated \\
+==13503==  \\
+==13503== All heap blocks were freed \-\- no leaks are possible \\
+==13503==  \\
+==13503== For counts of detected and suppressed errors, rerun with: -v \\
+==13503== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0) \\
+}
+
+\subsubsection{Árvore B}
+Teste de execução de indexação da Árvore B utilizando os arquivos indicados por \textit{conj1}:
+\\\\
+\texttt{
+==12999== Memcheck, a memory error detector \\
+==12999== Copyright (C) 2002\-2013, and GNU GPL'd, by Julian Seward et al. \\
+==12999== Using Valgrind\-3.10.0.SVN and LibVEX; rerun with \-h for copyright info \\
+==12999== Command: ./trab2 \-i B documentos.txt indexArv.txt \\
+==12999==  \\
+==12999==  \\
+==12999== HEAP SUMMARY: \\
+==12999==     in use at exit: 0 bytes in 0 blocks \\
+==12999==   total heap usage: 13,867 allocs, 13,867 frees, 250,362 bytes allocated \\
+==12999==  \\
+==12999== All heap blocks were freed \-\- no leaks are possible \\
+==12999==  \\
+==12999== For counts of detected and suppressed errors, rerun with: \-v \\
+==12999== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0) \\
+}
+
+Teste de execução de busca da Árvore B utilizando o arquivo indicado por previamente:
+\\\\
+\texttt{
+==13196== Memcheck, a memory error detector \\
+==13196== Copyright (C) 2002\-2013, and GNU GPL'd, by Julian Seward et al. \\
+==13196== Using Valgrind\-3.10.0.SVN and LibVEX; rerun with \-h for copyright info \\
+==13196== Command: ./trab2 \-b B query.txt index.txt \\
+==13196==  \\
+(...) \\
+o paradigma \\
+doc3.txt \\
+doc1.txt \\
+(...) \\
+==13196==  \\
+==13196== HEAP SUMMARY: \\
+==13196==     in use at exit: 0 bytes in 0 blocks \\
+==13196==   total heap usage: 13,564 allocs, 13,564 frees, 248,203 bytes allocated \\
+==13196==  \\
+==13196== All heap blocks were freed \-\- no leaks are possible \\
+==13196==  \\
+==13196== For counts of detected and suppressed errors, rerun with: \-v \\
+==13196== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0) \\
+}
+% ----------------------------------------------------------
+% Conclusão
+% ----------------------------------------------------------
+\section{Conclusão}
+As estruturas implementadas são ambas apropriadas para o âmbito de buscas, porém variam em sua aplicabilidade dependendo de um conjunto de variáveis referentes à base de dados alvo para se armazenar.
+
+A \textit{Hash} é uma estrutura relativamente simples de ser implementada e eficiente, dependendo do método de dispersão e tratamento de colisão. Porém ela é uma estrutura dependente do conjunto de dados, pois deve ter no máximo metade do tamanho ocupada, e é fixa. De tal forma que, caso o conjunto de dados cresça mais que o esperado, a \textit{hash} perderá a eficiência.
+
+A Árvore B, por outro lado, independe do conjunto de dados, pois pode crescer indefinidamente. Mas é uma estrutura mais complexa e, se mal implementada, pode ser ineficiente.
+
+Com os dados coletados, vemos que os tempos de indexação entre as \textit{Hashs} foram próximos, assim como os tempos de busca. A Árvore B conseguiu buscas mais rápidas, porém bem pouco mais rápidas que as buscas da \textit{Hash}. O tempo de indexação da árvore se mostrou significantemente lenta a medida que a entrada cresce. Este fato aparentemente decorre do método de processamento de dados, que são armazenados em uma lista antes de começar a inserir na árvore. Além disto, é necessário fazer deslocamentos em vetores na inserção, que é uma operação custosa.
+
+% ----------------------------------------------------------
+% Referências bibliográficas
+% ----------------------------------------------------------
+%\section{Referências bibliográficas}
+\bibliography{trab2}{}
+\bibliographystyle{ieeetr}
+\addcontentsline{toc}{section}{Referências}
+
+\end{document}

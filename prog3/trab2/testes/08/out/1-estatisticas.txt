@@ -1,0 +1,17 @@
+Horas consumidas: 1651 minutos
+Horas a consumir: 1651 minutos
+
+Mídias por gênero:
+	Aventura: 11
+	Romance: 6
+	Comédia Dramática: 5
+	Ação: 1
+	Biográfico: 1
+	Denúncia Social: 1
+	Drama Épico: 1
+	Drama Romântico: 1
+	Faroeste: 1
+	Infanto-juvenil: 1
+	Não-Ficção: 1
+
+Temporadas por série:

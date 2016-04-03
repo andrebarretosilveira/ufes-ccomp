@@ -1,0 +1,20 @@
+Horas consumidas: 1726 minutos
+Horas a consumir: 1874 minutos
+
+Mídias por gênero:
+	Ação: 5
+	Guerra: 3
+	Fantasia: 2
+	Ficção: 2
+	Terror: 2
+	Comédia: 1
+	Comédia Romântica: 1
+	Dança: 1
+	Drama: 1
+	Infantil: 1
+	Luta: 1
+
+Temporadas por série:
+	Dois homens e meio: 0 assistidas, 1 a assistir
+	Sobrenatural: 1 assistidas, 0 a assistir
+	Vikings: 0 assistidas, 0 a assistir

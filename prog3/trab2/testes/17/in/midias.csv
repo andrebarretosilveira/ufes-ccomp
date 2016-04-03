@@ -1,0 +1,21 @@
+﻿Código;Nome;Tipo;Diretor;A(u)tores;Tamanho;Gênero;Série;Temporada;Possui?;Consumiu?;Deseja?;Preço
+1;As Crônicas de Nárnia O Leão a Feiticeira e o Guarda-Roupa;L;;1;300;AV;;;x;x;x;300
+2;As Crônicas de Nárnia Príncipe Caspian;L;;1;400;AV;;;x;x;;200
+3;As Crônicas de Gelo e Fogo A Game of Thrones;L;;2;300;AV;;;;x;;100
+4;Harry Potter e a Pedra Filosofal;L;;3;330;AV;;;x;x;;200,13
+5;The Hunger Games;L;;4;200;AC;;;x;x;;300,12
+6;The Maze Runner Correr ou Morrer;L;;5;200;AC;;;x;x;;234,76
+7;O Código Da Vinci;L;;6;200;DA;;;x;;;234,87
+8;Os Vingadores;F;13;7,8,9,10,11,12;110;SP;;;;x;;60,43
+9;Batman Begins;F;14;15,16,17,18;110;SP;;;;x;;60,43
+10;Mad Max: Estrada da Fúria;F;19;20,21;100;AC;;;;;;60,43
+11;Círculo de Fogo;F;22;23;120;MO;;;x;x;x;50,43
+12;Sherlock Holmes (filme de 2009);F;24;7;130;MO;;;;;;54,67
+13;Homem-Aranha;F;25;26;120;SP;;;x;x;;65,89
+14;Homem de Ferro;F;27;7;110;SP;;;x;x;;65,43
+15;Godzilla (2014);F;28;29;120;MO;;;x;x;x;32,76
+16;Titanic;F;30;31;113;MO;;;x;;;54,69
+17;Avatar;F;30;32;112;DA;;;;;x;65,89
+18;Breaking Bad;S;;29;300;AV;Breaking Bad;1;x;;;100
+19;Narcos;S;;33;500;DA;Narcos;1;x;x;;130,13
+20;Dexter;S;;34;600;DA;Dexter;1;;;;145,89

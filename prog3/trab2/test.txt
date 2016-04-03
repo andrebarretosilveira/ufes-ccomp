@@ -1,0 +1,8 @@
+Sigla;Gênero
+DP;Drama Policial
+AN;Animação
+AV;Aventura
+CO;Comédia
+CR;Comédia Romântica
+FC;Ficção Científica
+RO;Romance

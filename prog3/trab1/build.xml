@@ -1,0 +1,72 @@
+<project name="TrabalhoPROG3_2015_2" default="compile" basedir=".">
+	<description>Arquivo de build do trabalho de PROG3, 2015/2.</description>
+
+	<!-- Propriedades do build. -->
+	<property name="src" location="src" />
+	<property name="bin" location="bin" />
+	<property name="mainClass" value="Prog3_Trab1.Tester" />
+
+	<!-- Inicialização. -->
+	<target name="init" description="Inicializa as estruturas necessárias.">
+		<tstamp/>
+		<mkdir dir="${bin}" />
+	</target>
+
+	<!-- Compilação. -->
+	<target name="compile" depends="init" description="Compila o código-fonte.">
+		<javac includeantruntime="false" srcdir="${src}" destdir="${bin}" />
+	</target>
+
+	<!-- Execução normal. -->
+	<target name="run" depends="compile" description="Executa o programa principal, em modo normal.">
+		<java classname="${mainClass}">
+			<arg value="-p" />
+			<arg value="pessoas.csv" />
+			<arg value="-m" />
+			<arg value="midias.csv" />
+			<arg value="-e" />
+			<arg value="emprestimos.csv" />
+			<arg value="-g" />
+			<arg value="generos.csv" />
+			<classpath>
+				<pathelement path="${bin}" />
+			</classpath>
+		</java>
+	</target>
+
+	<!-- Execução somente leitura. -->
+	<target name="run-read-only" depends="compile" description="Executa o programa principal, em modo somente leitura.">
+		<java classname="${mainClass}">
+			<arg value="-e" />
+			<arg value="emprestimos.csv" />
+			<arg value="-g" />
+			<arg value="generos.csv" />
+			<arg value="-p" />
+			<arg value="pessoas.csv" />
+			<arg value="--read-only" />
+			<arg value="-m" />
+			<arg value="midias.csv" />
+			<classpath>
+				<pathelement path="${bin}" />
+			</classpath>
+		</java>
+	</target>
+
+	<!-- Execução somente escrita. -->
+	<target name="run-write-only" depends="compile" description="Executa o programa principal, em modo somente escrita.">
+		<java classname="${mainClass}">
+			<arg value="--write-only" />
+			<classpath>
+				<pathelement path="${bin}" />
+			</classpath>
+		</java>
+	</target>
+
+	<!-- Limpeza. -->
+	<target name="clean" description="Limpa o projeto, deixando apenas o código-fonte." >
+		<delete dir="${bin}"/>
+		<delete><fileset dir="." includes="*.txt"/></delete>
+		<delete><fileset dir="." includes="*.csv"/></delete>
+		<delete><fileset dir="." includes="*.dat"/></delete>
+	</target>
+</project>

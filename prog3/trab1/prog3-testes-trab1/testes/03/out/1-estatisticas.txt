@@ -1,0 +1,25 @@
+Horas consumidas: 2500 minutos
+Horas a consumir: 3815 minutos
+
+Mídias por gênero:
+	Ficção Científica: 11
+	Aventura: 9
+	Animação: 3
+	Épico: 2
+	Fantasia: 2
+	Terror (ou horror): 2
+	Comédia: 1
+	Drama: 1
+	Ação: 0
+	Comédia romântica: 0
+	Documentários: 0
+	Espionagem: 0
+	Guerra: 0
+	Musical: 0
+	Policial: 0
+	Romance: 0
+	Suspense: 0
+
+Temporadas por série:
+	Fringe: 1 assistidas, 1 a assistir
+	Twin Peaks: 0 assistidas, 1 a assistir

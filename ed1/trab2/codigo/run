@@ -1,0 +1,4 @@
+#valgrind --leak-check=full --gen-suppressions=yes --show-reachable=yes --read-var-info=yes --track-origins=yes lsystem grammars/Basic_Y_Fractal.lsy out.ps turtleout.ps
+#valgrind --leak-check=full --gen-suppressions=yes --show-reachable=yes --read-var-info=yes --track-origins=yes lsystem grammars/helloworld.lsy out.ps turtleout.ps
+#valgrind --leak-check=full --gen-suppressions=yes --show-reachable=yes --read-var-info=yes --track-origins=yes lsystem grammars/helloworld2.lsy out.ps turtleout.ps
+valgrind --leak-check=full --gen-suppressions=yes --show-reachable=yes --read-var-info=yes --track-origins=yes lsystem grammars/helloworld3.lsy out.ps turtleout.ps

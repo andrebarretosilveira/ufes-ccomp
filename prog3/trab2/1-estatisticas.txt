@@ -1,0 +1,15 @@
+Horas consumidas: 1218 minutos
+Horas a consumir: 2013 minutos
+
+Mídias por gênero:
+	Animação: 1
+	Aventura: 5
+	Comédia: 0
+	Comédia Romântica: 1
+	Drama Policial: 3
+	Ficção Científica: 9
+	Romance: 1
+
+Temporadas por série:
+	Sense 8: 0 assistidas, 1 a assistir
+	Sherlock: 1 assistidas, 1 a assistir

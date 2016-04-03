@@ -1,0 +1,20 @@
+Horas consumidas: 2881 minutos
+Horas a consumir: 97 minutos
+
+Mídias por gênero:
+	Aventura: 4
+	Romance: 3
+	Ação: 2
+	Comedia: 2
+	Drama: 2
+	Fantasia: 2
+	Ficção científica: 2
+	Biografia: 1
+	Suspense: 1
+	Terror: 1
+
+Temporadas por série:
+	70's Show: 1 assistidas, 0 a assistir
+	American Horror Story: 1 assistidas, 0 a assistir
+	Bates Hotel: 1 assistidas, 0 a assistir
+	Freaks and Geeks: 1 assistidas, 0 a assistir

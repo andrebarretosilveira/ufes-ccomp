@@ -1,0 +1,31 @@
+Código;Nome;Tipo;Diretor;A(u)tores;Tamanho;Gênero;Série;Temporada;Possui?;Consumiu?;Deseja?;Preço
+1;O Estrangeiro;L;;1;185;RO;;;;x;x;37,3
+2;No caminho de Swann;L;;2;558;RO;;;x;;;24,9
+3;O Processo;L;;3;272;RO;;;;x;x;17,9
+4;O Pequeno Príncipe;L;;4;40;LI;;;x;;;19
+5;A condição humana;L;;5;333;NF;;;;;x;57,6
+6;Viagem ao fim da noite;L;;6;512;RO;;;;x;x;67
+7;As Vinhas da Ira;L;;7;574;DS;;;x;;;55,9
+8;Por Quem os Sinos Dobram;L;;8;624;RO;;;;x;x;63,7
+9;O Bosque das Ilusões Perdidas;L;;9;374;RO;;;x;;;39
+10;O Hobbit: Uma Jornada Inesperada;F;37;38,39;182;AV;;;;x;x;19,9
+11;Trapaça;F;31;32,33;138;CD;;;;x;x;19,9
+12;Antes da Meia Noite;F;34;35,36;109;DR;;;x;;;29,9
+13;O Hobbit: A Desolação de Smaug;F;37;38,39;187;AV;;;;x;x;39,9
+14;12 Anos de Escravidão;F;40;41,42;134;DE;;;x;;;19,9
+15;Capitão Phillips;F;43;11,44;134;AC;;;;x;x;16,9
+16;Frozen: Uma Aventura Congelante;F;45;46,47;102;AV;;;x;;;69,9
+17;Ela;F;48;50,49;126;CD;;;;x;x;30,9
+18;Blue Jasmine;F;51;52,53;98;CD;;;x;;;29,9
+19;Walt nos Bastidores de Mary Poppins;F;54;11,55;126;CD;;;;x;x;19,9
+20;O Lobo de Wallstreet;F;56;14,57;180;BI;;;x;;;29,9
+21;Django Livre;F;58;14,59;165;FA;;;;x;x;13,9
+22;O Lado bom da Vida;F;31;60,33;122;CD;;;x;;;29,9
+23;Harry Potter e a Pedra Filosofal ;F;64;61,62,63;159;AV;;;;x;x;14,9
+24;Harry Potter e a Câmara Secreta ;F;64;61,62,63;174;AV;;;x;;;14,9
+25;Harry Potter e o Prisioneiro de Azkaban ;F;65;61,62,63;144;AV;;;;x;x;14,9
+26;Harry Potter e o Cálice de Fogo ;F;66;61,62,63;157;AV;;;x;;;12,9
+27;Harry Potter e a Ordem da Fênix ;F;67;61,62,63;144;AV;;;;x;x;13,41
+28;Harry Potter e o Enigma do Príncipe ;F;67;61,62,63;153;AV;;;x;;;13,41
+29;Harry Potter e as Relíquias da Morte: Parte 1;F;67;61,62,63;146;AV;;;;x;x;13,41
+30;Harry Potter e as Relíquias da Morte: Parte 2;F;67;61,62,63;130;AV;;;x;;;19,9

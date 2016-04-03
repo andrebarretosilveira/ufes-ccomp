@@ -1,0 +1,4 @@
+bairro incluir 5 "Jardim America"
+cidade medir
+rua eliminar 5 1
+rua incluir 5 1 "Tonhao"
