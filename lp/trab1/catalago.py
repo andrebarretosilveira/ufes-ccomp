@@ -8,7 +8,15 @@ class Catalago:
         self.__livros = list()
 
     def addLivro(self, livro):
-        self.__livros = self.__livros + [livro]
+        self.__livros.append(livro)
+
+    def removeLivro(self, codigo):
+        pos = 0
+        for livro in self.__livros:
+            if livro.getCodigo() == codigo:
+                self.__livros.pop(pos)
+                break
+            pos += 1
 
     def imprimeLivros(self):
         for livro in self.__livros:
@@ -18,36 +26,32 @@ class Catalago:
         f = open(arquivo, 'r')
         info = [0] * 12
         pos = 0
-        line = f.readline()
+        resumoPart = ' '
 
-        while line != '':
-            # Criando um livro
-            if line == '\n':
-                pos = 0
-                dataPub = Data(info[4][0:2], info[4][3:5], info[4][6:10])
-                livro = Livro(info[0], info[1], info[2], info[3], dataPub, info[5], info[6])
-                self.addLivro(livro)
+        while resumoPart != '':
+            codigo = str(f.readline().split('\n')[0])
+            titulo = str(f.readline().split('\n')[0])
+            autor = str(f.readline().split('\n')[0])
+            assunto = str(f.readline().split('\n')[0])
+            dataStr = str(f.readline().split('\n')[0])
+            dataPub = Data(dataStr[0:2], dataStr[3:5], dataStr[6:10])
+            editora = str(f.readline().split('\n')[0])
+            resumoPart = str(f.readline())
+            resumo = ''
+            while resumoPart != '\n' and resumoPart != '':
+                resumo += resumoPart
+                resumoPart = str(f.readline())
 
-            # Reunindo informações do livro
-            else:
-                temp = line.split('\n')
-                info[pos] = temp[0]
-                pos += 1
+            livro = Livro(codigo, titulo, autor, assunto, dataPub, editora, resumo)
+            self.addLivro(livro)
 
-            line = f.readline()
-
-        # Adiciona último livro
-        dataPub = Data(info[4][0:2], info[4][3:5], info[4][6:10])
-        livro = Livro(info[0], info[1], info[2], info[3], dataPub, info[5], info[6])
-        self.addLivro(livro)
-
-    def atualizaCatalago(self, arquivo):
+    def atualizarCatalago(self, arquivo):
         f = open(arquivo, 'r')
         line = f.readline()
 
         while line != '':
-            # Incluir
-            if line == 'i\n':
+            # Leitura de dados em caso de inserção ou alteração
+            if line == 'i\n' or line == 'a\n':
                 codigo = str(f.readline().split('\n')[0])
                 titulo = str(f.readline().split('\n')[0])
                 autor = str(f.readline().split('\n')[0])
@@ -55,25 +59,32 @@ class Catalago:
                 dataStr = str(f.readline().split('\n')[0])
                 dataPub = Data(dataStr[0:2], dataStr[3:5], dataStr[6:10])
                 editora = str(f.readline().split('\n')[0])
-                resumoText = str(f.readline().split('\n')[0])
+                resumoPart = str(f.readline())
                 resumo = ''
-                while resumoText != '\n' and resumoText != '':
-                    resumo += resumoText + ' '
-                    resumoText = str(f.readline().split('\n')[0])
-                livro = Livro(codigo, titulo, autor, assunto, dataPub, editora, resumo)
-                self.addLivro(livro)
+                while resumoPart != '\n' and resumoPart != '':
+                    resumo += resumoPart
+                    resumoPart = str(f.readline())
 
-            # Alterar
-            elif line == 'a\n':
-                print "oi"
+                # Caso de inserção
+                if line == 'i\n':
+                    livro = Livro(codigo, titulo, autor, assunto, dataPub, editora, resumo)
+                    self.addLivro(livro)
 
-            # Excluir
+                # Caso de alteração
+                else:
+                    for livro in self.__livros:
+                        if livro.getCodigo() == codigo:
+                            livro.alteraDados(codigo, titulo, autor, assunto, dataPub, editora, resumo)
+                            break
+
+            # Caso de exclusão
             elif line == 'e\n':
-                print "oi"
+                codigo = str(f.readline().split('\n')[0])
+                self.removeLivro(codigo)
 
             line = f.readline()
 
-    def escreverCatalago(self, arquivo):
+    def escreverSaida(self, arquivo):
         f = open(arquivo, 'w')
         f.write("Listagem de livros\n\n")
         for livro in self.__livros:
@@ -81,4 +92,9 @@ class Catalago:
             for i in dados:
                 f.write(i+'\n')
 
-            f.write('\n')
+    def escreverCatalago(self, arquivo):
+        f = open(arquivo, 'w')
+        for livro in self.__livros:
+            dados = livro.getDados()
+            for i in dados:
+                f.write(i+'\n')

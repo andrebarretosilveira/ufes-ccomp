@@ -13,9 +13,21 @@ class Livro:
         self.__editora = editora
         self.__resumo = resumo
 
+    def getCodigo(self):
+        return self.__codigo
+
     def getDados(self):
-        dados = [str(self.__codigo)] + [self.__titulo] + [self.__autor] + [self.__assunto] + [self.__dataPub.toString()] + [self.__editora] + [self.__resumo]
+        dados = [self.__codigo] + [self.__titulo] + [self.__autor] + [self.__assunto] + [self.__dataPub.toString()] + [self.__editora] + [self.__resumo]
         return dados
+
+    def alteraDados(self, codigo, titulo, autor, assunto, dataPub, editora, resumo):
+        self.__codigo = codigo
+        self.__titulo = titulo
+        self.__autor = autor
+        self.__assunto = assunto
+        self.__dataPub = dataPub
+        self.__editora = editora
+        self.__resumo = resumo
 
     def imprime(self):
         print "Código : " + str(self.__codigo)
