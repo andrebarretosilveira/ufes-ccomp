@@ -1,15 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+###
+#   Trabalho 1 de LP - Python
+#   André Barreto Silveira
+###
+
 from livro import *
 
 class Catalago:
     def __init__(self):
         self.__livros = list()
 
+    # Função para adicionar um livro do Catálago
     def adicionaLivro(self, livro):
         self.__livros.append(livro)
 
+    # Função para remover um livro do Catálago
     def removeLivro(self, codigo):
         pos = 0
         for livro in self.__livros:
@@ -18,52 +25,55 @@ class Catalago:
                 break
             pos += 1
 
+    #def __lerLivro(self, f):
+
+
+    # Função que lê um arquivo e carrega o Catálago
     def lerCatalago(self, arquivo):
         f = open(arquivo, 'r')
-        info = [0] * 12
-        pos = 0
         resumoPart = ' '
 
         while resumoPart != '':
-            codigo = str(f.readline()[:-1])
-            titulo = str(f.readline()[:-1])
-            autor = str(f.readline()[:-1])
-            assunto = str(f.readline()[:-1])
-            dataStr = str(f.readline()[:-1])
+            codigo = f.readline().rstrip("\n")
+            titulo = f.readline().rstrip("\n")
+            autor = f.readline().rstrip("\n")
+            assunto = f.readline().rstrip("\n")
+            dataStr = f.readline().rstrip("\n")
             dataPub = date(int(dataStr[6:10]), int(dataStr[3:5]), int(dataStr[0:2]))
-            editora = str(f.readline()[:-1])
-            resumoPart = str(f.readline())
+            editora = f.readline().rstrip("\n")
+            resumoPart = f.readline()
             resumo = ''
             while resumoPart != '\n' and resumoPart != '':
                 resumo += resumoPart
-                resumoPart = str(f.readline())
+                resumoPart = f.readline()
 
-            resumo = resumo[:-1]
+            resumo = resumo.rstrip("\n")
 
             livro = Livro(codigo, titulo, autor, assunto, dataPub, editora, resumo)
             self.adicionaLivro(livro)
 
-    def atualizarCatalago(self, arquivo):
+    # Função atualizar o Catálago com base no arquivo
+    def atualiza(self, arquivo):
         f = open(arquivo, 'r')
         line = f.readline()
 
         while line != '':
             # Leitura de dados em caso de inserção ou alteração
             if line == 'i\n' or line == 'a\n':
-                codigo = str(f.readline()[:-1])
-                titulo = str(f.readline()[:-1])
-                autor = str(f.readline()[:-1])
-                assunto = str(f.readline()[:-1])
-                dataStr = str(f.readline()[:-1])
+                codigo = f.readline().rstrip("\n")
+                titulo = f.readline().rstrip("\n")
+                autor = f.readline().rstrip("\n")
+                assunto = f.readline().rstrip("\n")
+                dataStr = f.readline().rstrip("\n")
                 dataPub = date(int(dataStr[6:10]), int(dataStr[3:5]), int(dataStr[0:2]))
-                editora = str(f.readline()[:-1])
-                resumoPart = str(f.readline())
+                editora = f.readline().rstrip("\n")
+                resumoPart = f.readline()
                 resumo = ''
                 while resumoPart != '\n' and resumoPart != '':
                     resumo += resumoPart
-                    resumoPart = str(f.readline())
+                    resumoPart = f.readline()
 
-                resumo = resumo[:-1]
+                resumo = resumo.rstrip("\n")
 
                 # Caso de inserção
                 if line == 'i\n':
@@ -79,22 +89,54 @@ class Catalago:
 
             # Caso de exclusão
             elif line == 'e\n':
-                codigo = str(f.readline()[:-1])
+                codigo = f.readline().rstrip("\n")
                 self.removeLivro(codigo)
 
             line = f.readline()
 
-    def escreverSaida(self, arquivo):
+    # Função para escrita do arquivo de saída
+    def escreveSaida(self, arquivo):
         f = open(arquivo, 'w')
-        f.write("Listagem de livros\n")
+
+        self.ordena(Livro.comparaCodigo)
+        f.write("## Listagem ordenada crescentemente por Código ##\n")
         for livro in self.__livros:
             f.write('\n')
             dados = livro.getDados()
             for i in dados:
                 f.write(i+'\n')
 
-    def escreverCatalago(self, arquivo):
+        f.write('\n')
+        self.ordena(Livro.comparaTitulo)
+        f.write("## Listagem ordenada decrescentemente por Titulo ##\n")
+        for livro in self.__livros:
+            f.write('\n')
+            dados = livro.getDados()
+            for i in dados:
+                f.write(i+'\n')
+
+        f.write('\n')
+        self.ordena(Livro.comparaAutor)
+        f.write("## Listagem ordenada crescentemente por Autor ##\n")
+        for livro in self.__livros:
+            f.write('\n')
+            dados = livro.getDados()
+            for i in dados:
+                f.write(i+'\n')
+
+        f.write('\n')
+        self.ordena(Livro.comparaData)
+        f.write("## Listagem ordenada decrescentemente por Data de Publicação ##\n")
+        for livro in self.__livros:
+            f.write('\n')
+            dados = livro.getDados()
+            for i in dados:
+                f.write(i+'\n')
+
+    # Função para reescrita do Catálago
+    def escreveCatalago(self, arquivo):
         f = open(arquivo, 'w')
+        self.ordena(Livro.comparaCodigo)
 
         # Primeiro livro
         dados = self.__livros[0].getDados()
@@ -108,7 +150,7 @@ class Catalago:
             for i in dados:
                 f.write(i+'\n')
 
-    # Função de Ordenação (Seletion Sort)
+    # Função de Ordenação (Selection Sort)
     def ordena(self, comparador):
         N = len(self.__livros)
         for i in range(0, N):

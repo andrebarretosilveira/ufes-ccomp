@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+###
+#   Trabalho 1 de LP - Python
+#   André Barreto Silveira
+###
+
 from datetime import date
 
 class Livro:
@@ -13,22 +18,28 @@ class Livro:
         self.__editora = editora
         self.__resumo = resumo
 
+    # Retorna o código do livro
     def getCodigo(self):
         return self.__codigo
 
+    # Retorna o título do livro
     def getTitulo(self):
         return self.__titulo
 
+    # Retorna o autor do livro
     def getAutor(self):
         return self.__autor
 
+    # Retorna a data de publicação do livro
     def getData(self):
         return self.__dataPub
 
+    # Retorna os dados do livro
     def getDados(self):
-        dados = [self.__codigo] + [self.__titulo] + [self.__autor] + [self.__assunto] + [self.__dataPub.strftime("%d/%m/%y")] + [self.__editora] + [self.__resumo]
+        dados = [self.__codigo] + [self.__titulo] + [self.__autor] + [self.__assunto] + [self.__dataPub.strftime("%d/%m/%Y")] + [self.__editora] + [self.__resumo]
         return dados
 
+    # Função para alterar os dados do livro
     def alteraDados(self, codigo, titulo, autor, assunto, dataPub, editora, resumo):
         self.__codigo = codigo
         self.__titulo = titulo
@@ -38,7 +49,7 @@ class Livro:
         self.__editora = editora
         self.__resumo = resumo
 
-    @staticmethod
+    @staticmethod #Compara crescentemente por Código
     def comparaCodigo(livro1, livro2):
         cod1 = livro1.getCodigo()
         cod2 = livro2.getCodigo()
@@ -50,7 +61,7 @@ class Livro:
         else:
             return 1
 
-    @staticmethod
+    @staticmethod #Compara decrescentemente por Título
     def comparaTitulo(livro1, livro2):
         titulo1 = livro1.getTitulo()
         titulo2 = livro2.getTitulo()
@@ -62,7 +73,7 @@ class Livro:
         else:
             return 1
 
-    @staticmethod
+    @staticmethod #Compara crescentemente por Autor
     def comparaAutor(livro1, livro2):
         autor1 = livro1.getAutor()
         autor2 = livro2.getAutor()
@@ -74,7 +85,7 @@ class Livro:
         else:
             return 1
 
-    @staticmethod
+    @staticmethod #Compara decrescentemente por Data
     def comparaData(livro1, livro2):
         data1 = livro1.getData()
         data2 = livro2.getData()
