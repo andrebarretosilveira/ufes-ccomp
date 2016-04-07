@@ -1,18 +1,39 @@
 Listagem de livros
 
 001
+A - Um Trabalho de Python
+André Barreto
+Drama
+07/04/16
+Editora SemFundamento
+Era uma vez um bicho bem bonitinho que morreu. Fim.
+oi
+mamãe
+
+002
 Um Trabalho de Python - EDITADO
 André Barreto
 Drama
-07/04/2020
+07/04/20
 Editora ComFundamento
 Era uma vez um bicho bem bonitinho que morreu. Fim.
+Modificado pelo atual.txt
 
 003
-MAIS Outro Trabalho de Python
+X - MAIS Outro Trabalho de Python
 André Barreto
 Policial
-08/04/2016
+08/04/16
 Editora Jumento
 Era uma vez um bichinho legal, que queria proteger seus amigos do perigo.
+Isto foi inserido pelo atual.txt
 
+004
+Olá
+Abner
+Drama
+07/04/16
+Editora SemFundamento
+Era uma vez um bicho bem bonitinho que morreu. Fim.
+oi
+mamãe

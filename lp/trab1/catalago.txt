@@ -1,16 +1,28 @@
-001
-Um Trabalho de Python - EDITADO
-André Barreto
-Drama
-07/04/2020
-Editora ComFundamento
-Era uma vez um bicho bem bonitinho que morreu. Fim.
-
-003
-MAIS Outro Trabalho de Python
+002
+B - Outro Trabalho de Python
 André Barreto
 Policial
 08/04/2016
 Editora Jumento
 Era uma vez um bichinho legal, que queria proteger seus amigos do perigo.
+Mas aí ele morreu. Fim.
 
+001
+A - Um Trabalho de Python
+André Barreto
+Drama
+07/04/2016
+Editora SemFundamento
+Era uma vez um bicho bem bonitinho que morreu. Fim.
+oi
+mamãe
+
+004
+Olá
+Abner
+Drama
+07/04/2016
+Editora SemFundamento
+Era uma vez um bicho bem bonitinho que morreu. Fim.
+oi
+mamãe

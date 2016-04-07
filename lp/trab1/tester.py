@@ -13,5 +13,6 @@ catalago = Catalago()
 
 catalago.lerCatalago(catal)
 catalago.atualizarCatalago(atual)
+catalago.ordena(Livro.comparaCodigo)
 catalago.escreverSaida(saida)
-catalago.escreverCatalago(catal)
+#catalago.escreverCatalago("catalago2.txt")
