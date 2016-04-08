@@ -1,7 +1,7 @@
 ## Listagem ordenada crescentemente por Código ##
 
 001
-A - Um Trabalho de Python
+Um Trabalho de Python
 André Barreto
 Drama
 07/04/2016
@@ -29,7 +29,7 @@ Era uma vez um bichinho legal, que queria proteger seus amigos do perigo.
 Isto foi inserido pelo atual.txt
 
 004
-Olá
+Um Trabalho de Python
 Abner
 Drama
 07/04/2016
@@ -40,18 +40,26 @@ mamãe
 
 ## Listagem ordenada decrescentemente por Titulo ##
 
-001
-A - Um Trabalho de Python
+003
+X - MAIS Outro Trabalho de Python
+André Barreto
+Policial
+08/04/2016
+Editora Jumento
+Era uma vez um bichinho legal, que queria proteger seus amigos do perigo.
+Isto foi inserido pelo atual.txt
+
+002
+Um Trabalho de Python - EDITADO
 André Barreto
 Drama
-07/04/2016
-Editora SemFundamento
+07/04/2020
+Editora ComFundamento
 Era uma vez um bicho bem bonitinho que morreu. Fim.
-oi
-mamãe
+Modificado pelo atual.txt
 
 004
-Olá
+Um Trabalho de Python
 Abner
 Drama
 07/04/2016
@@ -60,28 +68,20 @@ Era uma vez um bicho bem bonitinho que morreu. Fim.
 oi
 mamãe
 
-002
-Um Trabalho de Python - EDITADO
+001
+Um Trabalho de Python
 André Barreto
 Drama
-07/04/2020
-Editora ComFundamento
+07/04/2016
+Editora SemFundamento
 Era uma vez um bicho bem bonitinho que morreu. Fim.
-Modificado pelo atual.txt
-
-003
-X - MAIS Outro Trabalho de Python
-André Barreto
-Policial
-08/04/2016
-Editora Jumento
-Era uma vez um bichinho legal, que queria proteger seus amigos do perigo.
-Isto foi inserido pelo atual.txt
+oi
+mamãe
 
 ## Listagem ordenada crescentemente por Autor ##
 
 001
-A - Um Trabalho de Python
+Um Trabalho de Python
 André Barreto
 Drama
 07/04/2016
@@ -109,7 +109,7 @@ Era uma vez um bichinho legal, que queria proteger seus amigos do perigo.
 Isto foi inserido pelo atual.txt
 
 004
-Olá
+Um Trabalho de Python
 Abner
 Drama
 07/04/2016
@@ -138,9 +138,9 @@ Editora Jumento
 Era uma vez um bichinho legal, que queria proteger seus amigos do perigo.
 Isto foi inserido pelo atual.txt
 
-001
-A - Um Trabalho de Python
-André Barreto
+004
+Um Trabalho de Python
+Abner
 Drama
 07/04/2016
 Editora SemFundamento
@@ -148,9 +148,9 @@ Era uma vez um bicho bem bonitinho que morreu. Fim.
 oi
 mamãe
 
-004
-Olá
-Abner
+001
+Um Trabalho de Python
+André Barreto
 Drama
 07/04/2016
 Editora SemFundamento

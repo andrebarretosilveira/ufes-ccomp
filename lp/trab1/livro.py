@@ -66,10 +66,10 @@ class Livro:
         titulo1 = livro1.getTitulo()
         titulo2 = livro2.getTitulo()
 
-        if titulo1 < titulo2:
+        if titulo1 > titulo2:
             return -1
         elif titulo1 == titulo2:
-            return Livro.comparaCodigo(livro1, livro2)
+            return (-1)*Livro.comparaCodigo(livro1, livro2)
         else:
             return 1
 
@@ -93,6 +93,6 @@ class Livro:
         if data1 > data2:
             return -1
         elif data1 == data2:
-            return Livro.comparaCodigo(livro1, livro2)
+            return (-1)*Livro.comparaCodigo(livro1, livro2)
         else:
             return 1

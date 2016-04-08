@@ -12,6 +12,29 @@ class Catalago:
     def __init__(self):
         self.__livros = list()
 
+    # Função que efetivamente realiza a leitura de um
+    # livro. Retorna uma tupla contendo o livro e a
+    # última linha lida, que no caso será ou '\n' ou
+    # '', indicando se o arquivo acabou.
+    def __lerLivro(self, f):
+        codigo = f.readline().rstrip("\n")
+        titulo = f.readline().rstrip("\n")
+        autor = f.readline().rstrip("\n")
+        assunto = f.readline().rstrip("\n")
+        dataStr = f.readline().rstrip("\n")
+        dataPub = date(int(dataStr[6:10]), int(dataStr[3:5]), int(dataStr[0:2]))
+        editora = f.readline().rstrip("\n")
+        resumoPart = f.readline()
+        resumo = ''
+        while resumoPart != '\n' and resumoPart != '':
+            resumo += resumoPart
+            resumoPart = f.readline()
+
+        resumo = resumo.rstrip("\n")
+
+        livro = Livro(codigo, titulo, autor, assunto, dataPub, editora, resumo)
+        return (livro, resumoPart)
+
     # Função para adicionar um livro do Catálago
     def adicionaLivro(self, livro):
         self.__livros.append(livro)
@@ -25,31 +48,12 @@ class Catalago:
                 break
             pos += 1
 
-    #def __lerLivro(self, f):
-
-
-    # Função que lê um arquivo e carrega o Catálago
+    # Função que abre um arquivo para leitura dos livros
     def lerCatalago(self, arquivo):
-        f = open(arquivo, 'r')
-        resumoPart = ' '
-
-        while resumoPart != '':
-            codigo = f.readline().rstrip("\n")
-            titulo = f.readline().rstrip("\n")
-            autor = f.readline().rstrip("\n")
-            assunto = f.readline().rstrip("\n")
-            dataStr = f.readline().rstrip("\n")
-            dataPub = date(int(dataStr[6:10]), int(dataStr[3:5]), int(dataStr[0:2]))
-            editora = f.readline().rstrip("\n")
-            resumoPart = f.readline()
-            resumo = ''
-            while resumoPart != '\n' and resumoPart != '':
-                resumo += resumoPart
-                resumoPart = f.readline()
-
-            resumo = resumo.rstrip("\n")
-
-            livro = Livro(codigo, titulo, autor, assunto, dataPub, editora, resumo)
+        arqv = open(arquivo, 'r')
+        posArqv = ' '
+        while posArqv != '':
+            (livro, posArqv) = self.__lerLivro(arqv)
             self.adicionaLivro(livro)
 
     # Função atualizar o Catálago com base no arquivo
@@ -60,32 +64,16 @@ class Catalago:
         while line != '':
             # Leitura de dados em caso de inserção ou alteração
             if line == 'i\n' or line == 'a\n':
-                codigo = f.readline().rstrip("\n")
-                titulo = f.readline().rstrip("\n")
-                autor = f.readline().rstrip("\n")
-                assunto = f.readline().rstrip("\n")
-                dataStr = f.readline().rstrip("\n")
-                dataPub = date(int(dataStr[6:10]), int(dataStr[3:5]), int(dataStr[0:2]))
-                editora = f.readline().rstrip("\n")
-                resumoPart = f.readline()
-                resumo = ''
-                while resumoPart != '\n' and resumoPart != '':
-                    resumo += resumoPart
-                    resumoPart = f.readline()
-
-                resumo = resumo.rstrip("\n")
+                (livro, posArqv) = self.__lerLivro(f)
 
                 # Caso de inserção
                 if line == 'i\n':
-                    livro = Livro(codigo, titulo, autor, assunto, dataPub, editora, resumo)
                     self.adicionaLivro(livro)
 
                 # Caso de alteração
                 else:
-                    for livro in self.__livros:
-                        if livro.getCodigo() == codigo:
-                            livro.alteraDados(codigo, titulo, autor, assunto, dataPub, editora, resumo)
-                            break
+                    self.removeLivro(livro.getCodigo())
+                    self.adicionaLivro(livro)
 
             # Caso de exclusão
             elif line == 'e\n':
@@ -156,7 +144,7 @@ class Catalago:
         for i in range(0, N):
             minPos = i
             for j in range(i, N):
-                if comparador(self.__livros[j], self.__livros[minPos]) == -1:
+                if comparador(self.__livros[j], self.__livros[minPos]) < 0:
                     minPos = j
 
             # Swap livros

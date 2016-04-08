@@ -1,5 +1,5 @@
 002
-B - Outro Trabalho de Python
+Um Trabalho de Python
 André Barreto
 Policial
 08/04/2016
@@ -8,7 +8,7 @@ Era uma vez um bichinho legal, que queria proteger seus amigos do perigo.
 Mas aí ele morreu. Fim.
 
 001
-A - Um Trabalho de Python
+Um Trabalho de Python
 André Barreto
 Drama
 07/04/2016
@@ -18,7 +18,7 @@ oi
 mamãe
 
 004
-Olá
+Um Trabalho de Python
 Abner
 Drama
 07/04/2016
