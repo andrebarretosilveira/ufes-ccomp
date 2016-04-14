@@ -9,12 +9,13 @@
 #ifndef MATRIZPENTADIAGONAL_H
 #define MATRIZPENTADIAGONAL_H
 
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /*
  * Estrutura da matriz composta por 5
  * vetores, representando as diagonais
+ * e a ordem da matriz
  */
 typedef struct matrizPentadiagonal
 {
