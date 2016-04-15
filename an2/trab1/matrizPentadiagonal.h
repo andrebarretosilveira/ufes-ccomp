@@ -24,11 +24,12 @@ typedef struct matrizPentadiagonal
 	double *a;
 	double *b;
 	double *d;
-    size_t n;
+    size_t N;  // Ordem da matriz Pentadiagonal
+    size_t n;  // Tamanho dos vetores *e e *d
 } MatrizPentadiagonal;
 
 /** Funções **/
-MatrizPentadiagonal* newMatPen(int);
+MatrizPentadiagonal* newMatPen(const int, const int);
 void preencheMatPen(MatrizPentadiagonal*);
 void printMatPen(MatrizPentadiagonal*);
 void freeMatPen(MatrizPentadiagonal*);

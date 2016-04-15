@@ -16,7 +16,7 @@
 int main()
 {
     MatrizPentadiagonal* matriz;
-    matriz = newMatPen(15);
+    matriz = newMatPen(12, 3);
     preencheMatPen(matriz);
     printMatPen(matriz);
     freeMatPen(matriz);
