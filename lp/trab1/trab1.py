@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 ###
-#   trab1.py
-#
 #   Trabalho 1 de LP - Python
 #   André Barreto Silveira
 ###

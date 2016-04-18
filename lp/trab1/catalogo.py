@@ -2,13 +2,15 @@
 # -*- coding: utf-8 -*-
 
 ###
+#   catalogo.py
+#
 #   Trabalho 1 de LP - Python
 #   André Barreto Silveira
 ###
 
 from livro import *
 
-class Catalago:
+class Catalogo:
     def __init__(self):
         self.__livros = list()
 
@@ -17,7 +19,15 @@ class Catalago:
     # última linha lida, que no caso será ou '\n' ou
     # '', indicando se o arquivo acabou.
     def __lerLivro(self, f):
-        codigo = f.readline().rstrip("\n")
+
+        codigo = f.readline()
+
+        # Evita erros de leitura caso existam linhas
+        # em branco extras
+        if codigo == '\n' or codigo == '':
+            return (None, codigo)
+
+        codigo = codigo.rstrip("\n")
         titulo = f.readline().rstrip("\n")
         autor = f.readline().rstrip("\n")
         assunto = f.readline().rstrip("\n")
@@ -49,12 +59,13 @@ class Catalago:
             pos += 1
 
     # Função que abre um arquivo para leitura dos livros
-    def lerCatalago(self, arquivo):
+    def lerCatalogo(self, arquivo):
         arqv = open(arquivo, 'r')
-        posArqv = ' '
+        posArqv = None
         while posArqv != '':
             (livro, posArqv) = self.__lerLivro(arqv)
-            self.adicionaLivro(livro)
+            if livro != None:
+                self.adicionaLivro(livro)
 
     # Função atualizar o Catálago com base no arquivo
     def atualiza(self, arquivo):
@@ -87,7 +98,7 @@ class Catalago:
         f = open(arquivo, 'w')
 
         self.ordena(Livro.comparaCodigo)
-        f.write("## Listagem ordenada crescentemente por Código ##\n")
+        f.write("Lista de Livros Ordenada Crescentemente por Codigo:\n")
         for livro in self.__livros:
             f.write('\n')
             dados = livro.getDados()
@@ -96,7 +107,7 @@ class Catalago:
 
         f.write('\n')
         self.ordena(Livro.comparaTitulo)
-        f.write("## Listagem ordenada decrescentemente por Titulo ##\n")
+        f.write("Lista de Livros Ordenada Decrescentemente por Titulo:\n")
         for livro in self.__livros:
             f.write('\n')
             dados = livro.getDados()
@@ -105,7 +116,7 @@ class Catalago:
 
         f.write('\n')
         self.ordena(Livro.comparaAutor)
-        f.write("## Listagem ordenada crescentemente por Autor ##\n")
+        f.write("Lista de Livros Ordenada Crescentemente por Autor:\n")
         for livro in self.__livros:
             f.write('\n')
             dados = livro.getDados()
@@ -114,7 +125,7 @@ class Catalago:
 
         f.write('\n')
         self.ordena(Livro.comparaData)
-        f.write("## Listagem ordenada decrescentemente por Data de Publicação ##\n")
+        f.write("Lista de Livros Ordenada Decrescentemente por Data de Publicacao:\n")
         for livro in self.__livros:
             f.write('\n')
             dados = livro.getDados()
@@ -122,7 +133,7 @@ class Catalago:
                 f.write(i+'\n')
 
     # Função para reescrita do Catálago
-    def escreveCatalago(self, arquivo):
+    def escreveCatalogo(self, arquivo):
         f = open(arquivo, 'w')
         self.ordena(Livro.comparaCodigo)
 

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###
+#   livro.py
+#
 #   Trabalho 1 de LP - Python
 #   André Barreto Silveira
 ###
@@ -34,7 +36,7 @@ class Livro:
     def getData(self):
         return self.__dataPub
 
-    # Retorna os dados do livro
+    # Retorna os dados do livro em uma lista
     def getDados(self):
         dados = [self.__codigo] + [self.__titulo] + [self.__autor] + [self.__assunto] + [self.__dataPub.strftime("%d/%m/%Y")] + [self.__editora] + [self.__resumo]
         return dados
@@ -51,8 +53,8 @@ class Livro:
 
     @staticmethod #Compara crescentemente por Código
     def comparaCodigo(livro1, livro2):
-        cod1 = livro1.getCodigo()
-        cod2 = livro2.getCodigo()
+        cod1 = int(livro1.getCodigo())
+        cod2 = int(livro2.getCodigo())
 
         if cod1 < cod2:
             return -1
@@ -78,7 +80,7 @@ class Livro:
         autor1 = livro1.getAutor()
         autor2 = livro2.getAutor()
 
-        if autor1 > autor2:
+        if autor1 < autor2:
             return -1
         elif autor1 == autor2:
             return Livro.comparaCodigo(livro1, livro2)
