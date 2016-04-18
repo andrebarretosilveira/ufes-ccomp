@@ -2,7 +2,7 @@ all: compile
 
 FLAGS := -Wall -Wextra
 DEBUGFLAGS := -Wall -Wconversion -Wextra -g
-PRINCIPAL := trab1.c matrizPentadiagonal.c
+PRINCIPAL := trab1.c matrizPentadiagonal.c sistemaLinear.c sor.c
 
 compile:
 	gcc -o trab1 $(PRINCIPAL) $(FLAGS)

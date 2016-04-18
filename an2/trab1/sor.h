@@ -1,14 +1,12 @@
 /**
- * 	- CABEÇALHO SOR -
- * 	ASSINATURAS DAS FUNÇOES PARA A RESOLUÇÃO ATRAVÉS DO MÉTODO SOR
- * 	@LAST-UPDATE 30-09-2015
- *  @Authors - @ANDRÉ BARRETO, @IGOR VENTORIM, @VINICIUS ARRUDA
+ * sor.h
+ *
+ * Definição das funções SOR
  *
  */
-#include "csr.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include "sistemaLinear.h"
 
-
-double *sor(CSR* matrix,double omega,double toler, size_t iterMax);
-
-double absolut(double number);
+double *sor(SistemaLinear*, double, double, size_t);

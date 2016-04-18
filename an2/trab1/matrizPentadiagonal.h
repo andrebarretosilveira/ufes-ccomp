@@ -24,8 +24,8 @@ typedef struct matrizPentadiagonal
 	double *a;
 	double *b;
 	double *d;
-    size_t N;  // Ordem da matriz Pentadiagonal
-    size_t n;  // Tamanho dos vetores *e e *d
+    size_t N;      // Ordem da matriz Pentadiagonal
+    size_t tamED;  // Tamanho dos vetores *e e *d
 } MatrizPentadiagonal;
 
 /** Funções **/

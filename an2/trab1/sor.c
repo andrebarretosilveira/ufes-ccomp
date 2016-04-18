@@ -1,105 +1,109 @@
-	/*
-	*	ALGORITHM SOR(Sucessive Over Relaxation)
-	* 	FUNCTIONS TO RESOLUTION OF THE METHOD SOR FOR MATRIX SPARSE
-	*
-	* 	LAST-UPDATE 03-10-2015
-	*  	@Authors - @ANDRÉ BARRETO, @IGOR VENTORIM, @VINICIUS ARRUDA
-*/
-#include <stdio.h>
-#include <stdlib.h>
-#include "sor.h"
-#include <time.h>
-#include "csr.h"
-#include <math.h>
-
-
 /**
- * [sor2 - RESOLVENDO MATRIZ ESPARSA POR METODO ITERATIVO SOR]
- * @param  matrix  [Estrutura matriz no padrão CSR para matriz esparsas]
- * @param  omega   [Constante de relaxamento]
- * @param  toler   [Tolerancia de erro]
- * @param  iterMax [Numero maximo de iteraçoes]
- * @return         [Vetor soluçao]
+ * sor.c
+ *
+ * Implementação do SOR para os dois casos:
+ * SOR em matriz pentadiagonal e SOR livre
+ * de matriz
+ *
  */
-double *sor(CSR* matrix,double omega,double toler, size_t iterMax)
+
+#include <math.h>
+#include "sor.h"
+
+
+double *sor(SistemaLinear* sistema, double omega, double toler, size_t iterMax)
 {
-	struct timespec Start,End;
-	clock_gettime(CLOCK_MONOTONIC,&Start);
-	// SOR ITERATIVO
-	double *x;	/* VETOR SOLUÇÃO */
-	double soma,normax,aux,Elapsed_Time,erro;
-	size_t i,k,iter,inicio,fim;
+	double *x; // Vetor solução
+	double soma, normaX, normaDif, aux, erro;
+	size_t i, j, iter, dr;
 
-	x = calloc(matrix->n,sizeof(double));	/* ALOCANDO TAMANHO DO VETOR SOLUÇÃO */
+    // Solução inicial nula
+	x = calloc(sistema->N, sizeof(double));
 
-	/* PREENCHENDO VETOR INDEPENDENTE INICIAL */
-	//for(i = 0; i < matrix->n; i++)
-	//	x[i] = matrix->b[i]/matrix->d[i];
+    // Distância relativa de elementos até a primeira
+    // ocorrência de um elemento "e". Em outras palavras,
+    // o número n de partições no eixo x
+    dr = (sistema->matriz->N - sistema->matriz->tamED);
 
+    // Iterar até erro aceitável ou máximo de iterações atingido
 	iter = 0;
-	/* LOOP DE ITERAÇOES */
-	do{
-		erro = 0;
-		normax = 0;
+	do {
 		iter++;
 
-		/* LOOP PARA ENCONTRAR O VALOR DE CADA VARIÁVEL X */
-		for(i = 0; i < matrix->n; i++)
-		{
-			/* LIMITES SUPERIOR E INFERIOR DA LINHA */
-			inicio = matrix->row_ptr[i];
-			fim = matrix->row_ptr[i+1]-1;
+		// Loop para encontrar x[i]
+		for(i = 0; i < sistema->N; i++) {
+            soma = 0;
 
-			/* INICIANDO CONTA COM O INDICE DO VETOR INDEPENDENTE */
-			soma = matrix->b[i];
-			if( inicio <= fim)
-			{
+            // Primeira linha da matriz: apenas existem
+            // os elementos de a, b e d
+            soma += (sistema->matriz->a[0] +
+                    sistema->matriz->b[0]  +
+                    sistema->matriz->d[0]) *
+                    x[0];
 
-				/* PERCORRENDO AS COLUNAS NAO NULAS DA LINHA */
-				for(k = inicio; k <= fim; k++)
-				{
-					/*ALGEBRA PARA ENCONTRAR A EQUAÇÃO DE X[I]*/
-					soma -= matrix->A[k]* x[matrix->column_index[k]];
-				}
+            // Linhas que possuem c, a, b e d até a
+            // ocorrência do primeiro elemento de e:
+            // de 1 até dr+1
+            for(j=1; j < dr; j++) {
+                soma += (sistema->matriz->c[j-1] +
+                        sistema->matriz->a[j]    +
+                        sistema->matriz->b[j]    +
+                        sistema->matriz->d[j])   *
+                        x[j];
+            }
 
-			}
-			/* DIVIDINDO EQUAÇÃO PELA DIAGONAL */
-			soma = soma / matrix->d[i];
+            // Linhas que possuem e, c, a, b e d até
+            // a NÃO ocorrência de elementos de d:
+            // de dr até tamED
+            for(j=dr; j < sistema->matriz->tamED; j++) {
+                soma += (sistema->matriz->e[j-dr] +
+                        sistema->matriz->c[j-1]   +
+                        sistema->matriz->a[j]     +
+                        sistema->matriz->b[j]     +
+                        sistema->matriz->d[j])    *
+                        x[j];
+            }
 
-			/* CALCULANDO O NOVO VALOR DE X[I] APARTI DO FATOR DE RELAXAÇÃO */
-			aux = omega * soma + (1 - omega) * x[i];
+            // Linhas que possuem e, c, a e b até
+            // a NÃO ocorrência de elementos de b:
+            // de tamED até N-1
+            for(j=sistema->matriz->tamED; j < sistema->N-1; j++) {
+                soma += (sistema->matriz->e[j-dr] +
+                        sistema->matriz->c[j-1]   +
+                        sistema->matriz->a[j]     +
+                        sistema->matriz->b[j])    *
+                        x[j];
+            }
 
-			/* GUARDANDO A NORMA DE X */
-			if(fabs(aux) > normax)
-				normax = fabs(aux);
+            // Última linha da matriz: apenas existem
+            // os elementos de e, c e a
+            soma += (sistema->matriz->e[j-dr] +
+                    sistema->matriz->c[j-1]   +
+                    sistema->matriz->a[j])    *
+                    x[j];
 
-			/* GUARDANDO A NORMA DE X[I] -X[I-1] */
-			if(fabs(aux - x[i]) > erro)
-				erro = fabs(aux - x[i]);
+			// Calculo do novo valor de x[i]
+            //printf("aux = (1-%g)*%g + (%g/%g)*(%g-%g)\n", omega, x[i], omega, sistema->matriz->a[i], sistema->f[i], soma);
+			aux = (1 - omega) * x[i] + (omega/sistema->matriz->a[i]) * (sistema->f[i] - soma);
 
-			/* ATUALIZANDO O VALOR DE X[I] */
+			// Norma de x[i]
+            normaX = fabs(aux);
+
+			// Norma da diferença (x[i] - x[i-1])
+            normaDif = fabs(aux - x[i]);
+
+			// Atualizando valor de x[i]
 			x[i] = aux;
-
 		}
-		aux = 1;
-		if(normax > 1)
-			aux = normax;
-		//CALCULANDO O ERRO
-		erro = erro/aux;
 
-		//printf("ERRO - %f\n",erro);
+		// Cálculo do erro
+		erro = normaDif/normaX;
 
-	}while(erro > toler && iter < iterMax);
-	// FIM LOOP DE ITERAÇOES
+		printf("ERRO: %f\n",erro);
+	}
+    while(erro > toler && iter < iterMax);
+
 	printf("Iter: %lu - IterMax: %lu\n",iter,iterMax);
 
-	clock_gettime(CLOCK_MONOTONIC, &End);
-	// CALCULANDO TEMPO GASTO DE EXECUÇÃO
-	Elapsed_Time = End.tv_sec - Start.tv_sec + 1e-9*(End.tv_nsec - Start.tv_nsec);
-
-	printf("O tempo de execucao gasto foi %g segundos\n",Elapsed_Time);
-
-	// RETORNANDO VETOR SOLUÇAO
 	return x;
-
 }

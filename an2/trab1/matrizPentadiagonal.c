@@ -18,7 +18,7 @@ MatrizPentadiagonal* newMatPen(const int N, const int xParts)
     matriz->b = malloc((N-1)*sizeof(double));
     matriz->d = malloc((N-xParts)*sizeof(double));
     matriz->N = N;
-    matriz->n = (N-xParts);
+    matriz->tamED = (N-xParts);
     return matriz;
 }
 
@@ -27,13 +27,13 @@ void preencheMatPen(MatrizPentadiagonal* matriz)
     size_t i;
     for(i=0; i < matriz->N-1; i++) {
         matriz->c[i] = i+2;
-        matriz->a[i] = i+1;
+        matriz->a[i] = i+20;
         matriz->b[i] = i+1;
     }
-    matriz->a[i] = i+1;
+    matriz->a[i] = i+20;
 
-    size_t relat = matriz->N - matriz->n;
-    for(i=0; i < matriz->n; i++) {
+    size_t relat = matriz->N - matriz->tamED;
+    for(i=0; i < matriz->tamED; i++) {
         matriz->e[i] = i+relat+1;
         matriz->d[i] = i+1;
     }
@@ -51,7 +51,7 @@ void printMatPen(MatrizPentadiagonal *matriz)
         matriz->d[0]
     );
 
-    size_t ls = (matriz->N - matriz->n);
+    size_t ls = (matriz->N - matriz->tamED);
     for(i=1; i < ls; i++) {
         printf(" |    %2g %2g %2g %2g |\n",
             matriz->c[i-1], matriz->a[i],
@@ -60,15 +60,15 @@ void printMatPen(MatrizPentadiagonal *matriz)
     }
 
     size_t li = ls;
-    for(i=li; i < matriz->n; i++) {
+    for(i=li; i < matriz->tamED; i++) {
         printf(" | %2g %2g %2g %2g %2g |\n",
             matriz->e[i-li], matriz->c[i-1],
-            matriz->a[i], matriz->b[i-1],
+            matriz->a[i], matriz->b[i],
             matriz->d[i]
         );
     }
 
-    for(i=matriz->n; i < matriz->N-1; i++) {
+    for(i=matriz->tamED; i < matriz->N-1; i++) {
         printf(" | %2g %2g %2g %2g    |\n",
             matriz->e[i-li], matriz->c[i],
             matriz->a[i], matriz->b[i]
