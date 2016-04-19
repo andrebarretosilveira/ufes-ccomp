@@ -6,11 +6,12 @@
  *
  */
 
-#ifndef MATRIZPENTADIAGONAL_H
-#define MATRIZPENTADIAGONAL_H
-
 #include <stdio.h>
 #include <stdlib.h>
+#include "dados.h"
+
+#ifndef MATRIZPENTADIAGONAL_H
+#define MATRIZPENTADIAGONAL_H
 
 /*
  * Estrutura da matriz composta por 5
@@ -29,9 +30,10 @@ typedef struct matrizPentadiagonal
 } MatrizPentadiagonal;
 
 /** Funções **/
-MatrizPentadiagonal* newMatPen(const int, const int);
-void preencheMatPen(MatrizPentadiagonal*);
-void printMatPen(MatrizPentadiagonal*);
-void freeMatPen(MatrizPentadiagonal*);
+MatrizPentadiagonal* newMatrizPenta(const int, const int);
+MatrizPentadiagonal* criaMatrizPenta(Dados*);
+void preencheMatrizPenta(MatrizPentadiagonal*);
+void printMatrizPenta(MatrizPentadiagonal*);
+void freeMatrizPenta(MatrizPentadiagonal*);
 
 #endif

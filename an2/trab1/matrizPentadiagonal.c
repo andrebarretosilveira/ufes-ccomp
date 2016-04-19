@@ -8,21 +8,81 @@
 
 #include "matrizPentadiagonal.h"
 
-MatrizPentadiagonal* newMatPen(const int N, const int xParts)
+/**
+ * Função que aloca espaço de memória para a matriz pentadiagonal
+ * @param  N       Ordem da matriz
+ * @param  amountX Quantidade de pontos em x
+ * @return         Ponteiro para matriz alocada
+ */
+MatrizPentadiagonal* newMatrizPenta(const int N, const int amountX)
 {
     MatrizPentadiagonal* matriz;
     matriz = malloc(sizeof(MatrizPentadiagonal));
-    matriz->e = malloc((N-xParts)*sizeof(double));
+    matriz->e = malloc((N-amountX)*sizeof(double));
     matriz->c = malloc((N-1)*sizeof(double));
     matriz->a = malloc(N*sizeof(double));
     matriz->b = malloc((N-1)*sizeof(double));
-    matriz->d = malloc((N-xParts)*sizeof(double));
+    matriz->d = malloc((N-amountX)*sizeof(double));
     matriz->N = N;
-    matriz->tamED = (N-xParts);
+    matriz->tamED = (N-amountX);
     return matriz;
 }
 
-void preencheMatPen(MatrizPentadiagonal* matriz)
+/**
+ * Função que cria a matriz pentadiagonal, preenchendo
+ * os cinco vetores com os elementos respectivos
+ * @param  input Estrutura de dados de entrada
+ * @param  a     Constante BetaxI
+ * @param  b     Constante BetayI
+ * @param  c     Constante GamaI
+ * @return       Ponteiro para Matriz Pentadiagonal preenchida
+ */
+MatrizPentadiagonal* criaMatrizPenta(Dados* input)
+{
+	double hx, hy;
+	double aI, bI, cI, dI, eI;
+	size_t qtdElementos, i;
+    MatrizPentadiagonal* matriz;
+
+    double a=1, b=1, c=1;
+
+	// Ordem da matriz
+	qtdElementos = (input->amountX * input->amountY);
+
+	// Calculando hx e hy
+	hx = (input->endX - input->beginX)/((double)input->amountX-1);
+	hy = (input->endY - input->beginY)/((double)input->amountY-1);
+
+	// Valores do elementos da matriz
+	aI = c + 2 *((1/(hx*hx)) + (1/(hy*hy)));
+	bI = (-1/(hx*hx)) - (a/(2*hx));
+	cI = (-1/(hx*hx)) + (a/(2*hx));
+	dI = (-1/(hy*hy)) - (b/(2*hy));
+	eI = (-1/(hy*hy)) + (b/(2*hy));
+
+	// Alocando espaço para a matriz
+	matriz = newMatrizPenta(qtdElementos, input->amountX);
+
+	// Montando a matriz pentadiagonal
+    for(i=0; i < matriz->tamED; i++) {
+        matriz->e[i] = eI;
+        matriz->c[i] = cI;
+        matriz->a[i] = aI;
+        matriz->b[i] = bI;
+        matriz->d[i] = dI;
+    }
+    for(i=matriz->tamED; i < matriz->N-1; i++) {
+        matriz->c[i] = cI;
+        matriz->a[i] = aI;
+        matriz->b[i] = bI;
+    }
+    matriz->a[i] = aI;
+
+
+	return matriz;
+}
+
+void preencheMatrizPenta(MatrizPentadiagonal* matriz)
 {
     size_t i;
     for(i=0; i < matriz->N-1; i++) {
@@ -39,49 +99,39 @@ void preencheMatPen(MatrizPentadiagonal* matriz)
     }
 }
 
-void printMatPen(MatrizPentadiagonal *matriz)
+void printMatrizPenta(MatrizPentadiagonal *matriz)
 {
     size_t i;
 
-    printf("    e  c  a  b  d  \n");
-    printf(" ------------------\n");
+    printf("\ne: ");
+    for(i=0; i < matriz->tamED; i++)
+        printf("%g ", matriz->e[i]);
 
-    printf(" |       %2g %2g %2g |\n",
-        matriz->a[0], matriz->b[0],
-        matriz->d[0]
-    );
+    printf("\nc: ");
+    for(i=0; i < matriz->N-1; i++)
+        printf("%g ", matriz->c[i]);
 
-    size_t ls = (matriz->N - matriz->tamED);
-    for(i=1; i < ls; i++) {
-        printf(" |    %2g %2g %2g %2g |\n",
-            matriz->c[i-1], matriz->a[i],
-            matriz->b[i], matriz->d[i]
-        );
-    }
+    printf("\na: ");
+    for(i=0; i < matriz->N; i++)
+        printf("%g ", matriz->a[i]);
 
-    size_t li = ls;
-    for(i=li; i < matriz->tamED; i++) {
-        printf(" | %2g %2g %2g %2g %2g |\n",
-            matriz->e[i-li], matriz->c[i-1],
-            matriz->a[i], matriz->b[i],
-            matriz->d[i]
-        );
-    }
+    printf("\nb: ");
+    for(i=0; i < matriz->N-1; i++)
+        printf("%g ", matriz->b[i]);
 
-    for(i=matriz->tamED; i < matriz->N-1; i++) {
-        printf(" | %2g %2g %2g %2g    |\n",
-            matriz->e[i-li], matriz->c[i],
-            matriz->a[i], matriz->b[i]
-        );
-    }
+    printf("\nd: ");
+    for(i=0; i < matriz->tamED; i++)
+        printf("%g ", matriz->d[i]);
 
-    printf(" | %2g %2g %2g       |\n",
-        matriz->e[i-li], matriz->c[i-1],
-        matriz->a[i]
-    );
+    printf("\n");
+
 }
 
-void freeMatPen(MatrizPentadiagonal *matriz)
+/**
+ * Libera espaço alocado pela matriz pentadiagonal
+ * @param matriz Matriz a ser desalocada
+ */
+void freeMatrizPenta(MatrizPentadiagonal *matriz)
 {
     free(matriz->e);
     free(matriz->c);

@@ -36,51 +36,41 @@ double *sor(SistemaLinear* sistema, double omega, double toler, size_t iterMax)
 
             // Primeira linha da matriz: apenas existem
             // os elementos de a, b e d
-            soma += (sistema->matriz->a[0] +
-                    sistema->matriz->b[0]  +
-                    sistema->matriz->d[0]) *
-                    x[0];
+            soma += sistema->matriz->b[0]*x[1] +
+                    sistema->matriz->d[0]*x[dr];
 
             // Linhas que possuem c, a, b e d até a
             // ocorrência do primeiro elemento de e:
             // de 1 até dr+1
             for(j=1; j < dr; j++) {
-                soma += (sistema->matriz->c[j-1] +
-                        sistema->matriz->a[j]    +
-                        sistema->matriz->b[j]    +
-                        sistema->matriz->d[j])   *
-                        x[j];
+                soma += sistema->matriz->c[j-1] * x[j-1] +
+                        sistema->matriz->b[j]   * x[j+1] +
+                        sistema->matriz->d[j]   * x[j+dr];
             }
 
             // Linhas que possuem e, c, a, b e d até
             // a NÃO ocorrência de elementos de d:
             // de dr até tamED
             for(j=dr; j < sistema->matriz->tamED; j++) {
-                soma += (sistema->matriz->e[j-dr] +
-                        sistema->matriz->c[j-1]   +
-                        sistema->matriz->a[j]     +
-                        sistema->matriz->b[j]     +
-                        sistema->matriz->d[j])    *
-                        x[j];
+                soma += sistema->matriz->e[j-dr] * x[j-dr] +
+                        sistema->matriz->c[j-1]  * x[j-1]  +
+                        sistema->matriz->b[j]    * x[j+1]  +
+                        sistema->matriz->d[j]    * x[j+dr];
             }
 
             // Linhas que possuem e, c, a e b até
             // a NÃO ocorrência de elementos de b:
             // de tamED até N-1
             for(j=sistema->matriz->tamED; j < sistema->N-1; j++) {
-                soma += (sistema->matriz->e[j-dr] +
-                        sistema->matriz->c[j-1]   +
-                        sistema->matriz->a[j]     +
-                        sistema->matriz->b[j])    *
-                        x[j];
+                soma += sistema->matriz->e[j-dr] * x[j-dr] +
+                        sistema->matriz->c[j-1]  * x[j-1]  +
+                        sistema->matriz->b[j]    * x[j+1];
             }
 
             // Última linha da matriz: apenas existem
             // os elementos de e, c e a
-            soma += (sistema->matriz->e[j-dr] +
-                    sistema->matriz->c[j-1]   +
-                    sistema->matriz->a[j])    *
-                    x[j];
+            soma += sistema->matriz->e[j-dr] * x[j-dr] +
+                    sistema->matriz->c[j-1]  * x[j-1];
 
 			// Calculo do novo valor de x[i]
             //printf("aux = (1-%g)*%g + (%g/%g)*(%g-%g)\n", omega, x[i], omega, sistema->matriz->a[i], sistema->f[i], soma);

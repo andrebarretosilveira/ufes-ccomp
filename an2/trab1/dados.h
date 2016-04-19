@@ -1,11 +1,15 @@
 /**
  * dados.h
  *
- * Definição da estrutura da Matriz Pentadiagonal
- * e suas funções básicas.
+ * Definição das estruturas de dados necessárias
+ * para formular o problema, armazenando informações
+ * relacionadas ao domínio e a discretização.
  *
  */
- 
+
+#include <stdio.h>
+#include <stdlib.h>
+
 #ifndef DADOS_H
 #define DADOS_H
 
@@ -13,15 +17,12 @@
 #define TRUE 1
 #define FALSE 0
 
-typedef struct dados Dados;
-typedef struct contorno Contorno;
-
 /*
  * Estrutura dos Dados a serem lidos
- * pelo programa: domínio de x e y,
+ * pelo programa: domínio de x e y e
  * quantidade de partições em x e y.
  */
-struct dados
+typedef struct dados
 {
 	double beginX;
 	double endX;
@@ -29,20 +30,24 @@ struct dados
 	double endY;
 	int amountX;
 	int amountY;
-	//int contour;
-    //char* Fxy;
-	//Contour *elements;
-};
+	double omega;
+	double tolerancia;
+	size_t iterMax;
+} Dados;
 
-struct contorno
+/**
+ * Estrutura de Ponto usado para a
+ * discretização do domínio
+ */
+typedef struct ponto
 {
-	int x;
-	int y;
-	double value;
-};
+	double x;
+	double y;
+} Ponto;
 
-Data* readData(FILE*, double *a, double *b, double *c);
-//void writeMatrix(double **matrix, double *vetIndependent,Data *input);
-void freeData(Data *in);
+Dados* readDados(FILE*);
+Ponto* discretizaDominio(Dados*);
+double *criaVetorIndependente(Dados*, Ponto*);
+void freeDados(Dados*);
 
 #endif

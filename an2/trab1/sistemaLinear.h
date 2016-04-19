@@ -26,9 +26,10 @@ typedef struct sistemaLinear
 } SistemaLinear;
 
 /** Funções **/
-SistemaLinear* newSistemaLinear(MatrizPentadiagonal*, double*, const size_t);
+SistemaLinear* criaSistemaLinear(MatrizPentadiagonal*, double*, const size_t);
+void aplicaContorno(SistemaLinear*, Dados*);
 void printSistemaLinear(SistemaLinear*);
-void freeSistaLinear(SistemaLinear*);
+void freeSistemaLinear(SistemaLinear*);
 
 #endif
 
