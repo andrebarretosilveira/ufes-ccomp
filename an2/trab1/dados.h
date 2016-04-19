@@ -13,7 +13,7 @@
 #ifndef DADOS_H
 #define DADOS_H
 
-#define BUFFER 300
+#define BUFFER 3
 #define TRUE 1
 #define FALSE 0
 
@@ -24,6 +24,7 @@
  */
 typedef struct dados
 {
+    size_t experimento;
 	double beginX;
 	double endX;
 	double beginY;

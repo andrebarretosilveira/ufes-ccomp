@@ -14,7 +14,8 @@
  */
 Dados* readDados(FILE* input)
 {
-	Dados* dados = malloc(sizeof(Dados));
+	Dados* dados;
+    char* experimento;
 	int i, teclado = FALSE;
 
     if(input == stdin) {
@@ -22,6 +23,12 @@ Dados* readDados(FILE* input)
         printf("Iniciando programa...\n");
         printf("Favor entrar com as informacoes necessarias a seguir.\n\n");
     }
+
+	dados = malloc(sizeof(Dados));
+
+	// Lendo experimento a ser aplicado
+    if(teclado) printf("Digite o experimento: \n");
+	fscanf(input, "%zu", &dados->experimento);
 
 	// Lendo domínios e quantidade de pontos
     if(teclado) printf("Dominios e quantidade de pontos: \n");
@@ -91,11 +98,25 @@ Ponto* discretizaDominio(Dados* dados)
  */
 double *criaVetorIndependente(Dados* dados, Ponto* vetorPontos)
 {
+    size_t exp;
 	double *vetorIndependente;
 	int i, qtdElementos;
 
+    exp = dados->experimento;
+    printf("%zu\n", exp);
+
+    #if exp == 1
+        #define F(x,y) 0.0
+    #elif exp == 2
+        #define F(x,y) 20*y
+    #else
+        #define F(x,y) 1.0
+    #endif
+
 	qtdElementos = (dados->amountX * dados->amountY);
 	vetorIndependente = calloc((size_t)qtdElementos,sizeof(double));
+
+    printf("%lf", F(1,2));
 
 	// CRIAR VETOR
 
