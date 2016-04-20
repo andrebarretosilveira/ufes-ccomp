@@ -28,8 +28,7 @@ void printInfo()
 
 int main(int argc, char **argv)
 {
-    size_t N;
-    int i;
+    size_t i, N;
     double* vetorIndependente;
     double* x;
     FILE* fp;
@@ -75,8 +74,9 @@ int main(int argc, char **argv)
     // Processo de discretização do domínio e criação do sistema
     vetorPontos = discretizaDominio(input);
     vetorIndependente = criaVetorIndependente(input, vetorPontos);
-    matriz = criaMatrizPenta(input);
+    matriz = criaMatrizPenta(input, vetorPontos);
     sistema = criaSistemaLinear(matriz, vetorIndependente, N);
+    printSistemaLinear(sistema);
     aplicaContorno(sistema, input);
     printSistemaLinear(sistema);
 
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
     printf("x = ");
     for(i=0; i < N; i++)
-        printf("%lf ", x[i]);
+        printf("%.2lf ", x[i]);
     printf("\n\n");
 
     // Liberar memória

@@ -24,26 +24,51 @@ SistemaLinear* criaSistemaLinear(MatrizPentadiagonal* matriz, double* f, const s
  * @param sistema           Sistema Linear do problema
  * @param input             [description]
  */
-void aplicaContorno(SistemaLinear* sistema, Dados *input)
+void aplicaContorno(SistemaLinear* sistema, Dados *dados)
 {
-	//int i,j, qtdElementos;
-	//int index;
-	//qtdElementos = (input->amountX * input->amountY);
+	int i, j, I;
+    //size_t N;
+    MatrizPentadiagonal* matriz;
 
-    /*
-	for( j = 0; j < input->contour;j++)
-	{
-		index = indiceDiscreto(input->elements[j].x,input->elements[j].y,input->amountX);
-		sistema->f[index] = input->elements[j].value;
-		for(i = 0; i < qtdElementos ; i++)
-		{
-			if(i == index)
-				matrix[index][i] = 1;
-            else
-				matrix[index][i] = 0;
-		}
-	}
-    */
+    matriz = sistema->matriz;
+    //N = matriz->N;
+
+    for(i=0, j=0; i < dados->amountX; i++) {
+        I = indiceDiscreto(i, j, dados->amountX);
+        printf("%d + (%d*%d) = I = %d \n", i,j,dados->amountX,I);
+        sistema->f[I] = 1;
+        matriz->b[I] = 0;
+        matriz->a[I] = 1;
+        matriz->c[I] = 0;
+        matriz->d[I] = 0;
+    }
+    for(i=dados->amountX-1, j=1; j < dados->amountY-1; j++) {
+        I = indiceDiscreto(i, j, dados->amountX);
+        printf("%d + (%d*%d) = I = %d \n", i,j,dados->amountX,I);
+        sistema->f[I] = 1;
+        matriz->e[I] = 0;
+        matriz->a[I] = 1;
+        matriz->c[I] = 0;
+        matriz->d[I] = 0;
+    }
+    for(i=dados->amountX-1, j=dados->amountY-1; i > 0; i--) {
+        I = indiceDiscreto(i, j, dados->amountX);
+        printf("%d + (%d*%d) = I = %d \n", i,j,dados->amountX,I);
+        sistema->f[I] = 1;
+        matriz->e[I] = 0;
+        matriz->b[I] = 0;
+        matriz->a[I] = 1;
+        matriz->c[I] = 0;
+    }
+    for(i=0, j=dados->amountY-1; j > 0; j--) {
+        I = indiceDiscreto(i, j, dados->amountX);
+        printf("%d + (%d*%d) = I = %d \n", i,j,dados->amountX,I);
+        sistema->f[I] = 1;
+        matriz->e[I] = 0;
+        matriz->b[I] = 0;
+        matriz->a[I] = 1;
+        matriz->d[I] = 0;
+    }
 }
 
 /**
@@ -55,7 +80,7 @@ void aplicaContorno(SistemaLinear* sistema, Dados *input)
  */
 int indiceDiscreto(int i, int j, int amountX)
 {
-	return i + ((j-1) * amountX) - 1 ;
+	return i + (j * amountX);
 }
 
 void printSistemaLinear(SistemaLinear* sistema)

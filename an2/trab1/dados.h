@@ -17,10 +17,10 @@
 #define TRUE 1
 #define FALSE 0
 
-#define F(x,y) 0
-#define BETAx(x,y) 0
-#define BETAy(x,y) 0
-#define GAMA(x,y) 0
+#define F(x,y)     ( (x+y)*0 )
+#define BETAx(x,y) ( (x+y)*0 )
+#define BETAy(x,y) ( (x+y)*0 )
+#define GAMA(x,y)  ( (x+y)*0 )
 
 /*
  * Estrutura dos Dados a serem lidos
@@ -29,7 +29,7 @@
  */
 typedef struct dados
 {
-    size_t experimento;
+    int experimento;
 	double beginX;
 	double endX;
 	double beginY;

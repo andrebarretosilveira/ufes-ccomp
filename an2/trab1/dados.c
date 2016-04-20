@@ -27,7 +27,7 @@ Dados* readDados(FILE* input)
 
 	// Lendo experimento a ser aplicado
     if(teclado) printf("Digite o experimento: \n");
-	fscanf(input, "%zu", &dados->experimento);
+	fscanf(input, "%d", &dados->experimento);
 
 	// Lendo domínios e quantidade de pontos
     if(teclado) printf("Dominios e quantidade de pontos: \n");
@@ -103,7 +103,7 @@ double *criaVetorIndependente(Dados* dados, Ponto* vetorPontos)
 
 	N = (dados->amountX * dados->amountY);
 	vetorIndependente = calloc((size_t)N, sizeof(double));
-
+    
     for(i=0; i < N; i++) {
         x = vetorPontos[i].x;
         y = vetorPontos[i].y;

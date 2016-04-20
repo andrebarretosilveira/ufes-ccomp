@@ -18,11 +18,11 @@ MatrizPentadiagonal* newMatrizPenta(const int N, const int amountX)
 {
     MatrizPentadiagonal* matriz;
     matriz = malloc(sizeof(MatrizPentadiagonal));
-    matriz->e = malloc((N-amountX)*sizeof(double));
-    matriz->c = malloc((N-1)*sizeof(double));
-    matriz->a = malloc(N*sizeof(double));
-    matriz->b = malloc((N-1)*sizeof(double));
-    matriz->d = malloc((N-amountX)*sizeof(double));
+    matriz->e = calloc(N, sizeof(double));
+    matriz->c = calloc(N, sizeof(double));
+    matriz->a = calloc(N, sizeof(double));
+    matriz->b = calloc(N, sizeof(double));
+    matriz->d = calloc(N, sizeof(double));
     matriz->N = N;
     matriz->tamED = (N-amountX);
     return matriz;
@@ -39,12 +39,9 @@ MatrizPentadiagonal* newMatrizPenta(const int N, const int amountX)
  */
 MatrizPentadiagonal* criaMatrizPenta(Dados* input, Ponto* vetorPontos)
 {
-	double hx, hy;
-	double aI, bI, cI, dI, eI;
+	double x, y, hx, hy;
 	size_t N, i;
     MatrizPentadiagonal* matriz;
-
-    double a=1, b=1, c=1;
 
 	// Ordem da matriz
 	N = (input->amountX * input->amountY);
@@ -53,30 +50,29 @@ MatrizPentadiagonal* criaMatrizPenta(Dados* input, Ponto* vetorPontos)
 	hx = (input->endX - input->beginX)/((double)input->amountX-1);
 	hy = (input->endY - input->beginY)/((double)input->amountY-1);
 
-	// Valores do elementos da matriz
-	aI = c + 2 *((1/(hx*hx)) + (1/(hy*hy)));
-	bI = (-1/(hx*hx)) - (a/(2*hx));
-	cI = (-1/(hx*hx)) + (a/(2*hx));
-	dI = (-1/(hy*hy)) - (b/(2*hy));
-	eI = (-1/(hy*hy)) + (b/(2*hy));
-
 	// Alocando espaço para a matriz
 	matriz = newMatrizPenta(N, input->amountX);
 
 	// Montando a matriz pentadiagonal
     for(i=0; i < matriz->tamED; i++) {
-        matriz->e[i] = eI;
-        matriz->c[i] = cI;
-        matriz->a[i] = aI;
-        matriz->b[i] = bI;
-        matriz->d[i] = dI;
+        x = vetorPontos[i].x;
+        y = vetorPontos[i].y;
+        matriz->e[i] = (-1/(hy*hy)) + (BETAy(x,y)/(2*hy));
+        matriz->c[i] = (-1/(hx*hx)) + (BETAx(x,y)/(2*hx));
+        matriz->a[i] = GAMA(x,y) + 2 *((1/(hx*hx)) + (1/(hy*hy)));
+        matriz->b[i] = (-1/(hx*hx)) - (BETAx(x,y)/(2*hx));
+        matriz->d[i] = (-1/(hy*hy)) - (BETAy(x,y)/(2*hy));
     }
     for(i=matriz->tamED; i < matriz->N-1; i++) {
-        matriz->c[i] = cI;
-        matriz->a[i] = aI;
-        matriz->b[i] = bI;
+        x = vetorPontos[i].x;
+        y = vetorPontos[i].y;
+        matriz->c[i] = (-1/(hx*hx)) + (BETAx(x,y)/(2*hx));
+        matriz->a[i] = GAMA(x,y) + 2 *((1/(hx*hx)) + (1/(hy*hy)));
+        matriz->b[i] = (-1/(hx*hx)) - (BETAx(x,y)/(2*hx));
     }
-    matriz->a[i] = aI;
+    x = vetorPontos[i].x;
+    y = vetorPontos[i].y;
+    matriz->a[i] = GAMA(x,y) + 2 *((1/(hx*hx)) + (1/(hy*hy)));
 
 
 	return matriz;
@@ -104,11 +100,11 @@ void printMatrizPenta(MatrizPentadiagonal *matriz)
     size_t i;
 
     printf("\ne: ");
-    for(i=0; i < matriz->tamED; i++)
+    for(i=0; i < matriz->N; i++)
         printf("%g ", matriz->e[i]);
 
     printf("\nc: ");
-    for(i=0; i < matriz->N-1; i++)
+    for(i=0; i < matriz->N; i++)
         printf("%g ", matriz->c[i]);
 
     printf("\na: ");
@@ -116,11 +112,11 @@ void printMatrizPenta(MatrizPentadiagonal *matriz)
         printf("%g ", matriz->a[i]);
 
     printf("\nb: ");
-    for(i=0; i < matriz->N-1; i++)
+    for(i=0; i < matriz->N; i++)
         printf("%g ", matriz->b[i]);
 
     printf("\nd: ");
-    for(i=0; i < matriz->tamED; i++)
+    for(i=0; i < matriz->N; i++)
         printf("%g ", matriz->d[i]);
 
     printf("\n");
