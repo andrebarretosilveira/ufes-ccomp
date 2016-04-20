@@ -89,10 +89,10 @@ double *sor(SistemaLinear* sistema, double omega, double toler, size_t iterMax)
 		// Cálculo do erro
 		erro = normaDif/normaX;
 
-		printf("ERRO: %f\n",erro);
 	}
     while(erro > toler && iter < iterMax);
 
+    printf("Erro: %f\n", erro);
 	printf("Iter: %lu - IterMax: %lu\n",iter,iterMax);
 
 	return x;

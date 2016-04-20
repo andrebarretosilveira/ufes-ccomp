@@ -16,16 +16,20 @@
 #include "sor.h"
 #include "dados.h"
 
+// Flag do experimento
+int flagExp;
+
 void printInfo()
 {
-    fprintf(stderr, "\nSintaxe: ./trab1 [Metodo de Entrada] [Arquivo?]\n");
+    fprintf(stderr, "\nSintaxe: ./trab1 [Experimento] [Metodo de Entrada] [Arquivo?]\n");
     fprintf(stderr, "Metodos de entrada: -t (teclado) / -f [arquivo]\n");
-    fprintf(stderr, "Exemplos:\n ./trab1 -t\n ./trab1 -f input.txt\n\n");
+    fprintf(stderr, "Exemplos:\n ./trab1 1 -t\n ./trab1 2 -f input.txt\n\n");
 }
 
 int main(int argc, char **argv)
 {
     size_t N;
+    int i;
     double* vetorIndependente;
     double* x;
     FILE* fp;
@@ -35,19 +39,22 @@ int main(int argc, char **argv)
     Ponto* vetorPontos;
 
     // Número mínimo de argumentos: 1
-    if(argc < 2) {
+    if(argc < 3) {
         printInfo();
         exit(1);
     }
 
+    // Setando variável global do exp
+    flagExp = atoi(argv[1]);
+
     // Leitura iterativa pelo terminal
-    if(!strcmp(argv[1], "-t"))
+    if(!strcmp(argv[2], "-t"))
         input = readDados(stdin);
 
     // Leitura automática por um arquivo
-    else if(!strcmp(argv[1], "-f"))
+    else if(!strcmp(argv[2], "-f"))
     {
-        fp = fopen(argv[2], "r");
+        fp = fopen(argv[3], "r");
         if(fp == NULL) {
             fprintf(stderr, "Erro ao abrir arquivo \"%s\" para leitura\n", argv[2]);
             printInfo();
@@ -75,6 +82,11 @@ int main(int argc, char **argv)
 
     // Aplicação do algoritmo SOR
     x = sor(sistema, input->omega, input->tolerancia, input->iterMax);
+
+    printf("x = ");
+    for(i=0; i < N; i++)
+        printf("%lf ", x[i]);
+    printf("\n\n");
 
     // Liberar memória
     free(x);

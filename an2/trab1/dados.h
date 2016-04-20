@@ -17,6 +17,11 @@
 #define TRUE 1
 #define FALSE 0
 
+#define F(x,y) 0
+#define BETAx(x,y) 0
+#define BETAy(x,y) 0
+#define GAMA(x,y) 0
+
 /*
  * Estrutura dos Dados a serem lidos
  * pelo programa: domínio de x e y e
@@ -49,6 +54,7 @@ typedef struct ponto
 Dados* readDados(FILE*);
 Ponto* discretizaDominio(Dados*);
 double *criaVetorIndependente(Dados*, Ponto*);
+double f(double x, double y);
 void freeDados(Dados*);
 
 #endif

@@ -31,7 +31,7 @@ typedef struct matrizPentadiagonal
 
 /** Funções **/
 MatrizPentadiagonal* newMatrizPenta(const int, const int);
-MatrizPentadiagonal* criaMatrizPenta(Dados*);
+MatrizPentadiagonal* criaMatrizPenta(Dados*, Ponto*);
 void preencheMatrizPenta(MatrizPentadiagonal*);
 void printMatrizPenta(MatrizPentadiagonal*);
 void freeMatrizPenta(MatrizPentadiagonal*);

@@ -26,9 +26,9 @@ SistemaLinear* criaSistemaLinear(MatrizPentadiagonal* matriz, double* f, const s
  */
 void aplicaContorno(SistemaLinear* sistema, Dados *input)
 {
-	int i,j, qtdElementos;
-	int index;
-	qtdElementos = (input->amountX * input->amountY);
+	//int i,j, qtdElementos;
+	//int index;
+	//qtdElementos = (input->amountX * input->amountY);
 
     /*
 	for( j = 0; j < input->contour;j++)

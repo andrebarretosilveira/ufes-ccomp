@@ -37,17 +37,17 @@ MatrizPentadiagonal* newMatrizPenta(const int N, const int amountX)
  * @param  c     Constante GamaI
  * @return       Ponteiro para Matriz Pentadiagonal preenchida
  */
-MatrizPentadiagonal* criaMatrizPenta(Dados* input)
+MatrizPentadiagonal* criaMatrizPenta(Dados* input, Ponto* vetorPontos)
 {
 	double hx, hy;
 	double aI, bI, cI, dI, eI;
-	size_t qtdElementos, i;
+	size_t N, i;
     MatrizPentadiagonal* matriz;
 
     double a=1, b=1, c=1;
 
 	// Ordem da matriz
-	qtdElementos = (input->amountX * input->amountY);
+	N = (input->amountX * input->amountY);
 
 	// Calculando hx e hy
 	hx = (input->endX - input->beginX)/((double)input->amountX-1);
@@ -61,7 +61,7 @@ MatrizPentadiagonal* criaMatrizPenta(Dados* input)
 	eI = (-1/(hy*hy)) + (b/(2*hy));
 
 	// Alocando espaço para a matriz
-	matriz = newMatrizPenta(qtdElementos, input->amountX);
+	matriz = newMatrizPenta(N, input->amountX);
 
 	// Montando a matriz pentadiagonal
     for(i=0; i < matriz->tamED; i++) {

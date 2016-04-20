@@ -15,8 +15,7 @@
 Dados* readDados(FILE* input)
 {
 	Dados* dados;
-    char* experimento;
-	int i, teclado = FALSE;
+	int teclado = FALSE;
 
     if(input == stdin) {
         teclado = TRUE;
@@ -98,27 +97,18 @@ Ponto* discretizaDominio(Dados* dados)
  */
 double *criaVetorIndependente(Dados* dados, Ponto* vetorPontos)
 {
-    size_t exp;
+	int i, N;
 	double *vetorIndependente;
-	int i, qtdElementos;
+    double x, y;
 
-    exp = dados->experimento;
-    printf("%zu\n", exp);
+	N = (dados->amountX * dados->amountY);
+	vetorIndependente = calloc((size_t)N, sizeof(double));
 
-    #if exp == 1
-        #define F(x,y) 0.0
-    #elif exp == 2
-        #define F(x,y) 20*y
-    #else
-        #define F(x,y) 1.0
-    #endif
-
-	qtdElementos = (dados->amountX * dados->amountY);
-	vetorIndependente = calloc((size_t)qtdElementos,sizeof(double));
-
-    printf("%lf", F(1,2));
-
-	// CRIAR VETOR
+    for(i=0; i < N; i++) {
+        x = vetorPontos[i].x;
+        y = vetorPontos[i].y;
+        vetorIndependente[i] = F(x,y);
+    }
 
 	return vetorIndependente;
 }
