@@ -1,6 +1,6 @@
 all: compile
 
-FLAGS := -Wall -Wextra
+FLAGS := -lm -Wall -Wextra
 DEBUGFLAGS := -Wall -Wconversion -Wextra -g
 PRINCIPAL := trab1.c matrizPentadiagonal.c sistemaLinear.c sor.c dados.c
 

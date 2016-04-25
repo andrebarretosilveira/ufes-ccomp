@@ -8,10 +8,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "dados.h"
 
 #ifndef MATRIZPENTADIAGONAL_H
 #define MATRIZPENTADIAGONAL_H
+
+#define BETAx(x,y) 0
+#define BETAy(x,y) 0
+#define GAMA(x,y)  0
+
+// Variável global que identifica
+// o experimento a ser efetuado
+extern int flagExp;
 
 /*
  * Estrutura da matriz composta por 5
@@ -30,10 +39,13 @@ typedef struct matrizPentadiagonal
 } MatrizPentadiagonal;
 
 /** Funções **/
-MatrizPentadiagonal* newMatrizPenta(const int, const int);
-MatrizPentadiagonal* criaMatrizPenta(Dados*, Ponto*);
-void preencheMatrizPenta(MatrizPentadiagonal*);
-void printMatrizPenta(MatrizPentadiagonal*);
-void freeMatrizPenta(MatrizPentadiagonal*);
+MatrizPentadiagonal* alocaMatrizPentadiagonal(const int);
+MatrizPentadiagonal* criaMatrizPentadiagonal(Dados*, Ponto*);
+void montaMatrizV1(MatrizPentadiagonal*, Dados*);
+void montaMatrizV2(MatrizPentadiagonal*, Dados*, Ponto*);
+void montaMatrizA1(MatrizPentadiagonal*, Dados*);
+void montaMatrizA2(MatrizPentadiagonal*, Dados*, Ponto*);
+void printMatrizPentadiagonal(MatrizPentadiagonal*);
+void freeMatrizPentadiagonal(MatrizPentadiagonal*);
 
 #endif

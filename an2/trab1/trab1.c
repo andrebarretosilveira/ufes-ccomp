@@ -22,7 +22,8 @@ int flagExp;
 void printInfo()
 {
     fprintf(stderr, "\nSintaxe: ./trab1 [Experimento] [Metodo de Entrada] [Arquivo?]\n");
-    fprintf(stderr, "Metodos de entrada: -t (teclado) / -f [arquivo]\n");
+    fprintf(stderr, "Experimentos: 1, 2, 3 ou 4\n");
+    fprintf(stderr, "Metodos de entrada: -t (teclado) , -f [arquivo]\n");
     fprintf(stderr, "Exemplos:\n ./trab1 1 -t\n ./trab1 2 -f input.txt\n\n");
 }
 
@@ -37,13 +38,13 @@ int main(int argc, char **argv)
     Dados* input;
     Ponto* vetorPontos;
 
-    // Número mínimo de argumentos: 1
+    // Número mínimo de argumentos: 2
     if(argc < 3) {
         printInfo();
         exit(1);
     }
 
-    // Setando variável global do exp
+    // Variável global do experimento
     flagExp = atoi(argv[1]);
 
     // Leitura iterativa pelo terminal
@@ -55,18 +56,42 @@ int main(int argc, char **argv)
     {
         fp = fopen(argv[3], "r");
         if(fp == NULL) {
-            fprintf(stderr, "Erro ao abrir arquivo \"%s\" para leitura\n", argv[2]);
+            fprintf(stderr, "\nErro ao abrir arquivo \"%s\" para leitura\n", argv[3]);
             printInfo();
             exit(1);
         }
         input = readDados(fp);
         fclose(fp);
     }
+
+    // Opção de entrada incorreta
     else {
-        fprintf(stderr, "Opcao de entrada de dados incorreta.\n\n");
+        fprintf(stderr, "\nOpcao '%s' de entrada de dados invalida.\n", argv[2]);
         printInfo();
         exit(1);
     }
+
+    // Verifica se o experimento é válido
+    if(flagExp < 1 || flagExp > 4) {
+        fprintf(stderr, "\nExperimento '%d' invalido\n", flagExp);
+        printInfo();
+        exit(1);
+    }
+
+    /*
+    printf("\nExperimento: ");
+
+    if(flagExp == 1)
+        printf("Validação 1 - Solução trivial");
+    else if (flagExp == 2)
+        printf("Validação 2 - Solução conhecida");
+    else if (flagExp == 3)
+        printf("Aplicação Física 1 - Resfriador bidimensional");
+    else if (flagExp == 4)
+        printf("Aplicação Física 2 - Escoamento em Águas Subterrâneas");
+
+    printf("\nCalculando ...");
+    */
 
     // Ordem do sistema
     N = input->amountX * input->amountY;
@@ -74,18 +99,23 @@ int main(int argc, char **argv)
     // Processo de discretização do domínio e criação do sistema
     vetorPontos = discretizaDominio(input);
     vetorIndependente = criaVetorIndependente(input, vetorPontos);
-    matriz = criaMatrizPenta(input, vetorPontos);
+    matriz = criaMatrizPentadiagonal(input, vetorPontos);
     sistema = criaSistemaLinear(matriz, vetorIndependente, N);
-    printSistemaLinear(sistema);
+
+    // Aplicação das condições de contorno
     aplicaContorno(sistema, input);
-    printSistemaLinear(sistema);
+    
+    //printSistemaLinear(sistema);
 
     // Aplicação do algoritmo SOR
     x = sor(sistema, input->omega, input->tolerancia, input->iterMax);
 
-    printf("x = ");
-    for(i=0; i < N; i++)
-        printf("%.2lf ", x[i]);
+    printf("\n");
+    for(i=0; i < N; i++) {
+        printf("%.4lf ", x[i]);
+        if((i+1) % input->amountX == 0)
+            printf("\n");
+    }
     printf("\n\n");
 
     // Liberar memória

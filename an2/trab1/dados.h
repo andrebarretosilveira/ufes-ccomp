@@ -17,10 +17,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define F(x,y)     ( (x+y)*0 )
-#define BETAx(x,y) ( (x+y)*0 )
-#define BETAy(x,y) ( (x+y)*0 )
-#define GAMA(x,y)  ( (x+y)*0 )
+#define T0 5.1122
 
 /*
  * Estrutura dos Dados a serem lidos
@@ -29,7 +26,6 @@
  */
 typedef struct dados
 {
-    int experimento;
 	double beginX;
 	double endX;
 	double beginY;
@@ -52,9 +48,6 @@ typedef struct ponto
 } Ponto;
 
 Dados* readDados(FILE*);
-Ponto* discretizaDominio(Dados*);
-double *criaVetorIndependente(Dados*, Ponto*);
-double f(double x, double y);
 void freeDados(Dados*);
 
 #endif

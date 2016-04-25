@@ -25,10 +25,6 @@ Dados* readDados(FILE* input)
 
 	dados = malloc(sizeof(Dados));
 
-	// Lendo experimento a ser aplicado
-    if(teclado) printf("Digite o experimento: \n");
-	fscanf(input, "%d", &dados->experimento);
-
 	// Lendo domínios e quantidade de pontos
     if(teclado) printf("Dominios e quantidade de pontos: \n");
     if(teclado) printf("Intervalo de x: ");
@@ -56,61 +52,6 @@ Dados* readDados(FILE* input)
     if(teclado) printf("\nLeitura finalizada\n\n");
 
 	return dados;
-}
-
-/**
- * Função que discretiza o domínio, criando um vetor de pontos
- * correspondentes à discretização
- * @param  dados Estrutura dos dados de entrada
- * @return       Vetor de pontos
- */
-Ponto* discretizaDominio(Dados* dados)
-{
-	int i, j, n, m, pos;
-	double hx, hy;
-	Ponto *vetorPontos;
-
-    n = dados->amountX;
-    m = dados->amountY;
-	hx = (dados->endX - dados->beginX)/((double)n-1);
-	hy = (dados->endY - dados->beginY)/((double)m-1);
-
-	vetorPontos = calloc((size_t)(n*m),sizeof(Ponto));
-
-	pos = 0;
-	for(i = 1; i <= dados->amountX; i++)
-		for(j = 1; j <= dados->amountY; j++)
-		{
-			vetorPontos[pos].x = dados->beginX + (double)(j - 1)*(hx);
-			vetorPontos[pos].y = dados->beginY + (double)(i - 1)*(hy);
-			pos++;
-		}
-
-    return vetorPontos;
-}
-
-/**
- * Função que gera o vetor independente do sistema
- * @param  vetorPontos Vetor com todos os pontos discretizados
- * @param  dados       Estrutura de dados de entrada
- * @return             Vetor independente do sistema
- */
-double *criaVetorIndependente(Dados* dados, Ponto* vetorPontos)
-{
-	int i, N;
-	double *vetorIndependente;
-    double x, y;
-
-	N = (dados->amountX * dados->amountY);
-	vetorIndependente = calloc((size_t)N, sizeof(double));
-    
-    for(i=0; i < N; i++) {
-        x = vetorPontos[i].x;
-        y = vetorPontos[i].y;
-        vetorIndependente[i] = F(x,y);
-    }
-
-	return vetorIndependente;
 }
 
 /**
