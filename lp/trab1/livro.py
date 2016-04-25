@@ -4,8 +4,8 @@
 ###
 #   livro.py
 #
-#   Trabalho 1 de LP - Python
-#   André Barreto Silveira
+#   Definição e implementação da
+#   classe Livro e suas funções
 ###
 
 from datetime import date
@@ -40,16 +40,6 @@ class Livro:
     def getDados(self):
         dados = [self.__codigo] + [self.__titulo] + [self.__autor] + [self.__assunto] + [self.__dataPub.strftime("%d/%m/%Y")] + [self.__editora] + [self.__resumo]
         return dados
-
-    # Função para alterar os dados do livro
-    def alteraDados(self, codigo, titulo, autor, assunto, dataPub, editora, resumo):
-        self.__codigo = codigo
-        self.__titulo = titulo
-        self.__autor = autor
-        self.__assunto = assunto
-        self.__dataPub = dataPub
-        self.__editora = editora
-        self.__resumo = resumo
 
     @staticmethod #Compara crescentemente por Código
     def comparaCodigo(livro1, livro2):

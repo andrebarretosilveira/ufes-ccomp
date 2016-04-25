@@ -4,8 +4,8 @@
 ###
 #   catalogo.py
 #
-#   Trabalho 1 de LP - Python
-#   André Barreto Silveira
+#   Definição e implementação da
+#   classe Catalogo e suas funções
 ###
 
 from livro import *
@@ -17,9 +17,9 @@ class Catalogo:
     # Função que efetivamente realiza a leitura de um
     # livro. Retorna uma tupla contendo o livro e a
     # última linha lida, que no caso será ou '\n' ou
-    # '', indicando se o arquivo acabou.
+    # '', indicando se a leitura deve continuar ou se
+    # o arquivo arquivo acabou, respectivamente.
     def __lerLivro(self, f):
-
         codigo = f.readline()
 
         # Evita erros de leitura caso existam linhas
@@ -36,6 +36,8 @@ class Catalogo:
         editora = f.readline().rstrip("\n")
         resumoPart = f.readline()
         resumo = ''
+        # Lendo o resumo até achar uma linha em branco
+        # ou o final do arquivo
         while resumoPart != '\n' and resumoPart != '':
             resumo += resumoPart
             resumoPart = f.readline()
@@ -45,9 +47,18 @@ class Catalogo:
         livro = Livro(codigo, titulo, autor, assunto, dataPub, editora, resumo)
         return (livro, resumoPart)
 
+    # Função que verifica se o livro já existe no catálogo
+    def __possuiLivro(self, livro):
+        for l in self.__livros:
+            if livro.getCodigo() == l.getCodigo():
+                return True
+
+        return False
+
     # Função para adicionar um livro do Catálago
     def adicionaLivro(self, livro):
-        self.__livros.append(livro)
+        if not self.__possuiLivro(livro):
+            self.__livros.append(livro)
 
     # Função para remover um livro do Catálago
     def removeLivro(self, codigo):
@@ -73,21 +84,21 @@ class Catalogo:
         line = f.readline()
 
         while line != '':
-            # Leitura de dados em caso de inserção ou alteração
-            if line == 'i\n' or line == 'a\n':
+            line = line.rstrip('\n')
+
+            # Caso de inserção
+            if line == 'i':
                 (livro, posArqv) = self.__lerLivro(f)
+                self.adicionaLivro(livro)
 
-                # Caso de inserção
-                if line == 'i\n':
-                    self.adicionaLivro(livro)
-
-                # Caso de alteração
-                else:
-                    self.removeLivro(livro.getCodigo())
-                    self.adicionaLivro(livro)
+            # Caso de alteração
+            elif line == 'a':
+                (livro, posArqv) = self.__lerLivro(f)
+                self.removeLivro(livro.getCodigo())
+                self.adicionaLivro(livro)
 
             # Caso de exclusão
-            elif line == 'e\n':
+            elif line == 'e':
                 codigo = f.readline().rstrip("\n")
                 self.removeLivro(codigo)
 
@@ -135,7 +146,6 @@ class Catalogo:
     # Função para reescrita do Catálago
     def escreveCatalogo(self, arquivo):
         f = open(arquivo, 'w')
-        self.ordena(Livro.comparaCodigo)
 
         # Primeiro livro
         dados = self.__livros[0].getDados()

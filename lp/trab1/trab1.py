@@ -2,17 +2,19 @@
 # -*- coding: utf-8 -*-
 
 ###
+#   trab1.py
+#
 #   Trabalho 1 de LP - Python
 #   André Barreto Silveira
 ###
 
 from catalogo import *
 
-# Criando o catálago vazio
+# Criando o catálogo vazio
 catalogo = Catalogo()
 
 catalogo.lerCatalogo("catalogo.txt")
 catalogo.atualiza("atual.txt")
-catalogo.ordena(Livro.comparaCodigo)
 catalogo.escreveSaida("saida.txt")
+catalogo.ordena(Livro.comparaCodigo)
 catalogo.escreveCatalogo("catalogo.txt")

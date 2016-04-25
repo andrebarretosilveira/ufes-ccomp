@@ -1,4 +1,3 @@
-
 a
 1234
 Introducao a Programacao Usando C
@@ -24,5 +23,3 @@ Romance sobre um convento
 
 e
 9889
-
-
