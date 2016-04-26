@@ -232,7 +232,25 @@ Finitas em 2D.
 \section{Experimentos Numéricos}
 Para verificar a qualidade dos métodos implementados, foram
 realizados uma séries de testes a um conjunto de
-experimentos propostos, variando a ordem dos sistemas.
+experimentos propostos. Em cada experimento, o programa em
+questão é aplicado em diferentes ordens de sistema e em ambas
+as versões do SOR apresentadas, onde o foco é a comparação dos
+tempos de execução em cada caso.
+
+Para isto, em cada experimento a seguir será ilustrado uma
+tabela com os casos relevantes de teste e o tempo de
+execução em segundos que cada computação levou.
+
+Para simplificar, algumas abreviações foram utilizadas nestas
+tabelas, a saber:
+\begin{itemize}
+ \item $n$: partições no eixo X;
+ \item $m$: partições no eixo Y;
+ \item SOR ``normal'': algoritmo SOR utilizando a estrutura de
+ armazenado da matriz pentadiagonal;
+ \item SOR ``livre'': algoritmo SOR livre de matriz.
+\end{itemize}
+
 
 \subsection{Validação 1 - Problema simples com solução trivial}
 Este é um experimento simples para testes do sistema onde
@@ -278,13 +296,105 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \end{table}
 
 \subsection{Validação 2 - Problema com solução conhecida}
-\lipsum[7]
+Neste experimento, deve-se determinar a solução aproximada para
+$u(x,y)$ em $\Omega = (0,1) \times (0,1)$ considerando na Eq. 
+\eqref{eq:transporte}:
+\begin{equation}\label{eq:v2}
+\begin{split}
+k &= 1\\
+\beta_x(x,y) &= 1\\
+\beta_y(x,y) &= 20y\\
+\gamma(x,y) &= 1\\
+f(x,y) \text{ tal que } u(x,y) &= 10xy(1-x)(1-y)e^{x^{4.5}}
+\text{ é a solução exata }
+\end{split}
+\end{equation}
+
+e sabendo que $u(x,y) = 0$ no contorno de $\Omega$.
+
+Veja na tabela \ref{tab:tv2} os tempos de execução deste experimento
+por valores $n$ e $m$ e versão do algoritmo SOR.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|l|c|}
+\hline 
+\textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
+\hline
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\end{tabular}
+\caption{Testes - Validação 2}
+\label{tab:tv2}
+\end{table}
 
 \subsection{Aplicação Física 1 - Resfriador bidimensional}
 \lipsum[8]
 
+Veja na tabela \ref{tab:taf1} os tempos de execução deste experimento
+por valores $n$ e $m$ e versão do algoritmo SOR.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|l|c|}
+\hline 
+\textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
+\hline
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\end{tabular}
+\caption{Testes - Aplicação Física 1}
+\label{tab:taf1}
+\end{table}
+
 \subsection{Aplicação Física 2 - Escoamento em Águas Subterrâneas}
 \lipsum[9]
+
+Veja na tabela \ref{tab:taf2} os tempos de execução deste experimento
+por valores $n$ e $m$ e versão do algoritmo SOR.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|l|c|}
+\hline 
+\textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
+\hline
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
+                       &                       & livre  & 0.00s \\
+\hline
+\end{tabular}
+\caption{Testes - Aplicação Física 2}
+\label{tab:taf2}
+\end{table}
 
 % ----------------------------------------------------------
 % Conclusão

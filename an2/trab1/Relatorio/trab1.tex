@@ -36,6 +36,7 @@
 \usepackage[brazilian]{babel}
 \usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
 \usepackage{amsmath}
+\usepackage{mathtools,amssymb}
 \usepackage{pgfplots}
 
 \usepackage{lipsum}
@@ -296,7 +297,19 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \end{table}
 
 \subsection{Validação 2 - Problema com solução conhecida}
-\lipsum[7]
+Neste experimento, deve-se determinar a solução aproximada para
+$u(x,y)$ em $\Omega = (0,1) \times (0,1)$ considerando na Eq. 
+\eqref{eq:transporte}:
+\begin{align}\label{eq:v2}
+k &= 1\nonumber \\
+\beta_x(x,y) &= 1\nonumber \\
+\beta_y(x,y) &= 20y\nonumber \\
+\gamma(x,y) &= 1\nonumber \\
+f(x,y) \text{ tal que } u(x,y) &= 10xy(1-x)(1-y)e^{x^{4.5}}
+\text{ é a solução exata }
+\end{align}
+
+e sabendo que $u(x,y) = 0$ no contorno de $\Omega$.
 
 Veja na tabela \ref{tab:tv2} os tempos de execução deste experimento
 por valores $n$ e $m$ e versão do algoritmo SOR.
@@ -325,7 +338,26 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \end{table}
 
 \subsection{Aplicação Física 1 - Resfriador bidimensional}
-\lipsum[8]
+Este experimento consiste em uma aplicação dos métodos em questão para
+resfriar uma massa aquecida. Exemplos podem incluir o resfriamento de
+chips de computadores ou amplificadores elétricos. O modelo matemático
+que descreve a tranferência de calor nas direções $x$ e $y$ é dado por:
+\begin{equation} \label{eq:a1}
+- k\left(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial 
+y^2}\right) + \frac{2c}{T}u = \frac{2c}{T}u_{ref} = 0 \text{   em   }
+\Omega = (0,L) \times (0, W)
+\end{equation}
+
+\noindent onde $k$ é a condutividade térmica constante, $c$ é o coeficiente de
+transferência de calor, $T$ é a altura do resfriador e $u_{ref}$ é a
+temperatura de referência. Deve-se encontrar a temperatura no interior
+do resfriador considerando as seguintes condições de contorno:
+\begin{align*}
+u(x,0) &= 70\\
+u(x,W) &= 70\\
+u(0,y) &= 200\\
+k\frac{\partialu}{\partialn}(L,y) &= c(u_{ref} - u(L,y))
+\end{align*}
 
 Veja na tabela \ref{tab:taf1} os tempos de execução deste experimento
 por valores $n$ e $m$ e versão do algoritmo SOR.
