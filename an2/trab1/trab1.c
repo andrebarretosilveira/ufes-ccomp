@@ -109,6 +109,7 @@ int main(int argc, char **argv)
 
     // Aplicação do algoritmo SOR
     x = sor(sistema, input->omega, input->tolerancia, input->iterMax);
+    //x = sorLivre(input, input->omega, input->tolerancia, input->iterMax);
 
     printf("\n");
     for(i=0; i < N; i++) {
