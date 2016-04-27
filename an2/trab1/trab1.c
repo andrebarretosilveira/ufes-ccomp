@@ -126,8 +126,7 @@ int main(int argc, char **argv)
         // Aplicação do SOR
         x = sor(sistema, input->omega, input->tolerancia, input->iterMax);
 
-        // Liberar memória alocada pelo método
-        free(vetorPontos);
+        // Liberar memória alocada pelo sistema
         freeSistemaLinear(sistema);
     }
 
@@ -145,6 +144,7 @@ int main(int argc, char **argv)
 
     // Liberar memória
     free(x);
+    free(vetorPontos);
     freeDados(input);
 
     return 0;

@@ -116,9 +116,9 @@ void montaVetorIndependenteV2(double* vetorIndependente, Ponto* vetorPontos, con
     for(i=0; i < N; i++) {
         x = vetorPontos[i].x;
         y = vetorPontos[i].y;
-        vetorIndependente[i] = -((5/2*pow(e,pow(x,4.5))*(81*pow(x,9)-81*pow(x,8) +
+        vetorIndependente[i] = -((2.5*pow(e,pow(x,4.5))*(81*pow(x,9)-81*pow(x,8) +
             135*pow(x,4.5)-99*pow(x,3.5)+8)*(y-1)*y)+(20*pow(e,pow(x,4.5))*(x-1)*x)) +
-            5*pow(e,pow(x,4.5)) * (x*(9*(x-1)*pow(x,3.5)+4)-2) * (y-1)*y +
+            5*pow(e,pow(x,4.5))*(x*(9*(x-1)*pow(x,3.5)+4)-2)*(y-1)*y +
             20*y*(10*pow(e,pow(x,4.5))*(x-1)*x*(2*y-1)) +
             10*x*y*(1-x)*(1-y)*pow(e,pow(x,4.5));
     }

@@ -151,7 +151,7 @@ void montaMatrizA1(MatrizPentadiagonal* matriz, Dados* dados)
     for(i=0; i < matriz->N; i++) {
         matriz->e[i] = (-1/(hy*hy));
         matriz->c[i] = (-1/(hx*hx));
-        matriz->a[i] = 2*c/T + 2 *((1/(hx*hx)) + (1/(hy*hy)));
+        matriz->a[i] = 2*c/T + 2*((1/(hx*hx)) + (1/(hy*hy)));
         matriz->b[i] = (-1/(hx*hx));
         matriz->d[i] = (-1/(hy*hy));
     }

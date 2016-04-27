@@ -240,7 +240,10 @@ tempos de execução em cada caso.
 
 Para isto, em cada experimento a seguir será ilustrado uma
 tabela com os casos relevantes de teste e o tempo de
-execução em segundos que cada computação levou.
+execução em segundos que cada computação levou. Os tempos
+de execução apresentados foram recolhidos utilizando o
+utilitário \textit{time} do Linux que mede o tempo que o
+processo ficou rodando.
 
 Para simplificar, algumas abreviações foram utilizadas nestas
 tabelas, a saber:
@@ -251,6 +254,12 @@ tabelas, a saber:
  armazenado da matriz pentadiagonal;
  \item SOR ``livre'': algoritmo SOR livre de matriz.
 \end{itemize}
+
+Os testes nesta seção foram executados em uma máquina com as seguintes configurações:
+
+Ubuntu 14.04 64-bit \\
+\indent Intel Core i7-3770 CPU @ 3.40GHz x 4 \\
+\indent 8GB de memória
 
 
 \subsection{Validação 1 - Problema simples com solução trivial}
@@ -279,17 +288,17 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
 \end{tabular}
 \caption{Testes - Validação 1}
@@ -320,17 +329,17 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
 \end{tabular}
 \caption{Testes - Validação 2}
@@ -368,17 +377,17 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
 \end{tabular}
 \caption{Testes - Aplicação Física 1}
@@ -397,17 +406,17 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
 \end{tabular}
 \caption{Testes - Aplicação Física 2}
