@@ -94,8 +94,9 @@ class Catalogo:
             # Caso de alteração
             elif line == 'a':
                 (livro, posArqv) = self.__lerLivro(f)
-                self.removeLivro(livro.getCodigo())
-                self.adicionaLivro(livro)
+                if self.__possuiLivro(livro):
+                    self.removeLivro(livro.getCodigo())
+                    self.adicionaLivro(livro)
 
             # Caso de exclusão
             elif line == 'e':
@@ -146,6 +147,9 @@ class Catalogo:
     # Função para reescrita do Catálago
     def escreveCatalogo(self, arquivo):
         f = open(arquivo, 'w')
+
+        if len(self.__livros) == 0:
+            return;
 
         # Primeiro livro
         dados = self.__livros[0].getDados()

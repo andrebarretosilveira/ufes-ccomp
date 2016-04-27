@@ -1,24 +1,3 @@
-1234
-Introducao a Programacao Usando C
-Flavio Miguel Varejao
-Computacao
-01/01/2015
-Elsevier
-Introducao a 
-Tecnicas de Programacao
-Usando a Linguagem de Programacao C
-e uma Nova Abordagem inspirada em 
-Programacao Funcional e baseada em
-Tipos Abstratos de Dados
-
-2224
-O Mundo de Sofia
-Jostein Gaarder
-Filosofia
-12/10/1995
-Cia das Letras
-Romance que conta a historia da filosofia
-
 5432
 The Art of Computer Programming
 Dijkstra
@@ -37,11 +16,3 @@ Conceitos e
 Tecnicas
 de Linguagens
 de Programacao
-
-23231
-Memorial do Convento
-Jose Saramago
-Literatura
-02/06/2001
-Bertrand Brasil
-Romance sobre um convento
