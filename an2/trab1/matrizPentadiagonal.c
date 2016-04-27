@@ -115,11 +115,11 @@ void montaMatrizV2(MatrizPentadiagonal* matriz, Dados* dados, Ponto* vetorPontos
     // GAMA = 1
     for(i=0; i < matriz->N; i++) {
         y = vetorPontos[i].y;
-        matriz->e[i] = (-1/(hy*hy)) + (20*y/(2*hy));
-        matriz->c[i] = (-1/(hx*hx)) + (1/(2*hx));
-        matriz->a[i] = 1 + 2 *((1/(hx*hx)) + (1/(hy*hy)));
-        matriz->b[i] = (-1/(hx*hx)) - (1/(2*hx));
-        matriz->d[i] = (-1/(hy*hy)) - (20*y/(2*hy));
+        matriz->e[i] = (-1/(hy*hy)) - (20*y/(2*hy));
+        matriz->c[i] = (-1/(hx*hx)) - (1/(2*hx));
+        matriz->a[i] = 1 + 2*((1/(hx*hx)) + (1/(hy*hy)));
+        matriz->b[i] = (-1/(hx*hx)) + (1/(2*hx));
+        matriz->d[i] = (-1/(hy*hy)) + (20*y/(2*hy));
     }
 }
 
@@ -177,11 +177,11 @@ void montaMatrizA2(MatrizPentadiagonal* matriz, Dados* dados, Ponto* vetorPontos
     for(i=0; i < matriz->N; i++) {
         x = vetorPontos[i].x;
         y = vetorPontos[i].y;
-        matriz->e[i] = (-1/(hy*hy)) + (BETAy(x,y)/(2*hy));
-        matriz->c[i] = (-1/(hx*hx)) + (BETAx(x,y)/(2*hx));
+        matriz->e[i] = (-1/(hy*hy)) - (BETAy(x,y)/(2*hy));
+        matriz->c[i] = (-1/(hx*hx)) - (BETAx(x,y)/(2*hx));
         matriz->a[i] = GAMA(x,y) + 2 *((1/(hx*hx)) + (1/(hy*hy)));
-        matriz->b[i] = (-1/(hx*hx)) - (BETAx(x,y)/(2*hx));
-        matriz->d[i] = (-1/(hy*hy)) - (BETAy(x,y)/(2*hy));
+        matriz->b[i] = (-1/(hx*hx)) + (BETAx(x,y)/(2*hx));
+        matriz->d[i] = (-1/(hy*hy)) + (BETAy(x,y)/(2*hy));
     }
 }
 
