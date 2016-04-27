@@ -534,13 +534,14 @@ double *sorLivreV2(Dados* dados, Ponto* vetorPontos, double omega, double toler,
             else {
                 px = vetorPontos[i].x;
                 py = vetorPontos[i].y;
-                e = (-1/(hy*hy)) + (20*py/(2*hy));
-                c = (-1/(hx*hx)) + (1/(2*hx));
+                e = (-1/(hy*hy)) - (20*py/(2*hy));
+                c = (-1/(hx*hx)) - (1/(2*hx));
                 a = 1 + 2 *((1/(hx*hx)) + (1/(hy*hy)));
-                b = (-1/(hx*hx)) - (1/(2*hx));
-                d = (-1/(hy*hy)) - (20*py/(2*hy));
-                vetInd =  5*pow(euler,pow(px,4.5)) *
-                    (px*(9*(px-1)*pow(px,3.5)+4)-2) * (py-1)*py +
+                b = (-1/(hx*hx)) + (1/(2*hx));
+                d = (-1/(hy*hy)) + (20*py/(2*hy));
+                vetInd = -((5/2*pow(euler,pow(px,4.5))*(81*pow(px,9)-81*pow(px,8) +
+                    135*pow(px,4.5)-99*pow(px,3.5)+8)*(py-1)*py)+(20*pow(euler,pow(px,4.5))*(px-1)*px)) +
+                    5*pow(euler,pow(px,4.5)) * (px*(9*(px-1)*pow(px,3.5)+4)-2) * (py-1)*py +
                     20*py*(10*pow(euler,pow(px,4.5))*(px-1)*px*(2*py-1)) +
                     10*px*py*(1-px)*(1-py)*pow(euler,pow(px,4.5));
             }
