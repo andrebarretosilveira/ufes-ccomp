@@ -35,7 +35,8 @@
 \usepackage{url}
 \usepackage[brazilian]{babel}
 \usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
-\usepackage{amsmath}
+\usepackage[fleqn]{amsmath}
+\usepackage{mathtools,amssymb}
 \usepackage{pgfplots}
 
 \usepackage{lipsum}
@@ -215,7 +216,29 @@ usadas.
 % Método das Diferenças Finitas
 % ----------------------------------------------------------
 \section{Método das Diferenças Finitas}
-\lipsum[2]
+Método das Diferenças Finitas é um método numérico para resolver
+equações diferenciais através de aproximações de derivadas por
+diferenças finitas. Estas aproximações são obtidas pela série
+de Taylor:
+
+\begin{align*}
+f(x+h) &= f(x)+f'(x)h + \frac{f''(x)h^2}{2} + \frac{f'''(x)h^3}{6} + o(h^4) \\ 
+f(x-h) &= f(x) - f'(x)h + \frac{f''(x)h^2}{2} - \frac{f'''(x)h^3}{6} + 
+o(h^4)
+\end{align*}
+
+Portanto, a primeira e segunda derivadas podem ser escritas das
+seguintes formas:
+
+\begin{align*}
+f'(x) &= \frac{f(x+h)-f(x)}{h}+o(h) \text{ , diferença atrasada
+(1a ordem) }  \\
+f'(x) &= \frac{f(x) - f(x-h)}{h} + o(h) \text{ , diferença adiantada
+(1a ordem) } \\
+f'(x) &= \frac{f(x+h) - f(x-h)}{2h} + o(h^2) \text{ , diferença central 
+(2a ordem) } \\
+f''(x) &= \frac{f(x+h) -2f(x) + f(x-h)}{h^2} + o(h^2)
+\end{align*}
 
 % ----------------------------------------------------------
 % Implementação
@@ -239,7 +262,10 @@ tempos de execução em cada caso.
 
 Para isto, em cada experimento a seguir será ilustrado uma
 tabela com os casos relevantes de teste e o tempo de
-execução em segundos que cada computação levou.
+execução em segundos que cada computação levou. Os tempos
+de execução apresentados foram recolhidos utilizando o
+utilitário \textit{time} do Linux que mede o tempo que o
+processo ficou rodando.
 
 Para simplificar, algumas abreviações foram utilizadas nestas
 tabelas, a saber:
@@ -251,6 +277,25 @@ tabelas, a saber:
  \item SOR ``livre'': algoritmo SOR livre de matriz.
 \end{itemize}
 
+Os testes nesta seção foram executados em uma máquina com as
+seguintes configurações:
+
+Ubuntu 14.04 64-bit \\
+\indent Intel Core i7-3770 CPU @ 3.40GHz x 4 \\
+\indent 8GB de memória
+
+Quanto aos parâmetros do algoritmo SOR, os testes foram executados com 
+os seguintes:
+
+\begin{align*}
+\omega &= 1.6 \\
+toler &= 0.00001 \\
+iterMax &= 1000000 \\
+\end{align*}
+
+\noindent onde $\omega$ é o coeficiente de relaxação, $toler$ é a
+tolerância do erro de aproximação e $iterMax$ o número máximo de
+iterações.
 
 \subsection{Validação 1 - Problema simples com solução trivial}
 Este é um experimento simples para testes do sistema onde
@@ -278,17 +323,17 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0m0.034s \\
+                       &                       & livre  & 0m0.088s \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0m0.220s \\
+                       &                       & livre  & 0m0.526s \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 4m16.887s \\
+                       &                       & livre  & 10m2.833s \\
 \hline
-\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
 \end{tabular}
 \caption{Testes - Validação 1}
@@ -299,16 +344,14 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 Neste experimento, deve-se determinar a solução aproximada para
 $u(x,y)$ em $\Omega = (0,1) \times (0,1)$ considerando na Eq. 
 \eqref{eq:transporte}:
-\begin{equation}\label{eq:v2}
-\begin{split}
-k &= 1\\
-\beta_x(x,y) &= 1\\
-\beta_y(x,y) &= 20y\\
-\gamma(x,y) &= 1\\
+\begin{align}\label{eq:v2}
+k &= 1\nonumber \\
+\beta_x(x,y) &= 1\nonumber \\
+\beta_y(x,y) &= 20y\nonumber \\
+\gamma(x,y) &= 1\nonumber \\
 f(x,y) \text{ tal que } u(x,y) &= 10xy(1-x)(1-y)e^{x^{4.5}}
 \text{ é a solução exata }
-\end{split}
-\end{equation}
+\end{align}
 
 e sabendo que $u(x,y) = 0$ no contorno de $\Omega$.
 
@@ -321,17 +364,17 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
 \end{tabular}
 \caption{Testes - Validação 2}
@@ -339,7 +382,26 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \end{table}
 
 \subsection{Aplicação Física 1 - Resfriador bidimensional}
-\lipsum[8]
+Este experimento consiste em uma aplicação dos métodos em questão para
+resfriar uma massa aquecida. Exemplos podem incluir o resfriamento de
+chips de computadores ou amplificadores elétricos. O modelo matemático
+que descreve a tranferência de calor nas direções $x$ e $y$ é dado por:
+\begin{equation} \label{eq:a1}
+- k\left(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial 
+y^2}\right) + \frac{2c}{T}u = \frac{2c}{T}u_{ref} = 0 \text{   em   }
+\Omega = (0,L) \times (0, W)
+\end{equation}
+
+\noindent onde $k$ é a condutividade térmica constante, $c$ é o coeficiente de
+transferência de calor, $T$ é a altura do resfriador e $u_{ref}$ é a
+temperatura de referência. Deve-se encontrar a temperatura no interior
+do resfriador considerando as seguintes condições de contorno:
+\begin{align*}
+u(x,0) &= 70\\
+u(x,W) &= 70\\
+u(0,y) &= 200\\
+k\frac{\partial u}{\partial n}(L,y) &= c(u_{ref} - u(L,y))\\
+\end{align*}
 
 Veja na tabela \ref{tab:taf1} os tempos de execução deste experimento
 por valores $n$ e $m$ e versão do algoritmo SOR.
@@ -350,17 +412,17 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0m0.041s \\
+                       &                       & livre  & 0m0.095s \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0m0.240s \\
+                       &                       & livre  & 0m0.580s \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 2m52.629s \\
+                       &                       & livre  & 6m55.552s \\
 \hline
-\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
 \end{tabular}
 \caption{Testes - Aplicação Física 1}
@@ -379,17 +441,17 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
-\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & 0.00s \\
-                       &                       & livre  & 0.00s \\
+\multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+                       &                       & livre  & OOOOOOO \\
 \hline
 \end{tabular}
 \caption{Testes - Aplicação Física 2}

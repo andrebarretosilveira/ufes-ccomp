@@ -1,9 +1,9 @@
-% ------------------------------------------------------------------------
-% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
 % Relatório de Trabalho 1 de Algoritmos Numéricos 2
 % Autor: André Barreto
-% ------------------------------------------------------------------------
-% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
 
 \documentclass[
 	11pt,				% tamanho da fonte
@@ -17,25 +17,25 @@
 % ---
 % PACOTES
 % ---
-\usepackage{lmodern}			% Usa a fonte Latin Modern
-\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
-\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
-\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
-\usepackage{nomencl} 			% Lista de simbolos
-\usepackage{color}				% Controle das cores
-\usepackage{graphicx}			% Inclusão de gráficos
-\usepackage{microtype} 			% para melhorias de justificação
-\usepackage{makeidx}			% Gerar índice
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+\usepackage{nomencl}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{makeidx}
 \usepackage{multirow,tabularx}
 \usepackage{multicol}
-\usepackage{listings}			% Include the listings-package
+\usepackage{listings}
 \usepackage{color}
 \usepackage{hyperref}
 \usepackage{cite}
 \usepackage{url}
 \usepackage[brazilian]{babel}
-\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
-\usepackage{amsmath}
+\usepackage[brazilian,hyperpageref]{backref}
+\usepackage[fleqn]{amsmath}
 \usepackage{mathtools,amssymb}
 \usepackage{pgfplots}
 
@@ -53,30 +53,30 @@
 \definecolor{codepurple}{rgb}{0.5714285718,0,0.82}
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 \lstset{
-	backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-	basicstyle=\footnotesize,        % the size of the fonts that are used for the code
-	breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
-	breaklines=true,                 % sets automatic line breaking
-	captionpos=b,                    % sets the caption-position to bottom
-	commentstyle=\color{mygreen},    % comment style
-	deletekeywords={...},            % if you want to delete keywords from the given language
-	escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
-	extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
-	keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-	keywordstyle=\color{blue},       % keyword style
-	language=C,                      % the language of the code
-	otherkeywords={*,...},           % if you want to add more keywords to the set
-	numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
-	numbersep=5pt,                   % how far the line-numbers are from the code
-	numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
-	rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
-	showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
-	showstringspaces=false,          % underline spaces within strings only
-	showtabs=false,                  % show tabs within strings adding particular underscores
-	stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
-	stringstyle=\color{mymauve},     % string literal style
-	tabsize=2,	                   % sets default tabsize to 2 spaces
-	title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+	backgroundcolor=\color{white},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	commentstyle=\color{mygreen},
+	deletekeywords={...},
+	escapeinside={\%*}{*)},
+	extendedchars=true,
+	keepspaces=true,
+	keywordstyle=\color{blue},
+	language=C,
+	otherkeywords={*,...},
+	numbers=left,
+	numbersep=5pt,
+	numberstyle=\tiny\color{mygray},
+	rulecolor=\color{black},
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	stepnumber=1,
+	stringstyle=\color{mymauve},
+	tabsize=2,
+	title=\lstname
 }
 % ---
 	
@@ -141,9 +141,9 @@ André Barreto e Igor Ventorim\\\\
 
 \graphicspath{ {Imagens/} }
 
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 % Página de Título
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 \begin{titlepage}
 	\centering
 	{\scshape \large Universidade Federal do Espírito Santo\par}
@@ -165,22 +165,19 @@ Problemas Bidimensionais\par}
 \end{titlepage}
 \addtocounter{page}{1}
 
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 % Introdução
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 \section{Introdução}
-O estudo da equação de transporte, também denominada equação
-da advecção-difusão-reação, continua sendo um ativo campo de
-pesquisa, uma vez que essa equação é de fundamental
-importância nos problemas relacionados a aerodinâmica, 
-meteorologia, oceanografia, hidrologia, engenharia química e
-de reservatórios. A equação de transporte tem
-características bastante peculiares que fazem com que sua 
-resolução por meios numéricos seja dificultada em situações
-onde o problema é fortemente convectivo. Por isso, diversos
-métodos têm sido desenvolvidos e aplicados, com a intenção
-de superar as dificuldades numéricas impostas por esta
-equação.
+O estudo da equação de transporte, também denominada equação da 
+advecção-difusão-reação, continua sendo um ativo campo de pesquisa, uma vez que 
+essa equação é de fundamental importância nos problemas relacionados a 
+aerodinâmica,  meteorologia, oceanografia, hidrologia, engenharia química e
+de reservatórios. A equação de transporte tem características bastante 
+peculiares que fazem com que sua  resolução por meios numéricos seja 
+dificultada em situações onde o problema é fortemente convectivo. Por isso, 
+diversos métodos têm sido desenvolvidos e aplicados, com a intenção de superar 
+as dificuldades numéricas impostas por esta equação.
 
 A equação de transporte bidimensional pode ser definida por:
 
@@ -192,61 +189,88 @@ y^2}\right) +
 \gamma(x,y)u = f(x,y) \text{ em } \Omega
 \end{equation}
 
-Este trabalho tem como objetivo verificar como as formas de
-armazenamento das estruturas resultantes pela discretização
-da equação \eqref{eq:transporte} por diferenças finitas pode
-impactar no tempo de processamento.
+Este trabalho tem como objetivo verificar como as formas de armazenamento das 
+estruturas resultantes pela discretização da equação \eqref{eq:transporte} por 
+diferenças finitas pode impactar no tempo de processamento.
 
-Para isto, será implementado em linguagem C um programa capaz
-de aplicar a discretização da equação de transporte e resolver
-o sistema resultante discreto. Quanto ao método de resolução,
-será aplicado o algoritmo SOR
-(\textit{Sucessive Over Relaxation}) de duas formas:
-resolvendo o sistema penta-diagonal armazenado de forma
-esparsa, utilizando  cinto vetores; e completamente livre
-de matriz.
+Para isto, será implementado em linguagem C um programa capaz de aplicar a 
+discretização da equação de transporte e resolver o sistema resultante 
+discreto. Quanto ao método de resolução, será aplicado o algoritmo SOR
+(\textit{Sucessive Over Relaxation}) de duas formas: resolvendo o sistema 
+penta-diagonal armazenado de forma esparsa, utilizando  cinto vetores; e 
+completamente livre de matriz.
 
-Nas próximas seções estão descritos em detalhes o
-desenvolvimento, testes e conceitos do trabalho, sendo que
-o próximo tópico faz um resumo do método das Diferenças
-Finitas, descrevendo as técnicas e ordem de aproximação
-usadas.
+Nas próximas seções estão descritos em detalhes o desenvolvimento, testes e 
+conceitos do trabalho, sendo que o próximo tópico faz um resumo do método das 
+Diferenças Finitas, descrevendo as técnicas e ordem de aproximação usadas.
 
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 % Método das Diferenças Finitas
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 \section{Método das Diferenças Finitas}
-\lipsum[2]
+Método das Diferenças Finitas é um método numérico para resolver equações 
+diferenciais através de aproximações de derivadas por diferenças finitas. Estas 
+aproximações são obtidas pela série de Taylor:
 
-% ----------------------------------------------------------
+\begin{align*}
+f(x+h) &= f(x)+f'(x)h + \frac{f''(x)h^2}{2} + \frac{f'''(x)h^3}{6} + o(h^4) \\ 
+f(x-h) &= f(x) - f'(x)h + \frac{f''(x)h^2}{2} - \frac{f'''(x)h^3}{6} + 
+o(h^4)
+\end{align*}
+
+Portanto, a primeira e segunda derivadas podem ser escritas das
+seguintes formas:
+\begin{align*}
+f'(x) &= \frac{f(x+h)-f(x)}{h}+o(h) \text{ , diferença atrasada
+(1a ordem) }  \\
+f'(x) &= \frac{f(x) - f(x-h)}{h} + o(h) \text{ , diferença adiantada
+(1a ordem) } \\
+f'(x) &= \frac{f(x+h) - f(x-h)}{2h} + o(h^2) \text{ , diferença central 
+(2a ordem) } \\
+f''(x) &= \frac{f(x+h) -2f(x) + f(x-h)}{h^2} + o(h^2)
+\end{align*}
+
+O método das Diferenças Finitas em domínios retangulares consiste em 
+\textbf{três} etapas principais:
+
+\begin{itemize}
+ \item \textbf{Discretização do domínio}, onde os pontos $(x,y)$ são traduzidos 
+em um domínio linear, de forma que $I = (j-1)n + i$ e $ 1 \le I \ge n*m$, onde 
+$i$ e $j$ são representam um ponto bidimensional e $I$ uma posição 
+representativa deste ponto.
+ \item \textbf{Aproximar a Equação \eqref{eq:transporte} por diferenças 
+finitas}, que consiste em reescrever a equação utilizando as aproximações por 
+diferenças finitas, gerando um sistema linear.
+ \item \textbf{Aplicar condições de contorno} que são definidas pelo problema 
+proposto e que impactam diretamente na solução do problema.
+\end{itemize}
+
+
+% ------------------------------------------------------------------------------
 % Implementação
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 \section{Implementação}
-Nesta seção estão apresentados os códigos em C relevantes
-do sistema que mostra suas principais funcionalidades
-necessárias para a resolução do Método das Diferenças
-Finitas em 2D.
+Nesta seção estão apresentados os códigos em C relevantes do sistema que mostra 
+suas principais funcionalidades necessárias para a resolução do Método das 
+Diferenças Finitas em 2D.
 
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 % Experimentos Numéricos
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 \section{Experimentos Numéricos}
-Para verificar a qualidade dos métodos implementados, foram
-realizados uma séries de testes a um conjunto de
-experimentos propostos. Em cada experimento, o programa em
-questão é aplicado em diferentes ordens de sistema e em ambas
-as versões do SOR apresentadas, onde o foco é a comparação dos
-tempos de execução em cada caso.
+Para verificar a qualidade dos métodos implementados, foram realizados uma 
+séries de testes a um conjunto de experimentos propostos. Em cada experimento, 
+o programa em questão é aplicado em diferentes ordens de sistema e em ambas as 
+versões do SOR apresentadas, onde o foco é a comparação dos tempos de execução 
+em cada caso.
 
-Para isto, em cada experimento a seguir será ilustrado uma
-tabela com os casos relevantes de teste e o tempo de
-execução em segundos que cada computação levou. Os tempos
-de execução apresentados foram recolhidos utilizando o
-utilitário \textit{time} do Linux que mede o tempo que o
-processo ficou rodando.
+Para isto, em cada experimento a seguir será ilustrado uma tabela com os casos 
+relevantes de teste e o tempo de execução em segundos que cada computação 
+levou. Os tempos de execução apresentados foram recolhidos utilizando 
+o utilitário \textit{time} do Linux que mede o tempo que o processo ficou 
+rodando.
 
-Para simplificar, algumas abreviações foram utilizadas nestas
-tabelas, a saber:
+Para simplificar, algumas abreviações foram utilizadas nestas tabelas, a saber:
 \begin{itemize}
  \item $n$: partições no eixo X;
  \item $m$: partições no eixo Y;
@@ -255,32 +279,40 @@ tabelas, a saber:
  \item SOR ``livre'': algoritmo SOR livre de matriz.
 \end{itemize}
 
-Os testes nesta seção foram executados em uma máquina com as seguintes configurações:
+Os testes nesta seção foram executados em uma máquina com as seguintes 
+configurações:
 
 Ubuntu 14.04 64-bit \\
 \indent Intel Core i7-3770 CPU @ 3.40GHz x 4 \\
 \indent 8GB de memória
 
+Quanto aos parâmetros do algoritmo SOR, os testes foram executados com os 
+seguintes:
+\begin{align*}
+\omega &= 1.6 \\
+toler &= 0.00001 \\
+iterMax &= 1000000 
+\end{align*}
+
+\noindent onde $\omega$ é o coeficiente de relaxação, $toler$ é a tolerância do 
+erro de aproximação e $iterMax$ o número máximo de iterações.
 
 \subsection{Validação 1 - Problema simples com solução trivial}
-Este é um experimento simples para testes do sistema onde
-deve-se determinar a distribuição de calor em uma chapa de
-metal, com faces termicamente isoladas e com espessura
-desprezível, sendo que a temperatura é conhecida em todas
-as faces da chapa. Neste caso, a equação \eqref{eq:transporte}
-é dada por:
+Este é um experimento simples para testes do sistema onde deve-se determinar a 
+distribuição de calor em uma chapa de metal, com faces termicamente isoladas e 
+com espessura desprezível, sendo que a temperatura é conhecida em todas as 
+faces da chapa. Neste caso, a equação \eqref{eq:transporte} é dada por:
 
 \begin{equation} \label{eq:v1}
 - \left(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial 
 y^2}\right) = 0 \text{ em } \Omega
 \end{equation}
 
-Sendo $T_0$ a temperatura nas faces, espera-se que os valores
-no interior da placa sejam igualmente $T_0$ em todos os pontos
-da discretização.
+Sendo $T_0$ a temperatura nas faces, espera-se que os valores no interior da 
+placa sejam igualmente $T_0$ em todos os pontos da discretização.
 
-Veja na tabela \ref{tab:tv1} os tempos de execução deste experimento
-por valores $n$ e $m$ e versão do algoritmo SOR.
+Veja na tabela \ref{tab:tv1} os tempos de execução deste experimento por 
+valores $n$ e $m$ e versão do algoritmo SOR.
 
 \begin{table}[ht]
 \centering
@@ -288,14 +320,14 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0m0.034s \\
+                       &                       & livre  & 0m0.088s \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0m0.220s \\
+                       &                       & livre  & 0m0.526s \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 4m16.887s \\
+                       &                       & livre  & 10m2.833s \\
 \hline
 \multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
                        &                       & livre  & OOOOOOO \\
@@ -306,22 +338,22 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \end{table}
 
 \subsection{Validação 2 - Problema com solução conhecida}
-Neste experimento, deve-se determinar a solução aproximada para
-$u(x,y)$ em $\Omega = (0,1) \times (0,1)$ considerando na Eq. 
+Neste experimento, deve-se determinar a solução aproximada para $u(x,y)$ em 
+$\Omega = (0,1) \times (0,1)$ considerando na Eq.
 \eqref{eq:transporte}:
 \begin{align}\label{eq:v2}
 k &= 1\nonumber \\
 \beta_x(x,y) &= 1\nonumber \\
 \beta_y(x,y) &= 20y\nonumber \\
 \gamma(x,y) &= 1\nonumber \\
-f(x,y) \text{ tal que } u(x,y) &= 10xy(1-x)(1-y)e^{x^{4.5}}
-\text{ é a solução exata }
+f(x,y) \text{ tal que } u(x,y) &= 10xy(1-x)(1-y)e^{x^{4.5}}\\
+&\text{ é a solução exata }\nonumber
 \end{align}
 
 e sabendo que $u(x,y) = 0$ no contorno de $\Omega$.
 
-Veja na tabela \ref{tab:tv2} os tempos de execução deste experimento
-por valores $n$ e $m$ e versão do algoritmo SOR.
+Veja na tabela \ref{tab:tv2} os tempos de execução deste experimento por 
+valores $n$ e $m$ e versão do algoritmo SOR.
 
 \begin{table}[ht]
 \centering
@@ -329,13 +361,13 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0m0.041s \\
+                       &                       & livre  & 0m1.695s \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0m0.162s \\
+                       &                       & livre  & 0m9.440s \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & OOOOOOO \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 3m34.692s \\
                        &                       & livre  & OOOOOOO \\
 \hline
 \multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
@@ -347,29 +379,29 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \end{table}
 
 \subsection{Aplicação Física 1 - Resfriador bidimensional}
-Este experimento consiste em uma aplicação dos métodos em questão para
-resfriar uma massa aquecida. Exemplos podem incluir o resfriamento de
-chips de computadores ou amplificadores elétricos. O modelo matemático
-que descreve a tranferência de calor nas direções $x$ e $y$ é dado por:
+Este experimento consiste em uma aplicação dos métodos em questão para resfriar 
+uma massa aquecida. Exemplos podem incluir o resfriamento de chips de 
+computadores ou amplificadores elétricos. O modelo matemático que descreve a 
+transferência de calor nas direções $x$ e $y$ é dado por:
 \begin{equation} \label{eq:a1}
 - k\left(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial 
 y^2}\right) + \frac{2c}{T}u = \frac{2c}{T}u_{ref} = 0 \text{   em   }
 \Omega = (0,L) \times (0, W)
 \end{equation}
 
-\noindent onde $k$ é a condutividade térmica constante, $c$ é o coeficiente de
-transferência de calor, $T$ é a altura do resfriador e $u_{ref}$ é a
-temperatura de referência. Deve-se encontrar a temperatura no interior
-do resfriador considerando as seguintes condições de contorno:
+\noindent onde $k$ é a condutividade térmica constante, $c$ é o coeficiente 
+de transferência de calor, $T$ é a altura do resfriador e $u_{ref}$ é a 
+temperatura de referência. Deve-se encontrar a temperatura no interior do 
+resfriador considerando as seguintes condições de contorno:
 \begin{align*}
 u(x,0) &= 70\\
 u(x,W) &= 70\\
 u(0,y) &= 200\\
-k\frac{\partialu}{\partialn}(L,y) &= c(u_{ref} - u(L,y))
+k\frac{\partial u}{\partial n}(L,y) &= c(u_{ref} - u(L,y))
 \end{align*}
 
-Veja na tabela \ref{tab:taf1} os tempos de execução deste experimento
-por valores $n$ e $m$ e versão do algoritmo SOR.
+Veja na tabela \ref{tab:taf1} os tempos de execução deste experimento por 
+valores $n$ e $m$ e versão do algoritmo SOR.
 
 \begin{table}[ht]
 \centering
@@ -377,14 +409,14 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0m0.041s \\
+                       &                       & livre  & 0m0.095s \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0m0.240s \\
+                       &                       & livre  & 0m0.580s \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 2m52.629s \\
+                       &                       & livre  & 6m55.552s \\
 \hline
 \multirow{2}{*}{10000} & \multirow{2}{*}{1000} & normal & OOOOOOO \\
                        &                       & livre  & OOOOOOO \\
@@ -397,8 +429,8 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \subsection{Aplicação Física 2 - Escoamento em Águas Subterrâneas}
 \lipsum[9]
 
-Veja na tabela \ref{tab:taf2} os tempos de execução deste experimento
-por valores $n$ e $m$ e versão do algoritmo SOR.
+Veja na tabela \ref{tab:taf2} os tempos de execução deste experimento por 
+valores $n$ e $m$ e versão do algoritmo SOR.
 
 \begin{table}[ht]
 \centering
@@ -423,15 +455,15 @@ por valores $n$ e $m$ e versão do algoritmo SOR.
 \label{tab:taf2}
 \end{table}
 
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 % Conclusão
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 \section{Conclusão}
 \lipsum[5]
 
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 % Referências bibliográficas
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 %\bibliography{trab2}{}
 %\bibliographystyle{ieeetr}
 %\addcontentsline{toc}{section}{Referências}
