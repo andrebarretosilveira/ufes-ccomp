@@ -30,7 +30,7 @@ void printInfo()
 
 int main(int argc, char **argv)
 {
-    size_t i, N;
+    int i, j, N;
     double* vetorIndependente;
     double* x;
     FILE* fp;
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 
     printf("\nCalculando ...");
     */
-    
+
     // Ordem do sistema
     N = input->amountX * input->amountY;
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 
         // Aplicação das condições de contorno
         aplicaContorno(sistema, input);
-        
+
         //printSistemaLinear(sistema);
 
         // Aplicação do SOR
@@ -135,10 +135,10 @@ int main(int argc, char **argv)
         x = sorLivre(input, vetorPontos, input->omega, input->tolerancia, input->iterMax);
 
     printf("\n");
-    for(i=0; i < N; i++) {
-        printf("%.4lf ", x[i]);
-        if((i+1) % input->amountX == 0)
-            printf("\n");
+    for(i = N-1; i >= 0; i -= input->amountX+1) {
+        for(j = 0, i = i - input->amountX+1; j < input->amountX; i++, j++)
+            printf(" %.4lf ", x[i]);
+        printf("\n");
     }
     printf("\n\n");
 

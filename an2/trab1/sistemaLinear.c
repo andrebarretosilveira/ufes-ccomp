@@ -111,7 +111,7 @@ void montaVetorIndependenteV2(double* vetorIndependente, Ponto* vetorPontos, con
 {
     int i;
     double x, y;
-    const double e = 0.5772156649;
+    const double e = 2.718281;
 
     for(i=0; i < N; i++) {
         x = vetorPontos[i].x;
@@ -304,9 +304,9 @@ void aplicaContornoAplicacao1(SistemaLinear* sistema, Dados* dados)
     uRef = 70;
     c = 1;
 
-    for(i=0, j=0; i < dados->amountX; i++) {
+    for(i=0, j=dados->amountY-1; j > 0; j--) {
         I = indiceDiscreto(i, j, dados->amountX);
-        sistema->f[I] = 70;
+        sistema->f[I] = 200;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
         matriz->a[I]  = 1;
@@ -318,10 +318,17 @@ void aplicaContornoAplicacao1(SistemaLinear* sistema, Dados* dados)
         // Aplicação da condição de contorno mista
         // k*parcial(u)/parcial(n) = c(uRef-u(L,y)
         sistema->f[I] = sistema->f[I] - matriz->b[I]*hx*uRef;
-        matriz->a[I]  = matriz->a[I] + matriz->b[I]*(1 - hx*c);
+        matriz->a[I]  = matriz->a[I] + matriz->b[I]*(1-hx*c);
         matriz->b[I]  = 0;
+
+        // sistema->f[I] = 200;
+        // matriz->e[I]  = 0;
+        // matriz->b[I]  = 0;
+        // matriz->a[I]  = 1;
+        // matriz->c[I]  = 0;
+        // matriz->d[I]  = 0;
     }
-    for(i=dados->amountX-1, j=dados->amountY-1; i > 0; i--) {
+    for(i=0, j=0; i < dados->amountX; i++) {
         I = indiceDiscreto(i, j, dados->amountX);
         sistema->f[I] = 70;
         matriz->e[I]  = 0;
@@ -330,9 +337,9 @@ void aplicaContornoAplicacao1(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=0, j=dados->amountY-1; j > 0; j--) {
+    for(i=dados->amountX-1, j=dados->amountY-1; i >= 0; i--) {
         I = indiceDiscreto(i, j, dados->amountX);
-        sistema->f[I] = 200;
+        sistema->f[I] = 70;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
         matriz->a[I]  = 1;

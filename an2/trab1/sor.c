@@ -205,7 +205,7 @@ double *sorLivre(Dados* dados, Ponto* vetorPontos, double omega, double toler, s
         x = sorLivreA2(dados, omega, toler, iterMax);
 
     return x;
-        
+
 }
 
 double *sorLivreV1(Dados* dados, double omega, double toler, size_t iterMax)
@@ -424,7 +424,7 @@ double *sorLivreV2(Dados* dados, Ponto* vetorPontos, double omega, double toler,
 	double soma, normaX, normaDif, aux, erro;
     double e, c, a, b, d, vetInd, tamED;
     double hx, hy, px, py;
-    const double euler = 0.5772156649;
+    const double euler = 2.718281;
 	size_t N, i, iter, dr;
 
     N = dados->amountX*dados->amountY;
