@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.4.24)  27 APR 2016 22:02
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.4.24)  28 APR 2016 23:42
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1252,36 +1252,291 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) [2]
-LaTeX Font Info:    Try loading font information for OMS+lmr on input line 237.
+LaTeX Font Info:    Try loading font information for OMS+lmr on input line 236.
 
 
 (/usr/share/texmf/tex/latex/lm/omslmr.fd
 File: omslmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 237.
- [3] [4] [5] [6]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 471.
- [7]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 471.
+(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 236.
+ [3] [4]
+LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <9> not available
+(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 348.
+ [5]
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <9> on input line 382.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 382.
+ [6] [7]
+
+! Package inputenc Error: Unicode char \u8:�\expandafter not set up for use wit
+h LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.493         // Aplicação 
+                             da condição de contorno mista
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package inputenc Error: Keyboard character used is undefined
+(inputenc)                in inputencoding `utf8'.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.493         // Aplicação 
+                             da condição de contorno mista
+You need to provide a definition with \DeclareInputText 
+or \DeclareInputMath before using this key.
+
+
+! Package inputenc Error: Unicode char \u8:�\expandafter not set up for use wit
+h LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.493         // Aplicação 
+                             da condição de contorno mista
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package inputenc Error: Keyboard character used is undefined
+(inputenc)                in inputencoding `utf8'.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.493         // Aplicação 
+                             da condição de contorno mista
+You need to provide a definition with \DeclareInputText 
+or \DeclareInputMath before using this key.
+
+
+! Package inputenc Error: Unicode char \u8:�\expandafter not set up for use wit
+h LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.493         // Aplicação da condição 
+                                           de contorno mista
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package inputenc Error: Keyboard character used is undefined
+(inputenc)                in inputencoding `utf8'.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.493         // Aplicação da condição 
+                                           de contorno mista
+You need to provide a definition with \DeclareInputText 
+or \DeclareInputMath before using this key.
+
+
+! Package inputenc Error: Unicode char \u8:�\expandafter not set up for use wit
+h LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.493         // Aplicação da condição 
+                                           de contorno mista
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package inputenc Error: Keyboard character used is undefined
+(inputenc)                in inputencoding `utf8'.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.493         // Aplicação da condição 
+                                           de contorno mista
+You need to provide a definition with \DeclareInputText 
+or \DeclareInputMath before using this key.
+
+[8]
+
+! Package inputenc Error: Unicode char \u8:�\expandafter not set up for use wit
+h LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.552         // Norma da diferença 
+                                     (x[i] - x[i-1])
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package inputenc Error: Keyboard character used is undefined
+(inputenc)                in inputencoding `utf8'.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.552         // Norma da diferença 
+                                     (x[i] - x[i-1])
+You need to provide a definition with \DeclareInputText 
+or \DeclareInputMath before using this key.
+
+
+! Package inputenc Error: Unicode char \u8:�\expandafter not set up for use wit
+h LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.573             // Norma da diferença 
+                                         (x[i] - x[i-1])
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package inputenc Error: Keyboard character used is undefined
+(inputenc)                in inputencoding `utf8'.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.573             // Norma da diferença 
+                                         (x[i] - x[i-1])
+You need to provide a definition with \DeclareInputText 
+or \DeclareInputMath before using this key.
+
+[9]
+
+! Package inputenc Error: Unicode char \u8:�\expandafter not set up for use wit
+h LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.594             // Norma da diferença 
+                                         (x[i] - x[i-1])
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package inputenc Error: Keyboard character used is undefined
+(inputenc)                in inputencoding `utf8'.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.594             // Norma da diferença 
+                                         (x[i] - x[i-1])
+You need to provide a definition with \DeclareInputText 
+or \DeclareInputMath before using this key.
+
+
+! Package inputenc Error: Unicode char \u8:�\expandafter not set up for use wit
+h LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.614             // Norma da diferença 
+                                         (x[i] - x[i-1])
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package inputenc Error: Keyboard character used is undefined
+(inputenc)                in inputencoding `utf8'.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.614             // Norma da diferença 
+                                         (x[i] - x[i-1])
+You need to provide a definition with \DeclareInputText 
+or \DeclareInputMath before using this key.
+
+[10]
+
+! Package inputenc Error: Unicode char \u8:�\expandafter not set up for use wit
+h LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.632         // Norma da diferença 
+                                     (x[i] - x[i-1])
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package inputenc Error: Keyboard character used is undefined
+(inputenc)                in inputencoding `utf8'.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.632         // Norma da diferença 
+                                     (x[i] - x[i-1])
+You need to provide a definition with \DeclareInputText 
+or \DeclareInputMath before using this key.
+
+[11] [12] [13] [14]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 871.
+ [15]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 871.
  (./trab1.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 471.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 471.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 871.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 871.
 Package rerunfilecheck Info: File `trab1.out' has not changed.
-(rerunfilecheck)             Checksum: 889497ED9BCFC385F02F538D7A477861;718.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 471.
+(rerunfilecheck)             Checksum: 4164C578C60F2FC1F4578E62E010F534;841.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 871.
  ) 
 Here is how much of TeX's memory you used:
- 26626 strings out of 493304
- 563725 string characters out of 6139871
- 839146 words of memory out of 5000000
- 29442 multiletter control sequences out of 15000+600000
- 59758 words of font info for 78 fonts, out of 8000000 for 9000
+ 27448 strings out of 493304
+ 572804 string characters out of 6139871
+ 1104146 words of memory out of 5000000
+ 29935 multiletter control sequences out of 15000+600000
+ 71782 words of font info for 101 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 63i,10n,74p,701b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 63i,10n,74p,701b,1970s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/en
-c/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share
-/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm
+c/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/s
+hare/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm
 -mathex.enc}</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texm
 f/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmcs
 c10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fo
@@ -1289,13 +1544,14 @@ nts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pf
 b></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/typ
 e1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/
 share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public
-/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/tex
-mf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lms
-y8.pfb>
-Output written on trab1.pdf (7 pages, 235555 bytes).
+/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr9.pfb></usr/share/texmf
+/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy1
+0.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts
+/type1/public/lm/lmsy9.pfb>
+Output written on trab1.pdf (15 pages, 312161 bytes).
 PDF statistics:
- 164 PDF objects out of 1000 (max. 8388607)
- 139 compressed objects within 2 object streams
- 25 named destinations out of 1000 (max. 500000)
- 17493 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 566 PDF objects out of 1000 (max. 8388607)
+ 527 compressed objects within 6 object streams
+ 321 named destinations out of 1000 (max. 500000)
+ 22117 words of extra memory for PDF output out of 24883 (max. 10000000)
 

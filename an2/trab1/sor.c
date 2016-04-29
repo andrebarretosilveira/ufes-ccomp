@@ -216,20 +216,20 @@ double *sorLivreV1(Dados* dados, double omega, double toler, size_t iterMax)
     double hx, hy;
 	size_t N, i, iter, dr;
 
-    N = dados->amountX*dados->amountY;
+    N = dados->qtdX*dados->qtdY;
 
     // Solução inicial nula
 	x = calloc(N, sizeof(double));
 
-	hx = (dados->endX - dados->beginX)/((double)dados->amountX-1);
-	hy = (dados->endY - dados->beginY)/((double)dados->amountY-1);
+	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
+	hy = (dados->fimY - dados->inicioY)/((double)dados->qtdY-1);
 
     // Distância relativa de elementos até a primeira
     // ocorrência de um elemento "e". Em outras palavras,
     // o número n de partições +1 no eixo x
-    dr = dados->amountX;
+    dr = dados->qtdX;
 
-    tamED = N - dados->amountX;
+    tamED = N - dados->qtdX;
 
     // Iterar até erro aceitável ou máximo de iterações atingido
 	iter = 0;
@@ -424,23 +424,23 @@ double *sorLivreV2(Dados* dados, Ponto* vetorPontos, double omega, double toler,
 	double soma, normaX, normaDif, aux, erro;
     double e, c, a, b, d, vetInd, tamED;
     double hx, hy, px, py;
-    const double euler = 2.718281;
+    const double euler = EULER;
 	size_t N, i, iter, dr;
 
-    N = dados->amountX*dados->amountY;
+    N = dados->qtdX*dados->qtdY;
 
     // Solução inicial nula
 	x = calloc(N, sizeof(double));
 
-	hx = (dados->endX - dados->beginX)/((double)dados->amountX-1);
-	hy = (dados->endY - dados->beginY)/((double)dados->amountY-1);
+	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
+	hy = (dados->fimY - dados->inicioY)/((double)dados->qtdY-1);
 
     // Distância relativa de elementos até a primeira
     // ocorrência de um elemento "e". Em outras palavras,
     // o número n de partições +1 no eixo x
-    dr = dados->amountX;
+    dr = dados->qtdX;
 
-    tamED = N - dados->amountX;
+    tamED = N - dados->qtdX;
 
     // Iterar até erro aceitável ou máximo de iterações atingido
 	iter = 0;
@@ -643,20 +643,20 @@ double *sorLivreA1(Dados* dados, double omega, double toler, size_t iterMax)
     double hx, hy;
 	size_t N, i, iter, dr;
 
-    N = dados->amountX*dados->amountY;
+    N = dados->qtdX*dados->qtdY;
 
     // Solução inicial nula
 	x = calloc(N, sizeof(double));
 
-	hx = (dados->endX - dados->beginX)/((double)dados->amountX-1);
-	hy = (dados->endY - dados->beginY)/((double)dados->amountY-1);
+	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
+	hy = (dados->fimY - dados->inicioY)/((double)dados->qtdY-1);
 
     // Distância relativa de elementos até a primeira
     // ocorrência de um elemento "e". Em outras palavras,
     // o número n de partições +1 no eixo x
-    dr = dados->amountX;
+    dr = dados->qtdX;
 
-    tamED = N - dados->amountX;
+    tamED = N - dados->qtdX;
 
     // Iterar até erro aceitável ou máximo de iterações atingido
 	iter = 0;
@@ -862,20 +862,20 @@ double *sorLivreA2(Dados* dados, double omega, double toler, size_t iterMax)
     double hx, hy;
 	size_t N, i, iter, dr;
 
-    N = dados->amountX*dados->amountY;
+    N = dados->qtdX*dados->qtdY;
 
     // Solução inicial nula
 	x = calloc(N, sizeof(double));
 
-	hx = (dados->endX - dados->beginX)/((double)dados->amountX-1);
-	hy = (dados->endY - dados->beginY)/((double)dados->amountY-1);
+	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
+	hy = (dados->fimY - dados->inicioY)/((double)dados->qtdY-1);
 
     // Distância relativa de elementos até a primeira
     // ocorrência de um elemento "e". Em outras palavras,
     // o número n de partições +1 no eixo x
-    dr = dados->amountX;
+    dr = dados->qtdX;
 
-    tamED = N - dados->amountX;
+    tamED = N - dados->qtdX;
 
     // Iterar até erro aceitável ou máximo de iterações atingido
 	iter = 0;

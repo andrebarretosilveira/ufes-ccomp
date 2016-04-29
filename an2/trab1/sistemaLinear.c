@@ -39,19 +39,19 @@ Ponto* discretizaDominio(Dados* dados)
 	double hx, hy;
 	Ponto *vetorPontos;
 
-    n = dados->amountX;
-    m = dados->amountY;
-	hx = (dados->endX - dados->beginX)/((double)n-1);
-	hy = (dados->endY - dados->beginY)/((double)m-1);
+    n = dados->qtdX;
+    m = dados->qtdY;
+	hx = (dados->fimX - dados->inicioX)/((double)n-1);
+	hy = (dados->fimY - dados->inicioY)/((double)m-1);
 
 	vetorPontos = calloc((size_t)(n*m),sizeof(Ponto));
 
 	pos = 0;
-	for(i = 1; i <= dados->amountX; i++)
-		for(j = 1; j <= dados->amountY; j++)
+	for(i = 1; i <= dados->qtdX; i++)
+		for(j = 1; j <= dados->qtdY; j++)
 		{
-			vetorPontos[pos].x = dados->beginX + (double)(j - 1)*(hx);
-			vetorPontos[pos].y = dados->beginY + (double)(i - 1)*(hy);
+			vetorPontos[pos].x = dados->inicioX + (double)(j - 1)*(hx);
+			vetorPontos[pos].y = dados->inicioY + (double)(i - 1)*(hy);
 			pos++;
 		}
 
@@ -69,7 +69,7 @@ double *criaVetorIndependente(Dados* dados, Ponto* vetorPontos)
 	int N;
 	double *vetorIndependente;
 
-	N = (dados->amountX * dados->amountY);
+	N = (dados->qtdX * dados->qtdY);
 	vetorIndependente = malloc(N*sizeof(double));
 
     if(flagExp == 1)
@@ -111,7 +111,7 @@ void montaVetorIndependenteV2(double* vetorIndependente, Ponto* vetorPontos, con
 {
     int i;
     double x, y;
-    const double e = 2.718281;
+    const double e = EULER;
 
     for(i=0; i < N; i++) {
         x = vetorPontos[i].x;
@@ -173,16 +173,16 @@ void aplicaContorno(SistemaLinear* sistema, Dados *dados)
 {
     // Aplicando condições de contorno específicas
     if(flagExp == 1)
-        aplicaContornoValidacao1(sistema, dados);
+        aplicaContornoV1(sistema, dados);
 
     else if(flagExp == 2)
-        aplicaContornoValidacao2(sistema, dados);
+        aplicaContornoV2(sistema, dados);
 
     else if(flagExp == 3)
-        aplicaContornoAplicacao1(sistema, dados);
+        aplicaContornoA1(sistema, dados);
 
     else if(flagExp == 4)
-        aplicaContornoAplicacao2(sistema, dados);
+        aplicaContornoA2(sistema, dados);
 }
 
 /**
@@ -191,15 +191,15 @@ void aplicaContorno(SistemaLinear* sistema, Dados *dados)
  * @param sistema Ponteiro para o sistema pentadiagonal
  * @param dados   Ponteiro para os dados de entrada
  */
-void aplicaContornoValidacao1(SistemaLinear* sistema, Dados* dados)
+void aplicaContornoV1(SistemaLinear* sistema, Dados* dados)
 {
 	int i, j, I;
     MatrizPentadiagonal* matriz;
 
     matriz = sistema->matriz;
 
-    for(i=0, j=0; i < dados->amountX; i++) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=0, j=0; i < dados->qtdX; i++) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = T0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -207,8 +207,8 @@ void aplicaContornoValidacao1(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=dados->amountX-1, j=1; j < dados->amountY-1; j++) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=dados->qtdX-1, j=1; j < dados->qtdY-1; j++) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = T0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -216,8 +216,8 @@ void aplicaContornoValidacao1(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=dados->amountX-1, j=dados->amountY-1; i > 0; i--) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=dados->qtdX-1, j=dados->qtdY-1; i > 0; i--) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = T0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -225,8 +225,8 @@ void aplicaContornoValidacao1(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=0, j=dados->amountY-1; j > 0; j--) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=0, j=dados->qtdY-1; j > 0; j--) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = T0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -242,15 +242,15 @@ void aplicaContornoValidacao1(SistemaLinear* sistema, Dados* dados)
  * @param sistema Ponteiro para o sistema pentadiagonal
  * @param dados   Ponteiro para os dados de entrada
  */
-void aplicaContornoValidacao2(SistemaLinear* sistema, Dados* dados)
+void aplicaContornoV2(SistemaLinear* sistema, Dados* dados)
 {
 	int i, j, I;
     MatrizPentadiagonal* matriz;
 
     matriz = sistema->matriz;
 
-    for(i=0, j=0; i < dados->amountX; i++) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=0, j=0; i < dados->qtdX; i++) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -258,8 +258,8 @@ void aplicaContornoValidacao2(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=dados->amountX-1, j=1; j < dados->amountY-1; j++) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=dados->qtdX-1, j=1; j < dados->qtdY-1; j++) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -267,8 +267,8 @@ void aplicaContornoValidacao2(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=dados->amountX-1, j=dados->amountY-1; i > 0; i--) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=dados->qtdX-1, j=dados->qtdY-1; i > 0; i--) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -276,8 +276,8 @@ void aplicaContornoValidacao2(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=0, j=dados->amountY-1; j > 0; j--) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=0, j=dados->qtdY-1; j > 0; j--) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -293,19 +293,19 @@ void aplicaContornoValidacao2(SistemaLinear* sistema, Dados* dados)
  * @param sistema Ponteiro para o sistema pentadiagonal
  * @param dados   Ponteiro para os dados de entrada
  */
-void aplicaContornoAplicacao1(SistemaLinear* sistema, Dados* dados)
+void aplicaContornoA1(SistemaLinear* sistema, Dados* dados)
 {
 	int i, j, I;
     double uRef, c, hx;
     MatrizPentadiagonal* matriz;
 
     matriz = sistema->matriz;
-	hx = (dados->endX - dados->beginX)/((double)dados->amountX-1);
+	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
     uRef = 70;
     c = 1;
 
-    for(i=0, j=dados->amountY-1; j > 0; j--) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=0, j=dados->qtdY-1; j > 0; j--) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 200;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -313,8 +313,8 @@ void aplicaContornoAplicacao1(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=dados->amountX-1, j=1; j < dados->amountY-1; j++) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=dados->qtdX-1, j=1; j < dados->qtdY-1; j++) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         // Aplicação da condição de contorno mista
         // k*parcial(u)/parcial(n) = c(uRef-u(L,y)
         sistema->f[I] = sistema->f[I] - matriz->b[I]*hx*uRef;
@@ -328,8 +328,8 @@ void aplicaContornoAplicacao1(SistemaLinear* sistema, Dados* dados)
         // matriz->c[I]  = 0;
         // matriz->d[I]  = 0;
     }
-    for(i=0, j=0; i < dados->amountX; i++) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=0, j=0; i < dados->qtdX; i++) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 70;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -337,8 +337,8 @@ void aplicaContornoAplicacao1(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=dados->amountX-1, j=dados->amountY-1; i >= 0; i--) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=dados->qtdX-1, j=dados->qtdY-1; i >= 0; i--) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 70;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -354,39 +354,39 @@ void aplicaContornoAplicacao1(SistemaLinear* sistema, Dados* dados)
  * @param sistema Ponteiro para o sistema pentadiagonal
  * @param dados   Ponteiro para os dados de entrada
  */
-void aplicaContornoAplicacao2(SistemaLinear* sistema, Dados* dados)
+void aplicaContornoA2(SistemaLinear* sistema, Dados* dados)
 {
 	int i, j, I;
     MatrizPentadiagonal* matriz;
 
     matriz = sistema->matriz;
 
-    for(i=0, j=0; i < dados->amountX; i++) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=0, j=0; i < dados->qtdX; i++) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 0;
         matriz->b[I]  = 0;
         matriz->a[I]  = 1;
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=dados->amountX-1, j=1; j < dados->amountY-1; j++) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=dados->qtdX-1, j=1; j < dados->qtdY-1; j++) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 0;
         matriz->e[I]  = 0;
         matriz->a[I]  = 1;
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=dados->amountX-1, j=dados->amountY-1; i > 0; i--) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=dados->qtdX-1, j=dados->qtdY-1; i > 0; i--) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
         matriz->a[I]  = 1;
         matriz->c[I]  = 0;
     }
-    for(i=0, j=dados->amountY-1; j > 0; j--) {
-        I = indiceDiscreto(i, j, dados->amountX);
+    for(i=0, j=dados->qtdY-1; j > 0; j--) {
+        I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
@@ -399,12 +399,12 @@ void aplicaContornoAplicacao2(SistemaLinear* sistema, Dados* dados)
  * Transforma ij em indice I discreto
  * @param  i       Indice i do elemento
  * @param  j       Indice j do elemento
- * @param  amountX Número de pontos em x
+ * @param  qtdX Número de pontos em x
  * @return         Indice I
  */
-int indiceDiscreto(int i, int j, int amountX)
+int indiceDiscreto(int i, int j, int qtdX)
 {
-	return i + (j * amountX);
+	return i + (j * qtdX);
 }
 
 void printSistemaLinear(SistemaLinear* sistema)

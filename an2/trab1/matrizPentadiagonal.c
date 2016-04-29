@@ -11,7 +11,7 @@
 /**
  * Função que aloca espaço de memória para a matriz pentadiagonal
  * @param  N       Ordem da matriz
- * @param  amountX Quantidade de pontos em x
+ * @param  qtdX Quantidade de pontos em x
  * @return         Ponteiro para matriz alocada
  */
 MatrizPentadiagonal* alocaMatrizPentadiagonal(const int N)
@@ -40,12 +40,12 @@ MatrizPentadiagonal* criaMatrizPentadiagonal(Dados* dados, Ponto* vetorPontos)
     MatrizPentadiagonal* matriz;
 
 	// Ordem da matriz
-	N = (dados->amountX * dados->amountY);
+	N = (dados->qtdX * dados->qtdY);
 
 	// Alocando espaço para a matriz
 	matriz = alocaMatrizPentadiagonal(N);
     matriz->N = N;
-    matriz->tamED = (N-dados->amountX);
+    matriz->tamED = (N-dados->qtdX);
 
     // Validação 1
     if(flagExp == 1)
@@ -78,8 +78,8 @@ void montaMatrizV1(MatrizPentadiagonal* matriz, Dados* dados)
     double hx, hy;
 
     // Calculando hx e hy
-	hx = (dados->endX - dados->beginX)/((double)dados->amountX-1);
-	hy = (dados->endY - dados->beginY)/((double)dados->amountY-1);
+	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
+	hy = (dados->fimY - dados->inicioY)/((double)dados->qtdY-1);
 
     // Montando a matriz pentadiagonal
     // BETAx, BETAy, GAMA são nulos
@@ -105,8 +105,8 @@ void montaMatrizV2(MatrizPentadiagonal* matriz, Dados* dados, Ponto* vetorPontos
     double y, hx, hy;
 
     // Calculando hx e hy
-	hx = (dados->endX - dados->beginX)/((double)dados->amountX-1);
-	hy = (dados->endY - dados->beginY)/((double)dados->amountY-1);
+	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
+	hy = (dados->fimY - dados->inicioY)/((double)dados->qtdY-1);
 
     // Montando a matriz pentadiagonal
     // k = 1
@@ -140,8 +140,8 @@ void montaMatrizA1(MatrizPentadiagonal* matriz, Dados* dados)
     T = 2;
 
     // Calculando hx e hy
-	hx = (dados->endX - dados->beginX)/((double)dados->amountX-1);
-	hy = (dados->endY - dados->beginY)/((double)dados->amountY-1);
+	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
+	hy = (dados->fimY - dados->inicioY)/((double)dados->qtdY-1);
 
     // Montando a matriz pentadiagonal
     // k = 1
@@ -170,8 +170,8 @@ void montaMatrizA2(MatrizPentadiagonal* matriz, Dados* dados, Ponto* vetorPontos
     double x, y, hx, hy;
 
     // Calculando hx e hy
-	hx = (dados->endX - dados->beginX)/((double)dados->amountX-1);
-	hy = (dados->endY - dados->beginY)/((double)dados->amountY-1);
+	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
+	hy = (dados->fimY - dados->inicioY)/((double)dados->qtdY-1);
 
     // Montando a matriz pentadiagonal
     for(i=0; i < matriz->N; i++) {

@@ -18,6 +18,7 @@
 #define FALSE 0
 
 #define T0 5.1122
+#define EULER 2.718281
 
 /*
  * Estrutura dos Dados a serem lidos
@@ -26,12 +27,12 @@
  */
 typedef struct dados
 {
-	double beginX;
-	double endX;
-	double beginY;
-	double endY;
-	int amountX;
-	int amountY;
+	double inicioX;
+	double fimX;
+	double inicioY;
+	double fimY;
+	int qtdX;
+	int qtdY;
 	double omega;
 	double tolerancia;
 	size_t iterMax;

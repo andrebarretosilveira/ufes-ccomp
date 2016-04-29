@@ -106,7 +106,7 @@ int main(int argc, char **argv)
     */
 
     // Ordem do sistema
-    N = input->amountX * input->amountY;
+    N = input->qtdX * input->qtdY;
 
     // Criação de vetor de pontos para discretização
     vetorPontos = discretizaDominio(input);
@@ -135,8 +135,8 @@ int main(int argc, char **argv)
         x = sorLivre(input, vetorPontos, input->omega, input->tolerancia, input->iterMax);
 
     printf("\n");
-    for(i = N-1; i >= 0; i -= input->amountX+1) {
-        for(j = 0, i = i - input->amountX+1; j < input->amountX; i++, j++)
+    for(i = N-1; i >= 0; i -= input->qtdX+1) {
+        for(j = 0, i = i - input->qtdX+1; j < input->qtdX; i++, j++)
             printf(" %.4lf ", x[i]);
         printf("\n");
     }

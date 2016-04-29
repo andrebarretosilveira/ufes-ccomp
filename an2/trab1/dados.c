@@ -28,18 +28,18 @@ Dados* readDados(FILE* input)
 	// Lendo domínios e quantidade de pontos
     if(teclado) printf("Dominios e quantidade de pontos: \n");
     if(teclado) printf("Intervalo de x: ");
-	fscanf(input,"%lf",&dados->beginX);
-	fscanf(input,"%lf",&dados->endX);
+	fscanf(input,"%lf",&dados->inicioX);
+	fscanf(input,"%lf",&dados->fimX);
 
     if(teclado) printf("Quantidade de pontos em x: ");
-	fscanf(input,"%d",&dados->amountX);
+	fscanf(input,"%d",&dados->qtdX);
 
     if(teclado) printf("Intervalo de y: ");
-	fscanf(input,"%lf",&dados->beginY);
-	fscanf(input,"%lf",&dados->endY);
+	fscanf(input,"%lf",&dados->inicioY);
+	fscanf(input,"%lf",&dados->fimY);
 
     if(teclado) printf("Quantidade de pontos em y: ");
-	fscanf(input,"%d",&dados->amountY);
+	fscanf(input,"%d",&dados->qtdY);
 
 	if(teclado) printf("\nAlgoritmo SOR:\n");
 	if(teclado) printf("Fator de relaxacao omega: ");

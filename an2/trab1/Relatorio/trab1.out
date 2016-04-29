@@ -1,9 +1,11 @@
 \BOOKMARK [1][-]{section.1}{Introdu\347\343o}{}% 1
 \BOOKMARK [1][-]{section.2}{M\351todo das Diferen\347as Finitas}{}% 2
 \BOOKMARK [1][-]{section.3}{Implementa\347\343o}{}% 3
-\BOOKMARK [1][-]{section.4}{Experimentos Num\351ricos}{}% 4
-\BOOKMARK [2][-]{subsection.4.1}{Valida\347\343o 1 - Problema simples com solu\347\343o trivial}{section.4}% 5
-\BOOKMARK [2][-]{subsection.4.2}{Valida\347\343o 2 - Problema com solu\347\343o conhecida}{section.4}% 6
-\BOOKMARK [2][-]{subsection.4.3}{Aplica\347\343o F\355sica 1 - Resfriador bidimensional}{section.4}% 7
-\BOOKMARK [2][-]{subsection.4.4}{Aplica\347\343o F\355sica 2 - Escoamento em \301guas Subterr\342neas}{section.4}% 8
-\BOOKMARK [1][-]{section.5}{Conclus\343o}{}% 9
+\BOOKMARK [2][-]{subsection.3.1}{Estruturas}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Fun\347\365es}{section.3}% 5
+\BOOKMARK [1][-]{section.4}{Experimentos Num\351ricos}{}% 6
+\BOOKMARK [2][-]{subsection.4.1}{Valida\347\343o 1 - Problema simples com solu\347\343o trivial}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.2}{Valida\347\343o 2 - Problema com solu\347\343o conhecida}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.3}{Aplica\347\343o F\355sica 1 - Resfriador bidimensional}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.4}{Aplica\347\343o F\355sica 2 - Escoamento em \301guas Subterr\342neas}{section.4}% 10
+\BOOKMARK [1][-]{section.5}{Conclus\343o}{}% 11
