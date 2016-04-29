@@ -43,7 +43,7 @@ void aplicaContornoV2(SistemaLinear*, Dados*);
 void aplicaContornoA1(SistemaLinear*, Dados*);
 void aplicaContornoA2(SistemaLinear*, Dados*);
 int indiceDiscreto(int, int, int);
-void printSistemaLinear(SistemaLinear*);
+void printVetorSolucao(FILE*, double*, int, int, int);
 void freeSistemaLinear(SistemaLinear*);
 
 #endif

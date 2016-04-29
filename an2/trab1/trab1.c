@@ -30,11 +30,13 @@ void printInfo()
 
 int main(int argc, char **argv)
 {
-    int i, j, N;
-    double* vetorIndependente;
-    double* x;
+    int N;
+    size_t numIter;
+    double *x, *vetorIndependente;
+    double error, norma;
     FILE* fp;
     char* tipoSOR;
+    char* arqvSaida = "solucao.mat";
     MatrizPentadiagonal* matriz;
     SistemaLinear* sistema;
     Dados* input;
@@ -90,30 +92,15 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    /*
-    printf("\nExperimento: ");
-
-    if(flagExp == 1)
-        printf("Validação 1 - Solução trivial");
-    else if (flagExp == 2)
-        printf("Validação 2 - Solução conhecida");
-    else if (flagExp == 3)
-        printf("Aplicação Física 1 - Resfriador bidimensional");
-    else if (flagExp == 4)
-        printf("Aplicação Física 2 - Escoamento em Águas Subterrâneas");
-
-    printf("\nCalculando ...");
-    */
-
     // Ordem do sistema
     N = input->qtdX * input->qtdY;
 
-    // Criação de vetor de pontos para discretização
+    // Processo de discretização resulta em um vetor de pontos
     vetorPontos = discretizaDominio(input);
 
     // SOR utilizando matriz esparsa
     if(strcmp(tipoSOR, "normal") == 0) {
-        // Processo de discretização do domínio e criação do sistema
+        // Criação do sistema linear penta-diagonal
         vetorIndependente = criaVetorIndependente(input, vetorPontos);
         matriz = criaMatrizPentadiagonal(input, vetorPontos);
         sistema = criaSistemaLinear(matriz, vetorIndependente, N);
@@ -121,10 +108,8 @@ int main(int argc, char **argv)
         // Aplicação das condições de contorno
         aplicaContorno(sistema, input);
 
-        //printSistemaLinear(sistema);
-
         // Aplicação do SOR
-        x = sor(sistema, input->omega, input->tolerancia, input->iterMax);
+        x = sor(sistema, input->omega, input->tolerancia, input->iterMax, &numIter, &error, &norma);
 
         // Liberar memória alocada pelo sistema
         freeSistemaLinear(sistema);
@@ -132,15 +117,39 @@ int main(int argc, char **argv)
 
     // Aplicação do algortimo SOR livre de matriz
     else
-        x = sorLivre(input, vetorPontos, input->omega, input->tolerancia, input->iterMax);
+        x = sorLivre(input, vetorPontos, input->omega, input->tolerancia, input->iterMax, &numIter, &error, &norma);
 
+    // Imprimindo relatório do programa
     printf("\n");
-    for(i = N-1; i >= 0; i -= input->qtdX+1) {
-        for(j = 0, i = i - input->qtdX+1; j < input->qtdX; i++, j++)
-            printf(" %.4lf ", x[i]);
-        printf("\n");
+
+    if(flagExp == 1)
+        printf("Validacao 1 - Solucao trivial\n");
+    else if (flagExp == 2)
+        printf("Validacao 2 - Solucao conhecida\n");
+    else if (flagExp == 3)
+        printf("Aplicacao Fisica 1 - Resfriador bidimensional\n");
+    else if (flagExp == 4)
+        printf("Aplicacao Fisica 2 - Escoamento em Aguas Subterraneas\n");
+
+    printf("\nSOR \"%s\"\n", tipoSOR);
+	printf("Numero de iteracoes : %lu\n", numIter);
+    printf("Norma da solucao    : %lf\n", norma);
+    printf("Erro                : %lf\n", error);
+
+    // Imprimindo solução em formato .mat para leitura em octave
+    fp = fopen(arqvSaida, "w");
+    if(fp == NULL) {
+        fprintf(stderr, "Erro ao abrir arquivo \"%s\" para escrita\n\n", arqvSaida);
+        printf("Imprimindo solucao na saida padrao\n");
+        printVetorSolucao(stdout, x, N, input->qtdX, input->qtdY);
+        printf("\n\n");
     }
-    printf("\n\n");
+    else {
+        printVetorSolucao(fp, x, N, input->qtdX, input->qtdY);
+        printf("\nArquivo \"%s\" gerado.\n\n", arqvSaida);
+    }
+
+    fclose(fp);
 
     // Liberar memória
     free(x);

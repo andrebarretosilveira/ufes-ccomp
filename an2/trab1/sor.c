@@ -19,7 +19,7 @@
  * @param  iterMax Número máximo de iterações
  * @return         O vetor solução do sistema
  */
-double *sor(SistemaLinear* sistema, double omega, double toler, size_t iterMax)
+double *sor(SistemaLinear* sistema, double omega, double toler, size_t iterMax, size_t* numIter, double* error, double* norma)
 {
 	double *x; // Vetor solução
 	double soma, normaX, normaDif, aux, erro;
@@ -176,8 +176,9 @@ double *sor(SistemaLinear* sistema, double omega, double toler, size_t iterMax)
 	}
     while(erro > toler && iter < iterMax);
 
-	printf("Numero de iteracoes: %lu\n",iter);
-    printf("Erro: %f\n", erro);
+    *numIter = iter;
+    *error = erro;
+    *norma = normaX;
 
 	return x;
 }
@@ -191,24 +192,24 @@ double *sor(SistemaLinear* sistema, double omega, double toler, size_t iterMax)
  * @param  iterMax Número máximo de iterações
  * @return         O vetor solução do sistema
  */
-double *sorLivre(Dados* dados, Ponto* vetorPontos, double omega, double toler, size_t iterMax)
+double *sorLivre(Dados* dados, Ponto* vetorPontos, double omega, double toler, size_t iterMax, size_t* numIter, double* error, double* norma)
 {
     double* x;
 
     if(flagExp == 1)
-        x = sorLivreV1(dados, omega, toler, iterMax);
+        x = sorLivreV1(dados, omega, toler, iterMax, numIter, error, norma);
     else if(flagExp == 2)
-        x = sorLivreV2(dados, vetorPontos, omega, toler, iterMax);
+        x = sorLivreV2(dados, vetorPontos, omega, toler, iterMax, numIter, error, norma);
     else if(flagExp == 3)
-        x = sorLivreA1(dados, omega, toler, iterMax);
+        x = sorLivreA1(dados, omega, toler, iterMax, numIter, error, norma);
     else
-        x = sorLivreA2(dados, omega, toler, iterMax);
+        x = sorLivreA2(dados, omega, toler, iterMax, numIter, error, norma);
 
     return x;
 
 }
 
-double *sorLivreV1(Dados* dados, double omega, double toler, size_t iterMax)
+double *sorLivreV1(Dados* dados, double omega, double toler, size_t iterMax, size_t* numIter, double* error, double* norma)
 {
 	double *x; // Vetor solução
 	double soma, normaX, normaDif, aux, erro;
@@ -412,13 +413,14 @@ double *sorLivreV1(Dados* dados, double omega, double toler, size_t iterMax)
 	}
     while(erro > toler && iter < iterMax);
 
-	printf("Numero de iteracoes: %lu\n",iter);
-    printf("Erro: %f\n", erro);
+	*numIter = iter;
+    *error = erro;
+    *norma = normaX;
 
 	return x;
 }
 
-double *sorLivreV2(Dados* dados, Ponto* vetorPontos, double omega, double toler, size_t iterMax)
+double *sorLivreV2(Dados* dados, Ponto* vetorPontos, double omega, double toler, size_t iterMax, size_t* numIter, double* error, double* norma)
 {
 	double *x; // Vetor solução
 	double soma, normaX, normaDif, aux, erro;
@@ -629,13 +631,14 @@ double *sorLivreV2(Dados* dados, Ponto* vetorPontos, double omega, double toler,
 	}
     while(erro > toler && iter < iterMax);
 
-	printf("Numero de iteracoes: %lu\n",iter);
-    printf("Erro: %f\n", erro);
+	*numIter = iter;
+    *error = erro;
+    *norma = normaX;
 
 	return x;
 }
 
-double *sorLivreA1(Dados* dados, double omega, double toler, size_t iterMax)
+double *sorLivreA1(Dados* dados, double omega, double toler, size_t iterMax, size_t* numIter, double* error, double* norma)
 {
 	double *x; // Vetor solução
 	double soma, normaX, normaDif, aux, erro;
@@ -848,13 +851,14 @@ double *sorLivreA1(Dados* dados, double omega, double toler, size_t iterMax)
 	}
     while(erro > toler && iter < iterMax);
 
-	printf("Numero de iteracoes: %lu\n",iter);
-    printf("Erro: %f\n", erro);
+	*numIter = iter;
+    *error = erro;
+    *norma = normaX;
 
 	return x;
 }
 
-double *sorLivreA2(Dados* dados, double omega, double toler, size_t iterMax)
+double *sorLivreA2(Dados* dados, double omega, double toler, size_t iterMax, size_t* numIter, double* error, double* norma)
 {
 	double *x; // Vetor solução
 	double soma, normaX, normaDif, aux, erro;
@@ -1054,8 +1058,9 @@ double *sorLivreA2(Dados* dados, double omega, double toler, size_t iterMax)
 	}
     while(erro > toler && iter < iterMax);
 
-	printf("Numero de iteracoes: %lu\n",iter);
-    printf("Erro: %f\n", erro);
+	*numIter = iter;
+    *error = erro;
+    *norma = normaX;;
 
 	return x;
 }

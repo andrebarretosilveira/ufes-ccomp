@@ -397,26 +397,39 @@ void aplicaContornoA2(SistemaLinear* sistema, Dados* dados)
 
 /**
  * Transforma ij em indice I discreto
- * @param  i       Indice i do elemento
- * @param  j       Indice j do elemento
+ * @param  i    Indice i do elemento
+ * @param  j    Indice j do elemento
  * @param  qtdX Número de pontos em x
- * @return         Indice I
+ * @return      Indice I
  */
 int indiceDiscreto(int i, int j, int qtdX)
 {
 	return i + (j * qtdX);
 }
 
-void printSistemaLinear(SistemaLinear* sistema)
+/**
+ * Imprime o vetor solução em formato .mat
+ * para leitura da solução em forma de matriz
+ * em Octave
+ * @param output Arquivo de saída
+ * @param x      Vetor solução
+ * @param N      Tamanho do vetor
+ * @param qtdX   Quantidade de pontos x
+ * @param qtdY   Quantidade de pontos y
+ */
+void printVetorSolucao(FILE* output, double* x, int N, int qtdX, int qtdY)
 {
-    size_t i;
-    printMatrizPentadiagonal(sistema->matriz);
-    printf("\nf = ");
-    for(i=0; i < sistema->N; i++) {
-        printf("%g ", sistema->f[i]);
-    }
+    int i, j;
 
-    printf("\n\n");
+    fprintf(output, "# name: x\n");
+    fprintf(output, "# type: matrix\n");
+    fprintf(output, "# rows: %d\n", qtdY);
+    fprintf(output, "# columns: %d\n", qtdX);
+    for(i = N-1; i >= 0; i -= qtdX+1) {
+        for(j = 0, i = i - qtdX+1; j < qtdX; i++, j++)
+            fprintf(output, " %.4lf ", x[i]);
+        fprintf(output, "\n");
+    }
 }
 
 /**
