@@ -1,7 +1,7 @@
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
 % Relatório de Trabalho 1 de Algoritmos Numéricos 2
-% Autor: André Barreto
+% Autor: André Barreto Silveira
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
 
@@ -149,7 +149,7 @@ André Barreto e Igor Ventorim\\\\
 	{\scshape \large Universidade Federal do Espírito Santo\par}
 	{\large Departamento de Informática\par}
 	\vspace{1cm}
-	{\large André Barreto\par}
+	{\large André Barreto Silveira\par}
 	
 	\vfill
 	
@@ -221,11 +221,11 @@ Portanto, a primeira e segunda derivadas podem ser escritas das
 seguintes formas:
 \begin{align*}
 f'(x) &= \frac{f(x+h)-f(x)}{h}+o(h) \text{ , diferença atrasada
-(1a ordem) }  \\
+(1ª ordem) }  \\
 f'(x) &= \frac{f(x) - f(x-h)}{h} + o(h) \text{ , diferença adiantada
-(1a ordem) } \\
+(1ª ordem) } \\
 f'(x) &= \frac{f(x+h) - f(x-h)}{2h} + o(h^2) \text{ , diferença central 
-(2a ordem) } \\
+(2ª ordem) } \\
 f''(x) &= \frac{f(x+h) -2f(x) + f(x-h)}{h^2} + o(h^2)
 \end{align*}
 
@@ -664,27 +664,31 @@ o programa em questão é aplicado em diferentes ordens de sistema e em ambas as
 versões do SOR apresentadas, onde o foco é a comparação dos tempos de execução 
 em cada caso.
 
-Para isto, em cada experimento a seguir será ilustrado uma tabela com os casos 
+Em cada experimento a seguir será ilustrado uma tabela com os casos 
 relevantes de teste e o tempo de execução em segundos que cada computação 
 levou. Os tempos de execução apresentados foram recolhidos utilizando 
 o utilitário \textit{time} do Linux que mede o tempo que o processo ficou 
 rodando.
 
-Para simplificar, algumas abreviações foram utilizadas nestas tabelas, a saber:
+Algumas abreviações foram utilizadas nestas tabelas, a saber:
 \begin{itemize}
  \item $n$: partições no eixo X;
  \item $m$: partições no eixo Y;
  \item SOR ``normal'': algoritmo SOR utilizando a estrutura de
- armazenado da matriz pentadiagonal;
+ armazenado da matriz penta-diagonal;
  \item SOR ``livre'': algoritmo SOR livre de matriz.
 \end{itemize}
+
+Além disto, alguns testes levam tempo demais para ser viável computar e 
+comparar ou não houve tempo suficiente. Neste caso, seus tempos de 
+processamentos foram marcados com ``$\infty$''.
 
 Os testes nesta seção foram executados em uma máquina com as seguintes 
 configurações:
 
 Ubuntu 14.04 64-bit \\
 \indent Intel Core i7-3770 CPU @ 3.40GHz x 4 \\
-\indent 8GB de memória
+\indent 8GB de memória RAM
 
 Quanto aos parâmetros do algoritmo SOR, os testes foram executados com os 
 seguintes:
@@ -720,22 +724,38 @@ valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0m0.034s \\
-                       &                       & livre  & 0m0.088s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}   & normal & 0m0.034s \\
+                       &                        & livre  & 0m0.088s \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0m0.220s \\
-                       &                       & livre  & 0m0.526s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}   & normal & 0m0.220s \\
+                       &                        & livre  & 0m0.526s \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 4m16.887s \\
-                       &                       & livre  & 10m2.833s \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000}  & normal & 4m16.887s \\
+                       &                        & livre  & 10m2.833s \\
 \hline
-\multirow{2}{*}{1000}  & \multirow{2}{*}{1000} & normal & 10m20.053s \\
-                       &                       & livre  & $\infty$ \\
+\multirow{2}{*}{1000}  & \multirow{2}{*}{10000} & normal & 10m20.053s \\
+                       &                        & livre  & 209m4.270s \\
 \hline
 \end{tabular}
 \caption{Testes - Validação 1}
 \label{tab:tv1}
 \end{table}
+
+Veja na figura \ref{fig:v1_100-100} o gráfico da solução encontrada ao aplicar 
+a Validação 1 para $\Omega = (0,1)\times(0,1)$, $n = 100$ e $m = 100$.
+
+A constante $T_0$, neste caso, era 5.1122. Vemos que a solução não é 
+exatamente como esperamos por conta de erros de aproximação.
+
+Para utilizar outro valor para $T_0$, deve-se editar o \textit{define} da 
+constante, que encontra-se no arquivo ``dados.h''.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{v1_100-100.jpg}
+    \caption{Gráfico solução da Validação 1 para $n = 100$ e $m = 100$}
+    \label{fig:v1_100-100}
+\end{figure}
 
 \subsection{Validação 2 - Problema com solução conhecida}
 Neste experimento, deve-se determinar a solução aproximada para $u(x,y)$ em 
@@ -761,22 +781,41 @@ valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0m0.041s \\
-                       &                       & livre  & 0m1.695s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}   & normal & 0m0.041s \\
+                       &                        & livre  & 0m1.695s \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0m0.162s \\
-                       &                       & livre  & 0m9.440s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}   & normal & 0m0.162s \\
+                       &                        & livre  & 0m9.440s \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 3m34.692s \\
-                       &                       & livre  & $\infty$ \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000}  & normal & 3m34.692s \\
+                       &                        & livre  & $\infty$ \\
 \hline
-\multirow{2}{*}{1000}  & \multirow{2}{*}{1000} & normal & $\infty$ \\
-                       &                       & livre  & $\infty$ \\
+\multirow{2}{*}{1000}  & \multirow{2}{*}{10000} & normal & $\infty$ \\
+                       &                        & livre  & $\infty$ \\
 \hline
 \end{tabular}
 \caption{Testes - Validação 2}
 \label{tab:tv2}
 \end{table}
+
+Veja na figura \ref{fig:v2_25-25} o gráfico da solução encontrada ao aplicar 
+a Validação 2 para $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 25$, e na 
+figura \ref{fig:v2_80-100} o gráfico da solução encontrada ao aplicar 
+a Validação 2 para $\Omega = (0,1)\times(0,1)$, $n = 80$ e $m = 100$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{v2_25-25}
+    \caption{Gráfico solução da Validação 2 para $n = 25$ e $m = 25$}
+    \label{fig:v2_25-25}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{v2_80-100}
+    \caption{Gráfico solução da Validação 2 para $n = 80$ e $m = 100$}
+    \label{fig:v2_80-100}
+\end{figure}
 
 \subsection{Aplicação Física 1 - Resfriador bidimensional} \label{sec:a1}
 Este experimento consiste em uma aplicação dos métodos em questão para resfriar 
@@ -809,63 +848,86 @@ valores $n$ e $m$ e versão do algoritmo SOR.
 \hline 
 \textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
 \hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & 0m0.041s \\
-                       &                       & livre  & 0m0.095s \\
+\multirow{2}{*}{25}    & \multirow{2}{*}{100}   & normal & 0m0.041s \\
+                       &                        & livre  & 0m0.095s \\
 \hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & 0m0.240s \\
-                       &                       & livre  & 0m0.580s \\
+\multirow{2}{*}{100}   & \multirow{2}{*}{100}   & normal & 0m0.240s \\
+                       &                        & livre  & 0m0.580s \\
 \hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & 2m52.629s \\
-                       &                       & livre  & 6m55.552s \\
+\multirow{2}{*}{500}   & \multirow{2}{*}{1000}  & normal & 2m52.629s \\
+                       &                        & livre  & 6m55.552s \\
 \hline
-\multirow{2}{*}{1000}  & \multirow{2}{*}{1000} & normal & $\infty$ \\
-                       &                       & livre  & $\infty$ \\
+\multirow{2}{*}{1000}  & \multirow{2}{*}{10000} & normal & 56m43.129s \\
+                       &                        & livre  & 145m59.439s \\
 \hline
 \end{tabular}
 \caption{Testes - Aplicação Física 1}
 \label{tab:taf1}
 \end{table}
 
+Veja na figura \ref{fig:a1_25-25} o gráfico da solução encontrada ao aplicar 
+a Aplicação Física 1 para $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 25$, e 
+na figura \ref{fig:a1_25-100} o gráfico da solução encontrada ao aplicar 
+a Aplicação Física 1 para $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 100$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{a1_25-25}
+    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 25$}
+    \label{fig:a1_25-25}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{a1_25-100}
+    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 100$}
+    \label{fig:a1_25-100}
+\end{figure}
+
+Em ambos os testes anteriores, foi-se aplicado a condição de contorno mista. 
+Caso seja aplicado a condição de contorno de valor prescrito $u(L, y) =
+70$, e utilizando os dados $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 100$, 
+teremos um gráfico de solução ilustrado pela figura \ref{fig:a170_25-100}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{a170_25-100}
+    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 100$ e 
+$u(L, y) = 70$}
+    \label{fig:a170_25-100}
+\end{figure}
+
+Podemos ver que as soluções encontradas para $n = 25$ e $m = 100$ modificando a 
+condição de contorno são muito similares. Inclusive, a norma da solução é igual 
+à 200.00 em ambos os casos. Um fato importante é notar que o caso de valor 
+prescrito convergiu mais rapidamente (808 contra 1040 iterações do SOR).
+
 \subsection{Aplicação Física 2 - Escoamento em Águas Subterrâneas}
-\lipsum[9]
-
-Veja na tabela \ref{tab:taf2} os tempos de execução deste experimento por 
-valores $n$ e $m$ e versão do algoritmo SOR.
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{|c|c|l|c|}
-\hline 
-\textbf{n} & \textbf{m} & \textbf{SOR} & \textbf{Tempo} \\
-\hline
-\multirow{2}{*}{25}    & \multirow{2}{*}{100}  & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
-\hline
-\multirow{2}{*}{100}   & \multirow{2}{*}{100}  & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
-\hline
-\multirow{2}{*}{500}   & \multirow{2}{*}{1000} & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
-\hline
-\multirow{2}{*}{1000}  & \multirow{2}{*}{1000} & normal & OOOOOOO \\
-                       &                       & livre  & OOOOOOO \\
-\hline
-\end{tabular}
-\caption{Testes - Aplicação Física 2}
-\label{tab:taf2}
-\end{table}
+Infelizmente não foi possível realizar este experimento.
 
 % ------------------------------------------------------------------------------
 % Conclusão
 % ------------------------------------------------------------------------------
 \section{Conclusão}
-\lipsum[5]
+Com os dados coletados dos experimentos realizados, é passível assertar que a 
+forma de armazenamento das estruturas resultantes pela discretização da equação 
+\eqref{eq:transporte} por diferenças finitas tem um impacto muito significativo 
+no tempo de processamento.
 
-% ------------------------------------------------------------------------------
-% Referências bibliográficas
-% ------------------------------------------------------------------------------
-%\bibliography{trab2}{}
-%\bibliographystyle{ieeetr}
-%\addcontentsline{toc}{section}{Referências}
+Notamos que ao utilizar uma estrutura específica de armazenamento da matriz 
+penta-diagonal com os coeficientes computados de acordo, e igualmente para o 
+vetor independente, temos um ganho em eficiência significativo se avaliado em 
+relação a um programa livre de matriz. Isto é intuitivo, uma vez que o 
+algoritmo SOR livre de matriz deverá realizar exaustivamente operações iguais 
+em cada iteração, enquanto no outro caso tais cálculos são efetuados apenas 
+uma vez e armazenados em uma estrutura apropriada. E desta estrutura, o acesso 
+é direto, o que é um ganho considerável à realizar operações a cada passo.
+
+Porém vale destacar que o algoritmo ``perdedor'' em tempo de processamento, o 
+SOR livre de matriz, não é descartável. Este é uma opção para casos onde a 
+quantidade de dados a serem processados é de proporções muito grandes. Nestes 
+casos, o método rápido não pode ser aplicado pois necessita de espaço em 
+memória para armazenar seus dados, restando assim a aplicação de um algoritmo 
+livre de matriz eficiente para a solução do problema.
 
 \end{document}

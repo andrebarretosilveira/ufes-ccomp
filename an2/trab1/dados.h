@@ -19,6 +19,8 @@
 
 #define T0 5.1122
 #define EULER 2.718281
+#define Rw -250
+#define Pref 100
 
 /*
  * Estrutura dos Dados a serem lidos

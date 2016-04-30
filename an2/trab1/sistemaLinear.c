@@ -82,7 +82,7 @@ double *criaVetorIndependente(Dados* dados, Ponto* vetorPontos)
         montaVetorIndependenteA1(vetorIndependente, N);
 
     else if(flagExp == 4)
-        montaVetorIndependenteA2(vetorIndependente, vetorPontos, N);
+        montaVetorIndependenteA2(dados, vetorIndependente, N);
 
 	return vetorIndependente;
 }
@@ -151,16 +151,27 @@ void montaVetorIndependenteA1(double* vetorIndependente, const int N)
  * @param vetorPontos       Vetor de pontos discretos
  * @param N                 Ordem do sistema
  */
-void montaVetorIndependenteA2(double* vetorIndependente, Ponto* vetorPontos, const int N)
+void montaVetorIndependenteA2(Dados* dados, double* vetorIndependente, const int N)
 {
-    int i;
-    double x, y;
+    int i, I;
 
     for(i=0; i < N; i++) {
-        x = vetorPontos[i].x;
-        y = vetorPontos[i].y;
         vetorIndependente[i] = 0;
     }
+
+    I = indiceDiscreto(1500, 600, dados->qtdX);
+    if(I > N) {
+        printf("Erro: dominio pequeno para Aplicacao 2\n\n");
+        exit(1);
+    }
+    vetorIndependente[i] = Rw;
+
+    I = indiceDiscreto(3200, 250, dados->qtdX);
+    if(I > N) {
+        printf("Erro: dominio pequeno para Aplicacao 2\n\n");
+        exit(1);
+    }
+    vetorIndependente[i] = Rw;
 }
 
 /**
@@ -304,7 +315,8 @@ void aplicaContornoA1(SistemaLinear* sistema, Dados* dados)
     uRef = 70;
     c = 1;
 
-    for(i=0, j=dados->qtdY-1; j > 0; j--) {
+    // Lateral esquerda
+    for(i=0, j=1; j < dados->qtdY-1; j++) {
         I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 200;
         matriz->e[I]  = 0;
@@ -313,6 +325,8 @@ void aplicaContornoA1(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
+
+    // Lateral direita
     for(i=dados->qtdX-1, j=1; j < dados->qtdY-1; j++) {
         I = indiceDiscreto(i, j, dados->qtdX);
         // Aplicação da condição de contorno mista
@@ -321,13 +335,15 @@ void aplicaContornoA1(SistemaLinear* sistema, Dados* dados)
         matriz->a[I]  = matriz->a[I] + matriz->b[I]*(1-hx*c);
         matriz->b[I]  = 0;
 
-        // sistema->f[I] = 200;
+        // sistema->f[I] = 70;
         // matriz->e[I]  = 0;
         // matriz->b[I]  = 0;
         // matriz->a[I]  = 1;
         // matriz->c[I]  = 0;
         // matriz->d[I]  = 0;
     }
+
+    // Região inferior
     for(i=0, j=0; i < dados->qtdX; i++) {
         I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 70;
@@ -337,7 +353,8 @@ void aplicaContornoA1(SistemaLinear* sistema, Dados* dados)
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=dados->qtdX-1, j=dados->qtdY-1; i >= 0; i--) {
+    // Região superior
+    for(i=0, j=dados->qtdY-1; i < dados->qtdX-1; i++) {
         I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 70;
         matriz->e[I]  = 0;
@@ -361,36 +378,46 @@ void aplicaContornoA2(SistemaLinear* sistema, Dados* dados)
 
     matriz = sistema->matriz;
 
+    // Lateral esquerda
+    for(i=0, j=1; j < dados->qtdY-1; j++) {
+        I = indiceDiscreto(i, j, dados->qtdX);
+        sistema->f[I] = Pref;
+        matriz->e[I]  = 0;
+        matriz->b[I]  = 0;
+        matriz->a[I]  = 1;
+        matriz->c[I]  = 0;
+        matriz->d[I]  = 0;
+    }
+
+    // Lateral direita
+    for(i=dados->qtdX-1, j=1; j < dados->qtdY-1; j++) {
+        I = indiceDiscreto(i, j, dados->qtdX);
+        sistema->f[I] = Pref;
+        matriz->e[I]  = 0;
+        matriz->b[I]  = 0;
+        matriz->a[I]  = 1;
+        matriz->c[I]  = 0;
+        matriz->d[I]  = 0;
+    }
+
+    // Região inferior
     for(i=0, j=0; i < dados->qtdX; i++) {
         I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 0;
+        matriz->e[I]  = 0;
         matriz->b[I]  = 0;
         matriz->a[I]  = 1;
         matriz->c[I]  = 0;
         matriz->d[I]  = 0;
     }
-    for(i=dados->qtdX-1, j=1; j < dados->qtdY-1; j++) {
-        I = indiceDiscreto(i, j, dados->qtdX);
-        sistema->f[I] = 0;
-        matriz->e[I]  = 0;
-        matriz->a[I]  = 1;
-        matriz->c[I]  = 0;
-        matriz->d[I]  = 0;
-    }
-    for(i=dados->qtdX-1, j=dados->qtdY-1; i > 0; i--) {
+    // Região superior
+    for(i=0, j=dados->qtdY-1; i < dados->qtdX-1; i++) {
         I = indiceDiscreto(i, j, dados->qtdX);
         sistema->f[I] = 0;
         matriz->e[I]  = 0;
         matriz->b[I]  = 0;
         matriz->a[I]  = 1;
         matriz->c[I]  = 0;
-    }
-    for(i=0, j=dados->qtdY-1; j > 0; j--) {
-        I = indiceDiscreto(i, j, dados->qtdX);
-        sistema->f[I] = 0;
-        matriz->e[I]  = 0;
-        matriz->b[I]  = 0;
-        matriz->a[I]  = 1;
         matriz->d[I]  = 0;
     }
 }

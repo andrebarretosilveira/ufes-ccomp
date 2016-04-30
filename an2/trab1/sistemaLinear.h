@@ -36,7 +36,7 @@ double *criaVetorIndependente(Dados*, Ponto*);
 void montaVetorIndependenteV1(double*, const int);
 void montaVetorIndependenteV2(double*, Ponto*, const int);
 void montaVetorIndependenteA1(double*, const int);
-void montaVetorIndependenteA2(double*, Ponto*, const int);
+void montaVetorIndependenteA2(Dados*, double*, const int);
 void aplicaContorno(SistemaLinear*, Dados*);
 void aplicaContornoV1(SistemaLinear*, Dados*);
 void aplicaContornoV2(SistemaLinear*, Dados*);

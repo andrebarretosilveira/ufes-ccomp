@@ -59,9 +59,13 @@ MatrizPentadiagonal* criaMatrizPentadiagonal(Dados* dados, Ponto* vetorPontos)
     else if(flagExp == 3)
         montaMatrizA1(matriz, dados);
 
-    // Aplicação Física 2
+    // Aplicação Física 2 - Pressao
     else if(flagExp == 4)
-        montaMatrizA2(matriz, dados, vetorPontos);
+        montaMatrizA2_P(matriz, dados);
+
+    // Aplicação Física 2 - Velocidade
+    else if(flagExp == 5)
+        montaMatrizA2_V(matriz, dados);
 
 	return matriz;
 }
@@ -86,7 +90,7 @@ void montaMatrizV1(MatrizPentadiagonal* matriz, Dados* dados)
     for(i=0; i < matriz->N; i++) {
         matriz->e[i] = (-1/(hy*hy));
         matriz->c[i] = (-1/(hx*hx));
-        matriz->a[i] = 2 *((1/(hx*hx)) + (1/(hy*hy)));
+        matriz->a[i] = 2*((1/(hx*hx)) + (1/(hy*hy)));
         matriz->b[i] = (-1/(hx*hx));
         matriz->d[i] = (-1/(hy*hy));
     }
@@ -164,10 +168,37 @@ void montaMatrizA1(MatrizPentadiagonal* matriz, Dados* dados)
  * @param dados       Ponteiro para estrutura de Dados
  * @param vetorPontos Vetor de pontos discretos
  */
-void montaMatrizA2(MatrizPentadiagonal* matriz, Dados* dados, Ponto* vetorPontos)
+void montaMatrizA2_P(MatrizPentadiagonal* matriz, Dados* dados)
 {
     size_t i;
-    double x, y, hx, hy;
+    double hx, hy;
+
+    // Calculando hx e hy
+	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
+	hy = (dados->fimY - dados->inicioY)/((double)dados->qtdY-1);
+
+    // Montando a matriz pentadiagonal
+    // BETAx, BETAy, GAMA são nulos
+    for(i=0; i < matriz->N; i++) {
+        matriz->e[i] = (-1/(hy*hy));
+        matriz->c[i] = (-1/(hx*hx));
+        matriz->a[i] = 2*((1/(hx*hx)) + (1/(hy*hy)));
+        matriz->b[i] = (-1/(hx*hx));
+        matriz->d[i] = (-1/(hy*hy));
+    }
+}
+
+/**
+ * Método de construção específico do experimento 4:
+ * "Aplicação Física 2 - Escoamento em Águas Subterrâneas"
+ * @param matriz      Ponteiro para matriz pentadiagonal
+ * @param dados       Ponteiro para estrutura de Dados
+ * @param vetorPontos Vetor de pontos discretos
+ */
+void montaMatrizA2_V(MatrizPentadiagonal* matriz, Dados* dados)
+{
+    size_t i;
+    double hx, hy;
 
     // Calculando hx e hy
 	hx = (dados->fimX - dados->inicioX)/((double)dados->qtdX-1);
@@ -175,13 +206,11 @@ void montaMatrizA2(MatrizPentadiagonal* matriz, Dados* dados, Ponto* vetorPontos
 
     // Montando a matriz pentadiagonal
     for(i=0; i < matriz->N; i++) {
-        x = vetorPontos[i].x;
-        y = vetorPontos[i].y;
-        matriz->e[i] = (-1/(hy*hy)) - (BETAy(x,y)/(2*hy));
-        matriz->c[i] = (-1/(hx*hx)) - (BETAx(x,y)/(2*hx));
-        matriz->a[i] = GAMA(x,y) + 2 *((1/(hx*hx)) + (1/(hy*hy)));
-        matriz->b[i] = (-1/(hx*hx)) + (BETAx(x,y)/(2*hx));
-        matriz->d[i] = (-1/(hy*hy)) + (BETAy(x,y)/(2*hy));
+        matriz->e[i] = -(1/(2*hy));
+        matriz->c[i] = -(1/(2*hx));
+        matriz->a[i] = 0;
+        matriz->b[i] = (1/(2*hx));
+        matriz->d[i] = (1/(2*hy));
     }
 }
 

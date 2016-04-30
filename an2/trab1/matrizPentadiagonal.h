@@ -14,10 +14,6 @@
 #ifndef MATRIZPENTADIAGONAL_H
 #define MATRIZPENTADIAGONAL_H
 
-#define BETAx(x,y) 0
-#define BETAy(x,y) 0
-#define GAMA(x,y)  0
-
 // Variável global que identifica
 // o experimento a ser efetuado
 extern int flagExp;
@@ -44,7 +40,8 @@ MatrizPentadiagonal* criaMatrizPentadiagonal(Dados*, Ponto*);
 void montaMatrizV1(MatrizPentadiagonal*, Dados*);
 void montaMatrizV2(MatrizPentadiagonal*, Dados*, Ponto*);
 void montaMatrizA1(MatrizPentadiagonal*, Dados*);
-void montaMatrizA2(MatrizPentadiagonal*, Dados*, Ponto*);
+void montaMatrizA2_P(MatrizPentadiagonal*, Dados*);
+void montaMatrizA2_V(MatrizPentadiagonal*, Dados*);
 void printMatrizPentadiagonal(MatrizPentadiagonal*);
 void freeMatrizPentadiagonal(MatrizPentadiagonal*);
 
