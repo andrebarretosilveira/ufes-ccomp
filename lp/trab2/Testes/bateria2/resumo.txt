@@ -1,0 +1,8 @@
+Lista de Livros Ordenada Crescentemente por Codigo: 2, 3, 5, 6, 7, 8, 9, 17
+
+Lista de Livros Ordenada Decrescentemente por Titulo: 17, 3, 9, 2, 6, 5, 8, 7
+
+Lista de Livros Ordenada Crescentemente por Autor: 8, 5, 7, 6, 9, 2, 17, 3
+
+Lista de Livros Ordenada Decrescentemente por Data de Publicacao: 2, 3, 17, 6, 8, 7, 5, 9
+

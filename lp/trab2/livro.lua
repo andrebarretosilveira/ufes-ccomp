@@ -58,6 +58,18 @@ local function getDados(self)
     return dados
 end
 
+-- Retorna os dados do livro em uma string
+local function toString(self)
+    dados = {self.codigo,
+            self.titulo,
+            self.autor,
+            self.assunto,
+            os.date("%d/%m/%Y", self.dataPub),
+            self.editora,
+            self.resumo}
+    return table.concat(dados, '\n')
+end
+
 -- Compara crescentemente por Código
 local function comparaCodigo(livro1, livro2)
     cod1 = tonumber(livro1:getCodigo())
@@ -114,11 +126,6 @@ local function comparaData(livro1, livro2)
     end
 end
 
--- Print
-local function Print(self)
-    print(self.codigo, self.titulo, self.autor, self.assunto, self.dataPub, self.editora, self.resumo)
-end
-
 --
 -- Adicionando funções à tabela de métodos
 --
@@ -126,12 +133,11 @@ Livro_methods.getCodigo = getCodigo
 Livro_methods.getTitulo = getTitulo
 Livro_methods.getAutor = getAutor
 Livro_methods.getData = getData
-Livro_methods.getDados = getDados
+Livro_methods.toString = toString
 Livro_methods.comparaCodigo = comparaCodigo
 Livro_methods.comparaTitulo = comparaTitulo
 Livro_methods.comparaAutor = comparaAutor
 Livro_methods.comparaData = comparaData
-Livro_methods.Print = Print
 --
 
 return Livro_methods

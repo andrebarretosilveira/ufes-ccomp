@@ -1,0 +1,49 @@
+a
+7
+Inteligencia Artificial
+Peter Norvig
+Computacao
+11/09/2013
+Elsevier
+Livro texto de IA em muitas universidades.
+Um dos melhores livros de IA.
+
+i
+8
+Inteligencia Artificial
+George Luger
+Computacao
+01/01/2014
+Pearson
+Por meio de uma abordagem clara e objetiva, George Luger 
+reune nesta sexta edicao, atualizada com as praticas mais 
+recentes do mercado, topicos importantes relacionados a 
+inteligencia artificial.
+
+e
+1
+
+i
+9
+Redes Neurais. Principios e Pretica
+Simon Haykin
+Computacao
+01/12/2003
+Bookman
+As redes neurais artificiais tem raizes em disciplinas 
+como neurociencia, matematica, estatistica, fisica, 
+ciencia da computacao e engenharia. 
+
+e
+4
+
+i
+17
+Uma breve historia do tempo
+Stephen Hawking
+Fisica
+19/03/2015
+Intrinseca
+Uma das mentes mais geniais do mundo moderno, Stephen
+Hawking guia o leitor na busca por respostas a algumas das
+maiores duvidas da humanidade: Qual a origem do universo?

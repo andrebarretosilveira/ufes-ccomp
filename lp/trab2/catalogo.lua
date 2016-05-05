@@ -31,54 +31,47 @@ Catalogo_methods.Catalogo = Catalogo
 
 -- Função que efetivamente realiza a leitura de um
 -- livro. Retorna uma tupla contendo o livro e a
--- última linha lida, que no caso será ou '\n' ou
--- '', indicando se a leitura deve continuar ou se
+-- última linha lida, que no caso será ou '' ou
+-- nil, indicando se a leitura deve continuar ou se
 -- o arquivo arquivo acabou, respectivamente.
 function lerLivro(self, filename)
-    print(filename)
-    io.input(filename) -- Abre arquivo para leitura
-
     codigo = io.read()
     -- Evita erros de leitura caso existam linhas
     -- em branco extras
-    if codigo == '\n' or codigo == '' then
+    if codigo == '' or codigo == nil then
         return nil, codigo
     end
 
-    codigo = codigo:gsub("\n", "")
-    titulo = io.read():gsub("\n", "")
-    autor = io.read():gsub("\n", "")
-    assunto = io.read():gsub("\n", "")
-    dataStr = io.read():gsub("\n", "")
+    titulo = io.read()
+    autor = io.read()
+    assunto = io.read()
+    dataStr = io.read()
     dataTab = self.split(dataStr, '/')
     dataTab = {day=dataTab[1], month=dataTab[2], year=dataTab[3]}
     data = os.time(dataTab)
-    editora = io.read():gsub("\n", "")
+    editora = io.read()
+    resumo = io.read()
     resumoPart = io.read()
-    resumo = ''
     -- Lendo o resumo até achar uma linha em branco
     -- ou o final do arquivo
-    while resumoPart ~= '\n' and resumoPart ~= '' do
-        resumo = resumo .. resumoPart
+    while resumoPart ~= '' and resumoPart ~= nil do
+        resumo = resumo .. '\n' .. resumoPart
         resumoPart = io.read()
     end
 
-    resumo = resumo:gsub("\n", "")
-
     livro = ls.Livro(codigo, titulo, autor, assunto, data, editora, resumo)
-    livro:Print()
     return livro, resumoPart
 end
 
 -- Função que verifica se o livro já existe no catálogo
 function possuiLivro(self, livro)
     for key,l in ipairs(self.livros) do
-        if livro.getCodigo() == l.getCodigo() then
-            return True
+        if livro:getCodigo() == l:getCodigo() then
+            return true
         end
     end
 
-    return False
+    return false
 end
 
 -- Função para adicionar um livro do Catálago
@@ -90,8 +83,8 @@ end
 
 -- Função para remover um livro do Catálago
 function removeLivro(self, codigo)
-    for key,livro in ipairs(self.livros) do
-        if livro.getCodigo() == codigo then
+    for key,livro in pairs(self.livros) do
+        if livro:getCodigo() == codigo then
             table.remove(self.livros, key)
             break
         end
@@ -100,8 +93,9 @@ end
 
 -- Função que abre um arquivo para leitura dos livros
 function lerCatalogo(self, filename)
-    posArqv = nil
-    while posArqv ~= '' do
+    io.input(filename) -- Abre arquivo para leitura
+    posArqv = ''
+    while posArqv ~= nil do
         livro, posArqv = self:lerLivro(filename)
         if livro ~= nil then
             self:adicionaLivro(livro)
@@ -110,121 +104,110 @@ function lerCatalogo(self, filename)
 end
 
 -- Função atualizar o Catálago com base no arquivo
-function atualiza(self, arquivo)
-    f = open(arquivo, 'r')
-    line = f.read()
+function atualiza(self, filename)
+    io.input(filename) -- Abre arquivo para leitura
 
-    while line ~= '' do
-        line = line:gsub("\n", "")
-
+    line = io.read()
+    while line ~= nil do
         -- Caso de inserção
         if line == 'i' then
-            livro, posArqv = self.lerLivro(f)
-            self.adicionaLivro(livro)
+            livro, posArqv = self:lerLivro(filename)
+            self:adicionaLivro(livro)
 
         -- Caso de alteração
         elseif line == 'a' then
-            livro, posArqv = self.lerLivro(f)
-            if self.possuiLivro(livro) then
-                self.removeLivro(livro.getCodigo())
-                self.adicionaLivro(livro)
+            livro, posArqv = self:lerLivro(filename)
+            if self:possuiLivro(livro) then
+                self:removeLivro(livro:getCodigo())
+                self:adicionaLivro(livro)
             end
 
         -- Caso de exclusão
         elseif line == 'e' then
-            codigo = f.read():gsub("\n", "")
-            self.removeLivro(codigo)
+            codigo = io.read()
+            self:removeLivro(codigo)
         end
 
-        line = f.read()
+        line = io.read()
     end
 end
 
 -- Função para escrita do arquivo de saída
-function escreveSaida(self, arquivo)
-    f = open(arquivo, 'w')
+function escreveSaida(self, filename)
+    io.output(filename)
 
-    self.ordena(Livro.comparaCodigo)
-    f.write("Lista de Livros Ordenada Crescentemente por Codigo:\n")
+    self:ordena(ls.comparaCodigo)
+    io.write("Lista de Livros Ordenada Crescentemente por Codigo:\n")
     for key,livro in ipairs(self.livros) do
-        f.write('\n')
-        dados = livro.getDados()
-        for key,dado in ipairs(dados) do
-            f.write(dado .. '\n')
-        end
+        io.write('\n')
+        dados = livro:toString()
+        io.write(dados .. '\n')
     end
 
-    f.write('\n')
-    self.ordena(Livro.comparaTitulo)
-    f.write("Lista de Livros Ordenada Decrescentemente por Titulo:\n")
+    io.write('\n')
+    self:ordena(ls.comparaTitulo)
+    io.write("Lista de Livros Ordenada Decrescentemente por Titulo:\n")
     for key,livro in ipairs(self.livros) do
-        f.write('\n')
-        dados = livro.getDados()
-        for key,dado in ipairs(dados) do
-            f.write(dado .. '\n')
-        end
+        io.write('\n')
+        dados = livro:toString()
+        io.write(dados .. '\n')
     end
 
-    f.write('\n')
-    self.ordena(Livro.comparaAutor)
-    f.write("Lista de Livros Ordenada Crescentemente por Autor:\n")
+    io.write('\n')
+    self:ordena(ls.comparaAutor)
+    io.write("Lista de Livros Ordenada Crescentemente por Autor:\n")
     for key,livro in ipairs(self.livros) do
-        f.write('\n')
-        dados = livro.getDados()
-        for key,dado in ipairs(dados) do
-            f.write(dado .. '\n')
-        end
+        io.write('\n')
+        dados = livro:toString()
+        io.write(dados .. '\n')
     end
 
-    f.write('\n')
-    self.ordena(Livro.comparaData)
-    f.write("Lista de Livros Ordenada Decrescentemente por Data de Publicacao:\n")
+    io.write('\n')
+    self:ordena(ls.comparaData)
+    io.write("Lista de Livros Ordenada Decrescentemente por Data de Publicacao:\n")
     for key,livro in ipairs(self.livros) do
-        f.write('\n')
-        dados = livro.getDados()
-        for key,dado in ipairs(dados) do
-            f.write(dado .. '\n')
-        end
+        io.write('\n')
+        dados = livro:toString()
+        io.write(dados .. '\n')
     end
+
+    io.close()
 end
 
 -- Função para reescrita do Catálago
-function escreveCatalogo(self, arquivo)
-    f = open(arquivo, 'w')
+function escreveCatalogo(self, filename)
+    io.output(filename)
 
-    if len(self.livros) == 0 then
+    if #self.livros == 0 then
         return;
     end
 
     -- Primeiro livro
-    dados = self.livros["0"].getDados()
-    for key,dado in ipairs(dados) do
-        f.write(i .. '\n')
-    end
+    dados = self.livros[1]:toString()
+    io.write(dados .. '\n')
 
     -- Demais livros
     for key,livro in ipairs(self.livros) do
-        f.write('\n')
-        dados = livro.getDados()
-        for key,dado in ipairs(dados) do
-            f.write(dado .. '\n')
-        end
+        io.write('\n')
+        dados = livro:toString()
+        io.write(dados .. '\n')
     end
+    io.close()
 end
 
 -- Função de Ordenação (Selection Sort)
 function ordena(self, comparador)
     N = #self.livros
-    for i=0,N do
+    for i=1,N do
         minPos = i
         for j=i,N do
-            if comparador(self.livros["j"], self.livros["minPos"]) < 0 then
+            if comparador(self.livros[j], self.livros[minPos]) < 0 then
                 minPos = j
             end
         end
 
         -- Swap livros
-        self.livros["i"], self.livros["minPos"] = self.livros["minPos"], self.livros["i"]
+        self.livros[i], self.livros[minPos] = self.livros[minPos], self.livros[i]
     end
 end
 
