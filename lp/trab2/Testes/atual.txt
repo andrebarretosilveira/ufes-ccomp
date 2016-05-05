@@ -1,0 +1,25 @@
+a
+1234
+Introducao a Programacao Usando C
+Flavio Miguel Varejao
+Computacao
+01/01/2015
+Elsevier
+Introducao a 
+Tecnicas de Programacao
+Usando a Linguagem de Programacao C
+e uma Nova Abordagem inspirada em 
+Programacao Funcional e baseada em
+Tipos Abstratos de Dados
+
+i
+23231
+Memorial do Convento
+Jose Saramago
+Literatura
+02/06/2001
+Bertrand Brasil
+Romance sobre um convento
+
+e
+9889

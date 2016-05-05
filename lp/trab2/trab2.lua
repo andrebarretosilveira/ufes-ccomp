@@ -3,17 +3,13 @@
 -- André Barreto Silveira
 --
 
--- Adicionando arquivo de script livro.lua
-local catalogoScript = require("catalogo")
+-- Adicionando arquivo de script catalogo.lua
+local cs = require("catalogo")
 
---narnia = livroScript.Livro("001", "As Crônicas de Nárnia")
---hobbit = livroScript.Livro("122", "Hobbit - Uma Aventura Inesperada")
---narnia:Print()
---hobbit:Print()
+catalogo = cs.Catalogo()
 
---comp = livroScript.comparaAutor(narnia, hobbit)
---dados = narnia:getDados()
---for i,dado in ipairs(dados) do
-    --print(dado)
---end
---print(comp)
+catalogo.lerCatalogo("catalogo.txt")
+--catalogo.atualiza("atual.txt")
+--catalogo.escreveSaida("saida.txt")
+--catalogo.ordena(Livro.comparaCodigo)
+--catalogo.escreveCatalogo("catalogo.txt")
