@@ -17,7 +17,7 @@ local Catalogo Catalogo_metatable = {
 }
 
 -- Construtor
-local function Catalogo()
+function Catalogo()
     self = {}
     self.livros = {}
     setmetatable(self, Catalogo_metatable)
@@ -34,7 +34,7 @@ Catalogo_methods.Catalogo = Catalogo
 -- última linha lida, que no caso será ou '\n' ou
 -- '', indicando se a leitura deve continuar ou se
 -- o arquivo arquivo acabou, respectivamente.
-local function lerLivro(filename)
+function lerLivro(self, filename)
     print(filename)
     io.input(filename) -- Abre arquivo para leitura
 
@@ -50,8 +50,9 @@ local function lerLivro(filename)
     autor = io.read():gsub("\n", "")
     assunto = io.read():gsub("\n", "")
     dataStr = io.read():gsub("\n", "")
-    dataTab = split(dataStr, '/')
-    data = os.time{day=dataTab["1"], month=dataTab["2"], year=dataTab["3"]}
+    dataTab = self.split(dataStr, '/')
+    dataTab = {day=dataTab[1], month=dataTab[2], year=dataTab[3]}
+    data = os.time(dataTab)
     editora = io.read():gsub("\n", "")
     resumoPart = io.read()
     resumo = ''
@@ -65,11 +66,12 @@ local function lerLivro(filename)
     resumo = resumo:gsub("\n", "")
 
     livro = ls.Livro(codigo, titulo, autor, assunto, data, editora, resumo)
+    livro:Print()
     return livro, resumoPart
 end
 
 -- Função que verifica se o livro já existe no catálogo
-local function possuiLivro(livro)
+function possuiLivro(self, livro)
     for key,l in ipairs(self.livros) do
         if livro.getCodigo() == l.getCodigo() then
             return True
@@ -80,14 +82,14 @@ local function possuiLivro(livro)
 end
 
 -- Função para adicionar um livro do Catálago
-local function adicionaLivro(livro)
-    if not self.possuiLivro(livro) then
+function adicionaLivro(self, livro)
+    if not self:possuiLivro(livro) then
         table.insert(self.livros, livro)
     end
 end
 
 -- Função para remover um livro do Catálago
-local function removeLivro(codigo)
+function removeLivro(self, codigo)
     for key,livro in ipairs(self.livros) do
         if livro.getCodigo() == codigo then
             table.remove(self.livros, key)
@@ -97,19 +99,18 @@ local function removeLivro(codigo)
 end
 
 -- Função que abre um arquivo para leitura dos livros
-local function lerCatalogo(filename)
-    print(filename)
+function lerCatalogo(self, filename)
     posArqv = nil
     while posArqv ~= '' do
-        livro, posArqv = self.lerLivro(filename)
+        livro, posArqv = self:lerLivro(filename)
         if livro ~= nil then
-            self.adicionaLivro(livro)
+            self:adicionaLivro(livro)
         end
     end
 end
 
 -- Função atualizar o Catálago com base no arquivo
-local function atualiza(arquivo)
+function atualiza(self, arquivo)
     f = open(arquivo, 'r')
     line = f.read()
 
@@ -140,7 +141,7 @@ local function atualiza(arquivo)
 end
 
 -- Função para escrita do arquivo de saída
-local function escreveSaida(arquivo)
+function escreveSaida(self, arquivo)
     f = open(arquivo, 'w')
 
     self.ordena(Livro.comparaCodigo)
@@ -188,7 +189,7 @@ local function escreveSaida(arquivo)
 end
 
 -- Função para reescrita do Catálago
-local function escreveCatalogo(arquivo)
+function escreveCatalogo(self, arquivo)
     f = open(arquivo, 'w')
 
     if len(self.livros) == 0 then
@@ -212,7 +213,7 @@ local function escreveCatalogo(arquivo)
 end
 
 -- Função de Ordenação (Selection Sort)
-local function ordena(comparador)
+function ordena(self, comparador)
     N = #self.livros
     for i=0,N do
         minPos = i
@@ -228,7 +229,7 @@ local function ordena(comparador)
 end
 
 -- Função utilitária para separar strings
-local function split(str, pat)
+function split(str, pat)
     local t = {}
     local fpat = "(.-)" .. pat
     local last_end = 1

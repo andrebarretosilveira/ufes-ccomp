@@ -8,7 +8,7 @@ local cs = require("catalogo")
 
 catalogo = cs.Catalogo()
 
-catalogo.lerCatalogo("catalogo.txt")
+catalogo:lerCatalogo("catalogo.txt")
 --catalogo.atualiza("atual.txt")
 --catalogo.escreveSaida("saida.txt")
 --catalogo.ordena(Livro.comparaCodigo)
