@@ -52,12 +52,6 @@ local function getData(self)
     return self.dataPub
 end
 
--- Retorna os dados do livro em uma lista
-local function getDados(self)
-    dados = {self.codigo, self.titulo, self.autor, self.assunto, self.dataPub, self.editora, self.resumo}
-    return dados
-end
-
 -- Retorna os dados do livro em uma string
 local function toString(self)
     dados = {self.codigo,

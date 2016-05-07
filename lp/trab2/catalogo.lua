@@ -109,6 +109,8 @@ function atualiza(self, filename)
 
     line = io.read()
     while line ~= nil do
+        line = line:gsub(' ', '')
+
         -- Caso de inserção
         if line == 'i' then
             livro, posArqv = self:lerLivro(filename)
