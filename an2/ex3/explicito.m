@@ -42,7 +42,7 @@ end
 %legend('t=0.0','t=1.0')
 
 plot(x,u(:,1),x,u(:,10),x,u(:,20),x,u(:,30),x,u(:,40),x,u(:,50),x,u(:,60),x,u(:,npassos))
-legend('t=0.0','t=1.0','t=2.0','t=3.0','t=4.0','t=5.0','t=6.0','sol. estacionária')
+legend('t=0.0','t=1.0','t=2.0','t=3.0','t=4.0','t=5.0','t=6.0','sol. estacionaria')
   
 
 
