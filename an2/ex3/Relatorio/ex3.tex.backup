@@ -1,0 +1,400 @@
+% ------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
+% Relatório do Exercício 3 de Algoritmos Numéricos 2
+% Autor: André Barreto Silveira
+% ------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
+
+\documentclass[
+	11pt,				% tamanho da fonte
+	oneside,			% para impressão apenas no verso. Oposto a twoside
+	a4paper,			% tamanho do papel. 
+	english,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	]{article}
+
+
+% ---
+% PACOTES
+% ---
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+\usepackage{nomencl}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{makeidx}
+\usepackage{multirow,tabularx}
+\usepackage{multicol}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{url}
+\usepackage[brazilian]{babel}
+\usepackage[brazilian,hyperpageref]{backref}
+\usepackage[fleqn]{amsmath}
+\usepackage{mathtools,amssymb}
+\usepackage{pgfplots}
+
+\usepackage{lipsum}
+% ---
+
+% ---
+% Configurações do pacote listings
+% ---
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.571428571,0.571428571,0.571428571}
+\definecolor{mymauve}{rgb}{0.5714285718,0,0.82}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.571428571,0.571428571,0.571428571}
+\definecolor{codepurple}{rgb}{0.5714285718,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstset{
+	backgroundcolor=\color{white},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	commentstyle=\color{mygreen},
+	deletekeywords={...},
+	escapeinside={\%*}{*)},
+	extendedchars=true,
+	keepspaces=true,
+	keywordstyle=\color{blue},
+	language=C,
+	otherkeywords={*,...},
+	numbers=left,
+	numbersep=5pt,
+	numberstyle=\tiny\color{mygray},
+	rulecolor=\color{black},
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	stepnumber=1,
+	stringstyle=\color{mymauve},
+	tabsize=2,
+	title=\lstname
+}
+% ---
+	
+% ---
+% Informações de dados para CAPA
+% ---
+\title{\textbf{Solução de Problemas de Valor no Contorno Bidimensionais}}
+\author{
+André Barreto e Igor Ventorim\\\\
+\normalsize Universidade Federal do Espírito Santo\\
+}
+\date{2015}
+% ---
+
+% ---
+% Configurações de aparência do PDF final
+% ---
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+	pdftitle={\@title}, 
+	pdfauthor={\@author},
+	pdfsubject={Escalonamento de Jobs},
+	pdfcreator={LaTeX with abnTeX2},
+	pdfkeywords={abnt}{latex}{abntex}{abntex2}{atigo científico}, 
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	filecolor=magenta,
+	urlcolor=blue,
+	bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% ---
+% Compila o indice
+% ---
+\makeindex
+% ---
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+\setlength{\parindent}{1cm}
+\setlength{\parskip}{0.2cm}
+% ---
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+% ---
+
+% Seleciona o idioma do documento
+\selectlanguage{brazil}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing
+
+\graphicspath{ {Imagens/} }
+
+% ------------------------------------------------------------------------------
+% Página de Título
+% ------------------------------------------------------------------------------
+\begin{titlepage}
+	\centering
+	{\scshape \large Universidade Federal do Espírito Santo\par}
+	{\large Departamento de Informática\par}
+	\vspace{1cm}
+	{\large André Barreto Silveira\par}
+	
+	\vfill
+	
+	{\LARGE \bfseries Equação do Calor Unidimensional Transiente\par}
+	\vspace{1cm}
+	{\large Exercício 3 de Algoritmos Numéricos 2\par}
+
+	\vfill
+
+	{\large Vitória\par}
+	{\large 2016\par}
+\end{titlepage}
+\addtocounter{page}{1}
+
+% ------------------------------------------------------------------------------
+% Introdução
+% ------------------------------------------------------------------------------
+\section{Introdução}
+O estudo da equação de transporte, também denominada equação da 
+advecção-difusão-reação, continua sendo um ativo campo de pesquisa, uma vez que 
+essa equação é de fundamental importância nos problemas relacionados a 
+aerodinâmica,  meteorologia, oceanografia, hidrologia, engenharia química e
+de reservatórios. A equação de transporte tem características bastante 
+peculiares que fazem com que sua  resolução por meios numéricos seja 
+dificultada em situações onde o problema é fortemente convectivo. Por isso, 
+diversos métodos têm sido desenvolvidos e aplicados, com a intenção de superar 
+as dificuldades numéricas impostas por esta equação.
+
+A equação de transporte bidimensional pode ser definida por:
+
+\begin{equation} \label{eq:transporte}
+- k \left(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial 
+y^2}\right) +
+\beta_x(x,y)\frac{\partial u}{\partial x} +
+\beta_y(x,y)\frac{\partial u}{\partial y} +
+\gamma(x,y)u = f(x,y) \text{ em } \Omega
+\end{equation}
+
+Este trabalho tem como objetivo verificar como as formas de armazenamento das 
+estruturas resultantes pela discretização da equação \eqref{eq:transporte} por 
+diferenças finitas pode impactar no tempo de processamento.
+
+Para isto, será implementado em linguagem C um programa capaz de aplicar a 
+discretização da equação de transporte e resolver o sistema resultante 
+discreto. Quanto ao método de resolução, será aplicado o algoritmo SOR
+(\textit{Sucessive Over Relaxation}) de duas formas: resolvendo o sistema 
+penta-diagonal armazenado de forma esparsa, utilizando  cinto vetores; e 
+completamente livre de matriz.
+
+Nas próximas seções estão descritos em detalhes o desenvolvimento, testes e 
+conceitos do trabalho, sendo que o próximo tópico faz um resumo do método das 
+Diferenças Finitas, descrevendo as técnicas e ordem de aproximação usadas.
+
+% ------------------------------------------------------------------------------
+% Método das Diferenças Finitas
+% ------------------------------------------------------------------------------
+\section{Método das Diferenças Finitas}
+Método das Diferenças Finitas é um método numérico para resolver equações 
+diferenciais através de aproximações de derivadas por diferenças finitas. Estas 
+aproximações são obtidas pela série de Taylor:
+\begin{align*}
+f(x+h) &= f(x)+f'(x)h + \frac{f''(x)h^2}{2} + \frac{f'''(x)h^3}{6} + o(h^4) \\ 
+f(x-h) &= f(x) - f'(x)h + \frac{f''(x)h^2}{2} - \frac{f'''(x)h^3}{6} + 
+o(h^4)
+\end{align*}
+
+Portanto, a primeira e segunda derivadas podem ser escritas das
+seguintes formas:
+\begin{align*}
+f'(x) &= \frac{f(x+h)-f(x)}{h}+o(h) \text{ , diferença atrasada
+(1ª ordem) }  \\
+f'(x) &= \frac{f(x) - f(x-h)}{h} + o(h) \text{ , diferença adiantada
+(1ª ordem) } \\
+f'(x) &= \frac{f(x+h) - f(x-h)}{2h} + o(h^2) \text{ , diferença central 
+(2ª ordem) } \\
+f''(x) &= \frac{f(x+h) -2f(x) + f(x-h)}{h^2} + o(h^2)
+\end{align*}
+
+O método das Diferenças Finitas em domínios retangulares consiste em 
+\textbf{três} etapas principais:
+
+\begin{itemize}
+ \item \textbf{Discretização do domínio}, onde os pontos $(x,y)$ são traduzidos 
+em um domínio linear, de forma que $I = (j-1)n + i$ e $ 1 \le I \ge n*m$, onde 
+$i$ e $j$ são representam um ponto bidimensional e $I$ uma posição 
+representativa deste ponto.
+ \item \textbf{Aproximar a Equação \eqref{eq:transporte} por diferenças 
+finitas}, que consiste em reescrever a equação utilizando as aproximações por 
+diferenças finitas, gerando um sistema linear.
+ \item \textbf{Aplicar condições de contorno} que são definidas pelo problema 
+proposto e que impactam diretamente na solução do problema.
+\end{itemize}
+
+Após a aplicação das etapas acima, teremos como resultado um sistema 
+penta-diagonal da seguinte forma:
+\begin{equation} \label{eq:discret}
+e_Iu_{I-n} + c_Iu_{I-1} + a_Iu_I + b_Iu_{I+1} + d_Iu_{I+n} = f_I
+\end{equation}
+
+\noindent onde
+\begin{align*}
+e_I &= \left[\frac{-1}{h^2_y} - \frac{\beta_y}{2h_y}\right]  \\
+c_I &= \left[\frac{-1}{h^2_x} - \frac{\beta_x}{2h_x}\right]  \\
+a_I &= \left[\gamma_I + \frac{2}{h^2_x} + \frac{2}{h^2_y}\right]  \\
+b_I &= \left[\frac{-1}{h^2_x} + \frac{\beta_x}{2h_x}\right]  \\
+d_I &= \left[\frac{-1}{h^2_x} + \frac{\beta_y}{2h_y}\right]
+\end{align*}
+
+\noindent e a matriz de coeficientes é penta-diagonal, como ilustrado a seguir:
+
+$
+\begin{pmatrix}
+	a_1     & c_1     &         & e_1     &         &         &         &        
+ &         \\
+	b_2     & a_2     & c_2     &         & e_2     &         &         &        
+ &         \\
+	        & \ddots  & \ddots  & \ddots  &         & \ddots  &         &        
+ &         \\
+	d_{n+1} &         & b_{n+1} & a_{n+1} & c_{n+1} &         & e_{n+1} &        
+ &         \\
+	        & \ddots  &         & \ddots  & \ddots  & \ddots  &         & \ddots 
+ &         \\
+	        &         & d_I     &         & b_I     & a_I     & c_I     &        
+ & e_I     \\
+	        &         &         & \ddots  &         & \ddots  & \ddots  & \ddots 
+ &         \\
+	        &         &         & d_{N-1} &         &         & b_{N-1} & 
+a_{N-1} & c_{N-1} \\
+	        &         &         &         & d_N     &         &         & b_N    
+ & a_N     \\
+\end{pmatrix}
+$
+
+% ------------------------------------------------------------------------------
+% Teste Numéricos
+% ------------------------------------------------------------------------------
+\section{Testes Numéricos}
+
+\subsection{Teste 1}
+
+Equação do calor com condutividade térmica $a(x,t) = 0.835 cm^2/s$ e fonte de 
+calor nula:
+
+\begin{itemize}
+ \item Parâmetros básicos:
+ 
+\end{itemize}
+
+
+Este é um experimento simples para testes do sistema onde deve-se determinar a 
+distribuição de calor em uma chapa de metal, com faces termicamente isoladas e 
+com espessura desprezível, sendo que a temperatura é conhecida em todas as 
+faces da chapa. Neste caso, a equação \eqref{eq:transporte} é dada por:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{v1_100-100.jpg}
+    \caption{Gráfico solução da Validação 1 para $n = 100$ e $m = 100$}
+    \label{fig:v1_100-100}
+\end{figure}
+
+\subsection{Teste 2}
+Neste experimento, deve-se determinar a solução aproximada para $u(x,y)$ em 
+$\Omega = (0,1) \times (0,1)$ considerando na Eq.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{v2_25-25}
+    \caption{Gráfico solução da Validação 2 para $n = 25$ e $m = 25$}
+    \label{fig:v2_25-25}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{v2_80-100}
+    \caption{Gráfico solução da Validação 2 para $n = 80$ e $m = 100$}
+    \label{fig:v2_80-100}
+\end{figure}
+
+\subsection{Teste 3}
+Este experimento consiste em uma aplicação dos métodos em questão para resfriar 
+uma massa aquecida. Exemplos podem incluir o resfriamento de chips de 
+computadores ou amplificadores elétricos. O modelo matemático que descreve a 
+transferência de calor nas direções $x$ e $y$ é dado por:
+
+Veja na figura \ref{fig:a1_25-25} o gráfico da solução encontrada ao aplicar 
+a Aplicação Física 1 para $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 25$, e 
+na figura \ref{fig:a1_25-100} o gráfico da solução encontrada ao aplicar 
+a Aplicação Física 1 para $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 100$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{a1_25-25}
+    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 25$}
+    \label{fig:a1_25-25}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{a1_25-100}
+    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 100$}
+    \label{fig:a1_25-100}
+\end{figure}
+
+Em ambos os testes anteriores, foi-se aplicado a condição de contorno mista. 
+Caso seja aplicado a condição de contorno de valor prescrito $u(L, y) =
+70$, e utilizando os dados $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 100$, 
+teremos um gráfico de solução ilustrado pela figura \ref{fig:a170_25-100}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{a170_25-100}
+    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 100$ e 
+$u(L, y) = 70$}
+    \label{fig:a170_25-100}
+\end{figure}
+
+Podemos ver que as soluções encontradas para $n = 25$ e $m = 100$ modificando a 
+condição de contorno são muito similares. Inclusive, a norma da solução é igual 
+à 200.00 em ambos os casos. Um fato importante é notar que o caso de valor 
+prescrito convergiu mais rapidamente (808 contra 1040 iterações do SOR).
+
+% ------------------------------------------------------------------------------
+% Conclusão
+% ------------------------------------------------------------------------------
+\section{Conclusão}
+Com os dados coletados dos experimentos realizados, é passível assertar que a 
+forma de armazenamento das estruturas resultantes pela discretização da equação 
+\eqref{eq:transporte} por diferenças finitas tem um impacto muito significativo 
+no tempo de processamento.
+
+Notamos que ao utilizar uma estrutura específica de armazenamento da matriz 
+penta-diagonal com os coeficientes computados de acordo, e igualmente para o 
+vetor independente, temos um ganho em eficiência significativo se avaliado em 
+relação a um programa livre de matriz. Isto é intuitivo, uma vez que o 
+algoritmo SOR livre de matriz deverá realizar exaustivamente operações iguais 
+em cada iteração, enquanto no outro caso tais cálculos são efetuados apenas 
+uma vez e armazenados em uma estrutura apropriada. E desta estrutura, o acesso 
+é direto, o que é um ganho considerável à realizar operações a cada passo.
+
+Porém vale destacar que o algoritmo ``perdedor'' em tempo de processamento, o 
+SOR livre de matriz, não é descartável. Este é uma opção para casos onde a 
+quantidade de dados a serem processados é de proporções muito grandes. Nestes 
+casos, o método rápido não pode ser aplicado pois necessita de espaço em 
+memória para armazenar seus dados, restando assim a aplicação de um algoritmo 
+livre de matriz eficiente para a solução do problema.
+
+\end{document}
