@@ -170,15 +170,31 @@ André Barreto e Igor Ventorim\\\\
 \section{Introdução}
 Neste documento serão apresentados os testes numéricos dos algoritmos 
 explícito, implícito e de Crank-Nicolson para resolver a equação de calor 
-unidimensional pelo método das diferenças finitas.
+unidimensional pelo método das diferenças finitas. Ou seja, desejamos encontrar 
+$u(x,t)$ que satisfaça a equação diferencial:
+\begin{equation} \label{eq:calor}
+\frac{\partial u}{\partial t} -
+a(x,t)\frac{\partial^2 u}{\partial x^2}
+= f(x,t)
+\end{equation}
+
+onde $0 < x < l$, $a(x,t) > 0$ e $t > 0$. A equação \ref{eq:calor} satisfaz 
+condições iniciais e de contorno.
 
 % ------------------------------------------------------------------------------
 % Teste Numéricos
 % ------------------------------------------------------------------------------
 \section{Testes Numéricos}
+Para avaliar os algoritmos em questão de eficiência, acuidade da solução e 
+tempo computacional ao resolver a equação \ref{eq:calor}, serão realizados três 
+testes práticos nesta seção.
+
+Para cada um dos testes, por questões de simplicidade e eficiência, existe um 
+arquivo de código em octave com para realizá-lo. Para o teste 1, temos o 
+\textit{implicitoT1.m}, \textit{explicitoT1.m} e \textit{cranknicolsonT1.m}, e 
+assim por diante.
 
 \subsection{Teste 1}
-
 Equação do calor com condutividade térmica $a(x,t) = 0.835 cm^2/s$ e fonte de 
 calor nula:
 
@@ -187,7 +203,7 @@ calor nula:
  $a(x,t) = 0.835$, $f(x,t) = 0$, $(0,l) = (0,10)$ e número de passos no tempo 
 igual a 60.
  \item Condições de contorno e iniciais:
- $u(0,t) = 100ºC$, $u(10,t) = 50ºC$ e $u(x,0) = 0$, para $x \in (0,10)$
+ $u(0,t) = 100ºC$, $u(10,t) = 50ºC$ e $u(x,0) = 0$, para $x \in (0,10]$
  \item Parâmetros dos métodos de aproximação:
  \begin{itemize}
   \item $h = 1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
@@ -195,80 +211,190 @@ igual a 60.
   \item $h = 0.1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
 \frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
  \end{itemize}
-\end{itemize}	
+\end{itemize}
 
-\begin{figure}[h]
+Na figura \ref{fig:t1-imp}, vemos o gráfico da solução obtida pelo 
+algoritmo implícito, com $\Delta t = 0.4$. Podemos observar que, 
+aparentemente, o algoritmo ainda estava em processo de convergência quando 
+interrompido com os parâmetros utilizados.
+
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{v1_100-100.jpg}
-    \caption{Gráfico solução da Validação 1 para $n = 100$ e $m = 100$}
-    \label{fig:v1_100-100}
+    \includegraphics[width=0.8\textwidth]{teste1-imp-dt-04}
+    \caption{Teste 1 - Alg. Implícito e $\Delta t = 0.4$}
+    \label{fig:t1-imp}
+\end{figure}
+
+Na figura \ref{fig:t1-exp}, vemos o gráfico da solução obtida pelo 
+algoritmo explícito, com $\Delta t = 0.8$. Vemos que o algoritmo implícito e 
+este possuem gráficos muito díspares. O algoritmo Explícito, neste caso, 
+apresentou este resultado devido à divergência. Com os parâmetros utilizados, 
+não foi possível convergir, uma vez que o mesmo possui condições de 
+estabilidade. Porém, reduzindo o delta, podemos alcançar a convergência.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{teste1-exp-dt-08}
+    \caption{Teste 1 - Alg. Explícito e $\Delta t = 0.8$}
+    \label{fig:t1-exp}
+\end{figure}
+
+E na figura \ref{fig:t1-crank}, vemos o gráfico da solução obtida pelo 
+algoritmo de Crank-Nicolson, com $\Delta t = 0.8$. Ao contrário do algoritmo 
+explícito, o de Crank-Nicolson convergiu com os mesmo parâmetros. Além disto, 
+vemos que obtemos uma convergência mais aparente. Podemos inferir que a solução 
+é uma reta.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{teste1-crank-dt-08}
+    \caption{Teste 1 - Alg. Crank-Nicolson e $\Delta t = 0.8$}
+    \label{fig:t1-crank}
 \end{figure}
 
 \subsection{Teste 2}
-Neste experimento, deve-se determinar a solução aproximada para $u(x,y)$ em 
-$\Omega = (0,1) \times (0,1)$ considerando na Eq.
+Equação do calor com condutividade térmica $a(x,t) = 0.835 cm^2/s$ e fonte de 
+calor nula:
 
-\begin{figure}[h]
+\begin{itemize}
+ \item Parâmetros básicos:
+ $a(x,t) = 0.835$, $f(x,t) = 0$, $(0,l) = (0,10)$ e número de passos no tempo 
+igual a 60.
+ \item Condições de contorno e iniciais:
+ $u(0,t) = 100ºC$, $\frac{\partial u(10,t)}{\partial x} = 0$ e 
+$u(x,0) = 0$, para $x \in (0,10]$
+ \item Parâmetros dos métodos de aproximação:
+ \begin{itemize}
+  \item $h = 1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
+\frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
+  \item $h = 0.1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
+\frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
+ \end{itemize}
+\end{itemize}
+
+Este teste é bastante similar ao primeiro, com a diferença que o extremo final 
+do domínio não possui uma condição de contorno de valor prescrito, e sim com 
+uma derivada conhecida.
+
+Na figura \ref{fig:t2-imp}, vemos o gráfico da solução obtida pelo 
+algoritmo implícito, com $\Delta t = 0.4$.
+
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{v2_25-25}
-    \caption{Gráfico solução da Validação 2 para $n = 25$ e $m = 25$}
-    \label{fig:v2_25-25}
+    \includegraphics[width=0.8\textwidth]{teste2-imp-dt-04}
+    \caption{Teste 2 - Alg. Implícito e $\Delta t = 0.4$}
+    \label{fig:t2-imp}
 \end{figure}
 
-\begin{figure}[h]
+Na figura \ref{fig:t2-exp}, vemos o gráfico da solução obtida pelo 
+algoritmo explícito, com $\Delta t = 0.5$. Este é muito similar ao do algoritmo 
+implícito, e desta vez vemos que ele está \textit{convergindo}, assim como o 
+implícito.
+
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{v2_80-100}
-    \caption{Gráfico solução da Validação 2 para $n = 80$ e $m = 100$}
-    \label{fig:v2_80-100}
+    \includegraphics[width=0.8\textwidth]{teste2-exp-dt-05}
+    \caption{Teste 2 - Alg. Explícito e $\Delta t = 0.5$}
+    \label{fig:t2-exp}
+\end{figure}
+
+Até este momento, com estas soluções obtidas, não conseguimos dizer qual é a 
+solução exata, uma vez que é possível observar que as curvas apresentadas não 
+demonstram convergência. Isto se deve ao fato de que o número de passo $60$ é 
+muito pequeno para este caso.
+
+Portanto, na figura \ref{fig:t2-crank}, vemos o gráfico da solução obtida pelo 
+algoritmo de Crank-Nicolson, com $\Delta t = 0.4$ e o número de passo igual a 
+600. Desta forma, é notável que a solução tende à constante $100$. Isto era 
+esperado pois temos a derivada conhecida $\frac{\partial u(10,t)}{\partial x} = 
+0$ e $u(0,t) = 100$. Ou seja, a função deve começar em $100$ e terminar com 
+derivada em $x$ nula, que é um reta horizontal.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{teste2-crank-dt-04}
+    \caption{Teste 2 - Alg. Crank-Nicolson e $\Delta t = 0.4$}
+    \label{fig:t2-crank}
 \end{figure}
 
 \subsection{Teste 3}
-Este experimento consiste em uma aplicação dos métodos em questão para resfriar 
-uma massa aquecida. Exemplos podem incluir o resfriamento de chips de 
-computadores ou amplificadores elétricos. O modelo matemático que descreve a 
-transferência de calor nas direções $x$ e $y$ é dado por:
+Equação do calor com condutividade térmica $a(x,t) = 0.835 cm^2/s$ e fonte de 
+calor unitária:
 
-Veja na figura \ref{fig:a1_25-25} o gráfico da solução encontrada ao aplicar 
-a Aplicação Física 1 para $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 25$, e 
-na figura \ref{fig:a1_25-100} o gráfico da solução encontrada ao aplicar 
-a Aplicação Física 1 para $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 100$.
+\begin{itemize}
+ \item Parâmetros básicos:
+ $a(x,t) = 0.835$, $f(x,t) = 1$, $(0,l) = (0,10)$ e número de passos no tempo 
+igual a 60.
+ \item Condições de contorno e iniciais:
+ $u(0,t) = 100ºC$, $\frac{\partial u(10,t)}{\partial x} = 0$ e 
+$u(x,0) = 0$, para $x \in (0,10]$
+ \item Parâmetros dos métodos de aproximação:
+ \begin{itemize}
+  \item $h = 1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
+\frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
+  \item $h = 0.1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
+\frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
+ \end{itemize}
+\end{itemize}
 
-\begin{figure}[h]
+Este teste é similar ao segundo, com a diferença que agora temos fonte de 
+calor igual à $1$, que antes era nula.
+
+Na figura \ref{fig:t3-imp}, vemos o gráfico da solução obtida pelo 
+algoritmo implícito, com $\Delta t = 0.8$.
+
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{a1_25-25}
-    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 25$}
-    \label{fig:a1_25-25}
+    \includegraphics[width=0.8\textwidth]{teste3-imp-dt-08}
+    \caption{Teste 2 - Alg. Implícito e $\Delta t = 0.8$}
+    \label{fig:t3-imp}
 \end{figure}
 
-\begin{figure}[h]
+Na figura \ref{fig:t3-exp}, vemos o gráfico da solução obtida pelo 
+algoritmo explícito, com $\Delta t = 0.5$.
+
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{a1_25-100}
-    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 100$}
-    \label{fig:a1_25-100}
+    \includegraphics[width=0.8\textwidth]{teste3-exp-dt-05}
+    \caption{Teste 2 - Alg. Explícito e $\Delta t = 0.5$}
+    \label{fig:t3-exp}
 \end{figure}
 
-Em ambos os testes anteriores, foi-se aplicado a condição de contorno mista. 
-Caso seja aplicado a condição de contorno de valor prescrito $u(L, y) =
-70$, e utilizando os dados $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 100$, 
-teremos um gráfico de solução ilustrado pela figura \ref{fig:a170_25-100}
+Mais uma vez não conseguimos dizer qual é a solução exata. devido ao fato de 
+que o número de passo $60$ é muito pequeno.
 
-\begin{figure}[h]
+Portanto, na figura \ref{fig:t3-crank}, vemos o gráfico da solução obtida pelo 
+algoritmo de Crank-Nicolson, com $\Delta t = 0.4$ e o número de passo igual a 
+$600$. Com isto, podemos observar que o comportamento da solução é bem 
+diferente do aparente até então. O que acontece de fato é que a curva tende à 
+uma parábola.
+
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{a170_25-100}
-    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 100$ e 
-$u(L, y) = 70$}
-    \label{fig:a170_25-100}
+    \includegraphics[width=0.8\textwidth]{teste3-crank-dt-04}
+    \caption{Teste 2 - Alg. Crank-Nicolson e $\Delta t = 0.4$}
+    \label{fig:t3-crank}
 \end{figure}
-
-Podemos ver que as soluções encontradas para $n = 25$ e $m = 100$ modificando a 
-condição de contorno são muito similares. Inclusive, a norma da solução é igual 
-à 200.00 em ambos os casos. Um fato importante é notar que o caso de valor 
-prescrito convergiu mais rapidamente (808 contra 1040 iterações do SOR).
 
 % ------------------------------------------------------------------------------
 % Conclusão
 % ------------------------------------------------------------------------------
 \section{Conclusão}
-\lipsum[2]
+Os algoritmos apresentados são todos passíveis de uso, devendo apenas 
+considerar algumas questões específicas. O algoritmo Explícito possui o 
+limitador de caracterizar-se como um procedimento condicionalmente estável. Ou 
+seja, existem restrições a serem atendidas para que o processo seja 
+convergente. Logo, não é sempre viável escolher este método para a solução.
+
+Tanto o método Implícito quando o de Crank-Nicolson são incondicionalmente 
+estáveis. Isto que dizer que não apresentam restrições como o Explícito. 
+Portanto seu uso é mais plausível quando não temos um problema específico 
+conhecido.
+
+Em relação ao valor de $\Delta t$, nota-se que existe um intervalo indicado 
+para a sua escolha. Caso seja atribuindo um valor grande, teremos soluções 
+incoerentes. E caso seja um valor muito pequeno, a convergência será muito 
+lenta. Os valores ``ideais'' estariam entre 0.5 e 1, onde apresentam uma boa 
+taxa de convergência.
 
 \end{document}
