@@ -168,233 +168,224 @@ André Barreto e Igor Ventorim\\\\
 % Introdução
 % ------------------------------------------------------------------------------
 \section{Introdução}
-O estudo da equação de transporte, também denominada equação da 
-advecção-difusão-reação, continua sendo um ativo campo de pesquisa, uma vez que 
-essa equação é de fundamental importância nos problemas relacionados a 
-aerodinâmica,  meteorologia, oceanografia, hidrologia, engenharia química e
-de reservatórios. A equação de transporte tem características bastante 
-peculiares que fazem com que sua  resolução por meios numéricos seja 
-dificultada em situações onde o problema é fortemente convectivo. Por isso, 
-diversos métodos têm sido desenvolvidos e aplicados, com a intenção de superar 
-as dificuldades numéricas impostas por esta equação.
-
-A equação de transporte bidimensional pode ser definida por:
-
-\begin{equation} \label{eq:transporte}
-- k \left(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial 
-y^2}\right) +
-\beta_x(x,y)\frac{\partial u}{\partial x} +
-\beta_y(x,y)\frac{\partial u}{\partial y} +
-\gamma(x,y)u = f(x,y) \text{ em } \Omega
+Neste documento serão apresentados os testes numéricos dos algoritmos 
+explícito, implícito e de Crank-Nicolson para resolver a equação de calor 
+unidimensional pelo método das diferenças finitas. Ou seja, desejamos encontrar 
+$u(x,t)$ que satisfaça a equação diferencial:
+\begin{equation} \label{eq:calor}
+\frac{\partial u}{\partial t} -
+a(x,t)\frac{\partial^2 u}{\partial x^2}
+= f(x,t)
 \end{equation}
 
-Este trabalho tem como objetivo verificar como as formas de armazenamento das 
-estruturas resultantes pela discretização da equação \eqref{eq:transporte} por 
-diferenças finitas pode impactar no tempo de processamento.
-
-Para isto, será implementado em linguagem C um programa capaz de aplicar a 
-discretização da equação de transporte e resolver o sistema resultante 
-discreto. Quanto ao método de resolução, será aplicado o algoritmo SOR
-(\textit{Sucessive Over Relaxation}) de duas formas: resolvendo o sistema 
-penta-diagonal armazenado de forma esparsa, utilizando  cinto vetores; e 
-completamente livre de matriz.
-
-Nas próximas seções estão descritos em detalhes o desenvolvimento, testes e 
-conceitos do trabalho, sendo que o próximo tópico faz um resumo do método das 
-Diferenças Finitas, descrevendo as técnicas e ordem de aproximação usadas.
-
-% ------------------------------------------------------------------------------
-% Método das Diferenças Finitas
-% ------------------------------------------------------------------------------
-\section{Método das Diferenças Finitas}
-Método das Diferenças Finitas é um método numérico para resolver equações 
-diferenciais através de aproximações de derivadas por diferenças finitas. Estas 
-aproximações são obtidas pela série de Taylor:
-\begin{align*}
-f(x+h) &= f(x)+f'(x)h + \frac{f''(x)h^2}{2} + \frac{f'''(x)h^3}{6} + o(h^4) \\ 
-f(x-h) &= f(x) - f'(x)h + \frac{f''(x)h^2}{2} - \frac{f'''(x)h^3}{6} + 
-o(h^4)
-\end{align*}
-
-Portanto, a primeira e segunda derivadas podem ser escritas das
-seguintes formas:
-\begin{align*}
-f'(x) &= \frac{f(x+h)-f(x)}{h}+o(h) \text{ , diferença atrasada
-(1ª ordem) }  \\
-f'(x) &= \frac{f(x) - f(x-h)}{h} + o(h) \text{ , diferença adiantada
-(1ª ordem) } \\
-f'(x) &= \frac{f(x+h) - f(x-h)}{2h} + o(h^2) \text{ , diferença central 
-(2ª ordem) } \\
-f''(x) &= \frac{f(x+h) -2f(x) + f(x-h)}{h^2} + o(h^2)
-\end{align*}
-
-O método das Diferenças Finitas em domínios retangulares consiste em 
-\textbf{três} etapas principais:
-
-\begin{itemize}
- \item \textbf{Discretização do domínio}, onde os pontos $(x,y)$ são traduzidos 
-em um domínio linear, de forma que $I = (j-1)n + i$ e $ 1 \le I \ge n*m$, onde 
-$i$ e $j$ são representam um ponto bidimensional e $I$ uma posição 
-representativa deste ponto.
- \item \textbf{Aproximar a Equação \eqref{eq:transporte} por diferenças 
-finitas}, que consiste em reescrever a equação utilizando as aproximações por 
-diferenças finitas, gerando um sistema linear.
- \item \textbf{Aplicar condições de contorno} que são definidas pelo problema 
-proposto e que impactam diretamente na solução do problema.
-\end{itemize}
-
-Após a aplicação das etapas acima, teremos como resultado um sistema 
-penta-diagonal da seguinte forma:
-\begin{equation} \label{eq:discret}
-e_Iu_{I-n} + c_Iu_{I-1} + a_Iu_I + b_Iu_{I+1} + d_Iu_{I+n} = f_I
-\end{equation}
-
-\noindent onde
-\begin{align*}
-e_I &= \left[\frac{-1}{h^2_y} - \frac{\beta_y}{2h_y}\right]  \\
-c_I &= \left[\frac{-1}{h^2_x} - \frac{\beta_x}{2h_x}\right]  \\
-a_I &= \left[\gamma_I + \frac{2}{h^2_x} + \frac{2}{h^2_y}\right]  \\
-b_I &= \left[\frac{-1}{h^2_x} + \frac{\beta_x}{2h_x}\right]  \\
-d_I &= \left[\frac{-1}{h^2_x} + \frac{\beta_y}{2h_y}\right]
-\end{align*}
-
-\noindent e a matriz de coeficientes é penta-diagonal, como ilustrado a seguir:
-
-$
-\begin{pmatrix}
-	a_1     & c_1     &         & e_1     &         &         &         &        
- &         \\
-	b_2     & a_2     & c_2     &         & e_2     &         &         &        
- &         \\
-	        & \ddots  & \ddots  & \ddots  &         & \ddots  &         &        
- &         \\
-	d_{n+1} &         & b_{n+1} & a_{n+1} & c_{n+1} &         & e_{n+1} &        
- &         \\
-	        & \ddots  &         & \ddots  & \ddots  & \ddots  &         & \ddots 
- &         \\
-	        &         & d_I     &         & b_I     & a_I     & c_I     &        
- & e_I     \\
-	        &         &         & \ddots  &         & \ddots  & \ddots  & \ddots 
- &         \\
-	        &         &         & d_{N-1} &         &         & b_{N-1} & 
-a_{N-1} & c_{N-1} \\
-	        &         &         &         & d_N     &         &         & b_N    
- & a_N     \\
-\end{pmatrix}
-$
+onde $0 < x < l$, $a(x,t) > 0$ e $t > 0$.
 
 % ------------------------------------------------------------------------------
 % Teste Numéricos
 % ------------------------------------------------------------------------------
 \section{Testes Numéricos}
+Para avaliar os algoritmos em questão de eficiência, acuidade da solução e 
+tempo computacional ao resolver a equação \ref{eq:calor}, serão realizados três 
+testes práticos nesta seção.
+
+Para cada um dos testes, por questões de simplicidade e eficiência, existe um 
+arquivo de código em octave com para realizá-lo. Para o teste 1, temos o 
+\textit{implicitoT1.m}, \textit{explicitoT1.m} e \textit{cranknicolsonT1.m}, e 
+assim por diante.
 
 \subsection{Teste 1}
-
 Equação do calor com condutividade térmica $a(x,t) = 0.835 cm^2/s$ e fonte de 
 calor nula:
 
 \begin{itemize}
  \item Parâmetros básicos:
- 
+ $a(x,t) = 0.835$, $f(x,t) = 0$, $(0,l) = (0,10)$ e número de passos no tempo 
+igual a 60.
+ \item Condições de contorno e iniciais:
+ $u(0,t) = 100ºC$, $u(10,t) = 50ºC$ e $u(x,0) = 0$, para $x \in (0,10]$
+ \item Parâmetros dos métodos de aproximação:
+ \begin{itemize}
+  \item $h = 1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
+\frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
+  \item $h = 0.1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
+\frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
+ \end{itemize}
 \end{itemize}
 
-
-Este é um experimento simples para testes do sistema onde deve-se determinar a 
-distribuição de calor em uma chapa de metal, com faces termicamente isoladas e 
-com espessura desprezível, sendo que a temperatura é conhecida em todas as 
-faces da chapa. Neste caso, a equação \eqref{eq:transporte} é dada por:
+Na figura \ref{fig:t1-imp}, vemos o gráfico da solução obtida pelo 
+algoritmo implícito, com $\Delta t = 0.4$. Podemos observar que, 
+aparentemente, o algoritmo ainda estava em processo de convergência quando 
+interrompido com os parâmetros utilizados.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{v1_100-100.jpg}
-    \caption{Gráfico solução da Validação 1 para $n = 100$ e $m = 100$}
-    \label{fig:v1_100-100}
+    \includegraphics[width=0.8\textwidth]{teste1-imp-dt-04}
+    \caption{Teste 1 - Alg. Implícito e $\Delta t = 0.4$}
+    \label{fig:t1-imp}
+\end{figure}
+
+Na figura \ref{fig:t1-exp}, vemos o gráfico da solução obtida pelo 
+algoritmo explícito, com $\Delta t = 0.8$. Vemos que o algoritmo implícito e 
+este possuem gráficos muito díspares. O algoritmo Explícito, neste caso, 
+apresentou este resultado devido à divergência. Com os parâmetros utilizados, 
+não foi possível convergir, uma vez que o mesmo possui condições de 
+estabilidade. Porém, reduzindo o delta, podemos alcançar a convergência.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{teste1-exp-dt-08}
+    \caption{Teste 1 - Alg. Explícito e $\Delta t = 0.8$}
+    \label{fig:t1-exp}
+\end{figure}
+
+E na figura \ref{fig:t1-crank}, vemos o gráfico da solução obtida pelo 
+algoritmo de Crank-Nicolson, com $\Delta t = 0.8$. Ao contrário do algoritmo 
+explícito, o de Crank-Nicolson convergiu com os mesmo parâmetros. Além disto, 
+vemos que obtemos uma convergência mais aparente. Podemos inferir que a solução 
+é uma reta.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{teste1-crank-dt-08}
+    \caption{Teste 1 - Alg. Crank-Nicolson e $\Delta t = 0.8$}
+    \label{fig:t1-crank}
 \end{figure}
 
 \subsection{Teste 2}
-Neste experimento, deve-se determinar a solução aproximada para $u(x,y)$ em 
-$\Omega = (0,1) \times (0,1)$ considerando na Eq.
+Equação do calor com condutividade térmica $a(x,t) = 0.835 cm^2/s$ e fonte de 
+calor nula:
+
+\begin{itemize}
+ \item Parâmetros básicos:
+ $a(x,t) = 0.835$, $f(x,t) = 0$, $(0,l) = (0,10)$ e número de passos no tempo 
+igual a 60.
+ \item Condições de contorno e iniciais:
+ $u(0,t) = 100ºC$, $\frac{\partial u(10,t)}{\partial x} = 0$ e 
+$u(x,0) = 0$, para $x \in (0,10]$
+ \item Parâmetros dos métodos de aproximação:
+ \begin{itemize}
+  \item $h = 1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
+\frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
+  \item $h = 0.1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
+\frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
+ \end{itemize}
+\end{itemize}
+
+Este teste é bastante similar ao primeiro, com a diferença que o extremo final 
+do domínio não possui uma condição de contorno de valor prescrito, e sim com 
+uma derivada conhecida.
+
+Na figura \ref{fig:t2-imp}, vemos o gráfico da solução obtida pelo 
+algoritmo implícito, com $\Delta t = 0.4$.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{v2_25-25}
-    \caption{Gráfico solução da Validação 2 para $n = 25$ e $m = 25$}
-    \label{fig:v2_25-25}
+    \includegraphics[width=0.8\textwidth]{teste2-imp-dt-04}
+    \caption{Teste 2 - Alg. Implícito e $\Delta t = 0.4$}
+    \label{fig:t2-imp}
 \end{figure}
 
+Na figura \ref{fig:t2-exp}, vemos o gráfico da solução obtida pelo 
+algoritmo explícito, com $\Delta t = 0.5$. Este é muito similar ao do algoritmo 
+implícito, e desta vez vemos que ele está \textit{convergindo}, assim como o 
+implícito.
+
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{v2_80-100}
-    \caption{Gráfico solução da Validação 2 para $n = 80$ e $m = 100$}
-    \label{fig:v2_80-100}
+    \includegraphics[width=0.8\textwidth]{teste2-exp-dt-05}
+    \caption{Teste 2 - Alg. Explícito e $\Delta t = 0.5$}
+    \label{fig:t2-exp}
+\end{figure}
+
+Até este momento, com estas soluções obtidas, não conseguimos dizer qual é a 
+solução exata, uma vez que é possível observar que as curvas apresentadas não 
+demonstram convergência. Isto se deve ao fato de que o número de passo $60$ é 
+muito pequeno para este caso.
+
+Portanto, na figura \ref{fig:t2-crank}, vemos o gráfico da solução obtida pelo 
+algoritmo de Crank-Nicolson, com $\Delta t = 0.4$ e o número de passo igual a 
+600. Desta forma, é notável que a solução tende à constante $100$. Isto era 
+esperado pois temos a derivada conhecida $\frac{\partial u(10,t)}{\partial x} = 
+0$ e $u(0,t) = 100$. Ou seja, a função deve começar em $100$ e terminar com 
+derivada em $x$ nula, que é um reta horizontal.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{teste2-crank-dt-04}
+    \caption{Teste 2 - Alg. Crank-Nicolson e $\Delta t = 0.4$}
+    \label{fig:t2-crank}
 \end{figure}
 
 \subsection{Teste 3}
-Este experimento consiste em uma aplicação dos métodos em questão para resfriar 
-uma massa aquecida. Exemplos podem incluir o resfriamento de chips de 
-computadores ou amplificadores elétricos. O modelo matemático que descreve a 
-transferência de calor nas direções $x$ e $y$ é dado por:
+Equação do calor com condutividade térmica $a(x,t) = 0.835 cm^2/s$ e fonte de 
+calor unitária:
 
-Veja na figura \ref{fig:a1_25-25} o gráfico da solução encontrada ao aplicar 
-a Aplicação Física 1 para $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 25$, e 
-na figura \ref{fig:a1_25-100} o gráfico da solução encontrada ao aplicar 
-a Aplicação Física 1 para $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 100$.
+\begin{itemize}
+ \item Parâmetros básicos:
+ $a(x,t) = 0.835$, $f(x,t) = 1$, $(0,l) = (0,10)$ e número de passos no tempo 
+igual a 60.
+ \item Condições de contorno e iniciais:
+ $u(0,t) = 100ºC$, $\frac{\partial u(10,t)}{\partial x} = 0$ e 
+$u(x,0) = 0$, para $x \in (0,10]$
+ \item Parâmetros dos métodos de aproximação:
+ \begin{itemize}
+  \item $h = 1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
+\frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
+  \item $h = 0.1$ e $\Delta t_1 < \frac{h^2}{2a}$, $\Delta t_2 = 
+\frac{h^2}{2a}$, $\Delta t_3 > \frac{h^2}{2a}$
+ \end{itemize}
+\end{itemize}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{a1_25-25}
-    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 25$}
-    \label{fig:a1_25-25}
-\end{figure}
+Este teste é similar ao segundo, com a diferença que agora temos fonte de 
+calor igual à $1$, que antes era nula.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{a1_25-100}
-    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 100$}
-    \label{fig:a1_25-100}
-\end{figure}
-
-Em ambos os testes anteriores, foi-se aplicado a condição de contorno mista. 
-Caso seja aplicado a condição de contorno de valor prescrito $u(L, y) =
-70$, e utilizando os dados $\Omega = (0,1)\times(0,1)$, $n = 25$ e $m = 100$, 
-teremos um gráfico de solução ilustrado pela figura \ref{fig:a170_25-100}
+Na figura \ref{fig:t3-imp}, vemos o gráfico da solução obtida pelo 
+algoritmo implícito, com $\Delta t = 0.8$.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{a170_25-100}
-    \caption{Gráfico solução da Aplicação Física 1 para $n = 25$ e $m = 100$ e 
-$u(L, y) = 70$}
-    \label{fig:a170_25-100}
+    \includegraphics[width=0.8\textwidth]{teste3-imp-dt-08}
+    \caption{Teste 2 - Alg. Implícito e $\Delta t = 0.8$}
+    \label{fig:t3-imp}
 \end{figure}
 
-Podemos ver que as soluções encontradas para $n = 25$ e $m = 100$ modificando a 
-condição de contorno são muito similares. Inclusive, a norma da solução é igual 
-à 200.00 em ambos os casos. Um fato importante é notar que o caso de valor 
-prescrito convergiu mais rapidamente (808 contra 1040 iterações do SOR).
+Na figura \ref{fig:t3-exp}, vemos o gráfico da solução obtida pelo 
+algoritmo explícito, com $\Delta t = 0.5$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{teste3-exp-dt-05}
+    \caption{Teste 2 - Alg. Explícito e $\Delta t = 0.5$}
+    \label{fig:t3-exp}
+\end{figure}
+
+Mais uma vez não conseguimos dizer qual é a solução exata. devido ao fato de que 
+o número de passo $60$ é muito pequeno.
+
+Portanto, na figura \ref{fig:t3-crank}, vemos o gráfico da solução obtida pelo 
+algoritmo de Crank-Nicolson, com $\Delta t = 0.4$ e o número de passo igual a 
+$600$. Com isto, podemos observar que o comportamento da solução é bem 
+diferente do aparente até então. O que acontece de fato é que a curva tende à 
+uma parábola.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{teste3-crank-dt-04}
+    \caption{Teste 2 - Alg. Crank-Nicolson e $\Delta t = 0.4$}
+    \label{fig:t3-crank}
+\end{figure}
 
 % ------------------------------------------------------------------------------
 % Conclusão
 % ------------------------------------------------------------------------------
 \section{Conclusão}
-Com os dados coletados dos experimentos realizados, é passível assertar que a 
-forma de armazenamento das estruturas resultantes pela discretização da equação 
-\eqref{eq:transporte} por diferenças finitas tem um impacto muito significativo 
-no tempo de processamento.
+Os algoritmos apresentados são todos passíveis de uso, devendo apenas 
+considerar algumas questões específicas. O algoritmo Explícito possui o 
+limitador de caracterizar-se como um procedimento condicionalmente estável. Ou 
+seja, existem restrições a serem atendidas para que o processo seja 
+convergente. Logo, não é sempre viável escolher este método para a solução.
 
-Notamos que ao utilizar uma estrutura específica de armazenamento da matriz 
-penta-diagonal com os coeficientes computados de acordo, e igualmente para o 
-vetor independente, temos um ganho em eficiência significativo se avaliado em 
-relação a um programa livre de matriz. Isto é intuitivo, uma vez que o 
-algoritmo SOR livre de matriz deverá realizar exaustivamente operações iguais 
-em cada iteração, enquanto no outro caso tais cálculos são efetuados apenas 
-uma vez e armazenados em uma estrutura apropriada. E desta estrutura, o acesso 
-é direto, o que é um ganho considerável à realizar operações a cada passo.
-
-Porém vale destacar que o algoritmo ``perdedor'' em tempo de processamento, o 
-SOR livre de matriz, não é descartável. Este é uma opção para casos onde a 
-quantidade de dados a serem processados é de proporções muito grandes. Nestes 
-casos, o método rápido não pode ser aplicado pois necessita de espaço em 
-memória para armazenar seus dados, restando assim a aplicação de um algoritmo 
-livre de matriz eficiente para a solução do problema.
+Tanto o método Implícito quando o de Crank-Nicolson são incondicionalmente 
+estáveis. Isto que dizer que não apresentam restrições como o Explícito.
 
 \end{document}
