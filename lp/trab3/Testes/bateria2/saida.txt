@@ -1,0 +1,343 @@
+Lista de Livros Ordenada Crescentemente por Codigo:
+
+2
+O universo numa casca de noz
+Stephen Hawking
+Fisica
+01/02/2016
+Instrinseca
+Apos o enorme sucesso de Uma breve historia do tempo, a
+Intrinseca traz a luxuosa reedicao de O universo numa
+casca de noz, na qual Stephen Hawking se vale de
+ilustracoes, fotos e esquemas detalhados para mostrar
+grandes descobertas no campo da fisica teorica. 
+
+3
+Sapiens: Uma breve historia da humanidade
+Yuval Noah Harari
+Psicologia
+20/03/2015
+LPM
+Um relato eletrizante sobre a aventura de nossa
+extraordinaria especie, de primatas insignificantes a
+senhores do mundo.
+
+5
+Neurociencia e Transtornos de Aprendizagem
+Marta Pires Relvas
+Psicologia
+01/01/2011
+Wak
+Livro ideal para profissionais da educacao, pais e todos
+os responsaveis pelo processo de educar pessoas, 
+conhecendo exatamente as dimensoes que o humano possui na 
+teia complexa da vida, que e o aprendizado.
+
+6
+Neurociencias e Educacao
+Regina Migliori
+Psicologia
+19/03/2015
+Brasil Sustentavel
+E uma publicacao que apresenta o cerebro e suas inter-
+relacoes com nossos pensamentos, sentimentos e acoes, em 
+uma jornada pelas vias que tecem a trama entre nosso mundo 
+interno e a realidade externa. 
+
+7
+Inteligencia Artificial
+Peter Norvig
+Computacao
+11/09/2013
+Elsevier
+Livro texto de IA em muitas universidades.
+Um dos melhores livros de IA.
+
+8
+Inteligencia Artificial
+George Luger
+Computacao
+01/01/2014
+Pearson
+Por meio de uma abordagem clara e objetiva, George Luger 
+reune nesta sexta edicao, atualizada com as praticas mais 
+recentes do mercado, topicos importantes relacionados a 
+inteligencia artificial.
+
+9
+Redes Neurais. Principios e Pretica
+Simon Haykin
+Computacao
+01/12/2003
+Bookman
+As redes neurais artificiais tem raizes em disciplinas 
+como neurociencia, matematica, estatistica, fisica, 
+ciencia da computacao e engenharia. 
+
+17
+Uma breve historia do tempo
+Stephen Hawking
+Fisica
+19/03/2015
+Intrinseca
+Uma das mentes mais geniais do mundo moderno, Stephen
+Hawking guia o leitor na busca por respostas a algumas das
+maiores duvidas da humanidade: Qual a origem do universo?
+
+Lista de Livros Ordenada Decrescentemente por Titulo:
+
+17
+Uma breve historia do tempo
+Stephen Hawking
+Fisica
+19/03/2015
+Intrinseca
+Uma das mentes mais geniais do mundo moderno, Stephen
+Hawking guia o leitor na busca por respostas a algumas das
+maiores duvidas da humanidade: Qual a origem do universo?
+
+3
+Sapiens: Uma breve historia da humanidade
+Yuval Noah Harari
+Psicologia
+20/03/2015
+LPM
+Um relato eletrizante sobre a aventura de nossa
+extraordinaria especie, de primatas insignificantes a
+senhores do mundo.
+
+9
+Redes Neurais. Principios e Pretica
+Simon Haykin
+Computacao
+01/12/2003
+Bookman
+As redes neurais artificiais tem raizes em disciplinas 
+como neurociencia, matematica, estatistica, fisica, 
+ciencia da computacao e engenharia. 
+
+2
+O universo numa casca de noz
+Stephen Hawking
+Fisica
+01/02/2016
+Instrinseca
+Apos o enorme sucesso de Uma breve historia do tempo, a
+Intrinseca traz a luxuosa reedicao de O universo numa
+casca de noz, na qual Stephen Hawking se vale de
+ilustracoes, fotos e esquemas detalhados para mostrar
+grandes descobertas no campo da fisica teorica. 
+
+6
+Neurociencias e Educacao
+Regina Migliori
+Psicologia
+19/03/2015
+Brasil Sustentavel
+E uma publicacao que apresenta o cerebro e suas inter-
+relacoes com nossos pensamentos, sentimentos e acoes, em 
+uma jornada pelas vias que tecem a trama entre nosso mundo 
+interno e a realidade externa. 
+
+5
+Neurociencia e Transtornos de Aprendizagem
+Marta Pires Relvas
+Psicologia
+01/01/2011
+Wak
+Livro ideal para profissionais da educacao, pais e todos
+os responsaveis pelo processo de educar pessoas, 
+conhecendo exatamente as dimensoes que o humano possui na 
+teia complexa da vida, que e o aprendizado.
+
+8
+Inteligencia Artificial
+George Luger
+Computacao
+01/01/2014
+Pearson
+Por meio de uma abordagem clara e objetiva, George Luger 
+reune nesta sexta edicao, atualizada com as praticas mais 
+recentes do mercado, topicos importantes relacionados a 
+inteligencia artificial.
+
+7
+Inteligencia Artificial
+Peter Norvig
+Computacao
+11/09/2013
+Elsevier
+Livro texto de IA em muitas universidades.
+Um dos melhores livros de IA.
+
+Lista de Livros Ordenada Crescentemente por Autor:
+
+8
+Inteligencia Artificial
+George Luger
+Computacao
+01/01/2014
+Pearson
+Por meio de uma abordagem clara e objetiva, George Luger 
+reune nesta sexta edicao, atualizada com as praticas mais 
+recentes do mercado, topicos importantes relacionados a 
+inteligencia artificial.
+
+5
+Neurociencia e Transtornos de Aprendizagem
+Marta Pires Relvas
+Psicologia
+01/01/2011
+Wak
+Livro ideal para profissionais da educacao, pais e todos
+os responsaveis pelo processo de educar pessoas, 
+conhecendo exatamente as dimensoes que o humano possui na 
+teia complexa da vida, que e o aprendizado.
+
+7
+Inteligencia Artificial
+Peter Norvig
+Computacao
+11/09/2013
+Elsevier
+Livro texto de IA em muitas universidades.
+Um dos melhores livros de IA.
+
+6
+Neurociencias e Educacao
+Regina Migliori
+Psicologia
+19/03/2015
+Brasil Sustentavel
+E uma publicacao que apresenta o cerebro e suas inter-
+relacoes com nossos pensamentos, sentimentos e acoes, em 
+uma jornada pelas vias que tecem a trama entre nosso mundo 
+interno e a realidade externa. 
+
+9
+Redes Neurais. Principios e Pretica
+Simon Haykin
+Computacao
+01/12/2003
+Bookman
+As redes neurais artificiais tem raizes em disciplinas 
+como neurociencia, matematica, estatistica, fisica, 
+ciencia da computacao e engenharia. 
+
+2
+O universo numa casca de noz
+Stephen Hawking
+Fisica
+01/02/2016
+Instrinseca
+Apos o enorme sucesso de Uma breve historia do tempo, a
+Intrinseca traz a luxuosa reedicao de O universo numa
+casca de noz, na qual Stephen Hawking se vale de
+ilustracoes, fotos e esquemas detalhados para mostrar
+grandes descobertas no campo da fisica teorica. 
+
+17
+Uma breve historia do tempo
+Stephen Hawking
+Fisica
+19/03/2015
+Intrinseca
+Uma das mentes mais geniais do mundo moderno, Stephen
+Hawking guia o leitor na busca por respostas a algumas das
+maiores duvidas da humanidade: Qual a origem do universo?
+
+3
+Sapiens: Uma breve historia da humanidade
+Yuval Noah Harari
+Psicologia
+20/03/2015
+LPM
+Um relato eletrizante sobre a aventura de nossa
+extraordinaria especie, de primatas insignificantes a
+senhores do mundo.
+
+Lista de Livros Ordenada Decrescentemente por Data de Publicacao:
+
+2
+O universo numa casca de noz
+Stephen Hawking
+Fisica
+01/02/2016
+Instrinseca
+Apos o enorme sucesso de Uma breve historia do tempo, a
+Intrinseca traz a luxuosa reedicao de O universo numa
+casca de noz, na qual Stephen Hawking se vale de
+ilustracoes, fotos e esquemas detalhados para mostrar
+grandes descobertas no campo da fisica teorica. 
+
+3
+Sapiens: Uma breve historia da humanidade
+Yuval Noah Harari
+Psicologia
+20/03/2015
+LPM
+Um relato eletrizante sobre a aventura de nossa
+extraordinaria especie, de primatas insignificantes a
+senhores do mundo.
+
+17
+Uma breve historia do tempo
+Stephen Hawking
+Fisica
+19/03/2015
+Intrinseca
+Uma das mentes mais geniais do mundo moderno, Stephen
+Hawking guia o leitor na busca por respostas a algumas das
+maiores duvidas da humanidade: Qual a origem do universo?
+
+6
+Neurociencias e Educacao
+Regina Migliori
+Psicologia
+19/03/2015
+Brasil Sustentavel
+E uma publicacao que apresenta o cerebro e suas inter-
+relacoes com nossos pensamentos, sentimentos e acoes, em 
+uma jornada pelas vias que tecem a trama entre nosso mundo 
+interno e a realidade externa. 
+
+8
+Inteligencia Artificial
+George Luger
+Computacao
+01/01/2014
+Pearson
+Por meio de uma abordagem clara e objetiva, George Luger 
+reune nesta sexta edicao, atualizada com as praticas mais 
+recentes do mercado, topicos importantes relacionados a 
+inteligencia artificial.
+
+7
+Inteligencia Artificial
+Peter Norvig
+Computacao
+11/09/2013
+Elsevier
+Livro texto de IA em muitas universidades.
+Um dos melhores livros de IA.
+
+5
+Neurociencia e Transtornos de Aprendizagem
+Marta Pires Relvas
+Psicologia
+01/01/2011
+Wak
+Livro ideal para profissionais da educacao, pais e todos
+os responsaveis pelo processo de educar pessoas, 
+conhecendo exatamente as dimensoes que o humano possui na 
+teia complexa da vida, que e o aprendizado.
+
+9
+Redes Neurais. Principios e Pretica
+Simon Haykin
+Computacao
+01/12/2003
+Bookman
+As redes neurais artificiais tem raizes em disciplinas 
+como neurociencia, matematica, estatistica, fisica, 
+ciencia da computacao e engenharia. 
