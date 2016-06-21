@@ -1,8 +1,10 @@
 import System.Environment
+import Catalogo
 
 main = do
-    [f,g] <- getArgs
+    [f] <- getArgs
     contents <- readFile f
-    let lineslist = lines contents
-    print lineslist
+    let listaInfo = splitOn "" (lines contents)
+    let livros = criaListaLivros [] listaInfo
+    return livros
     --writeFile g lineslist

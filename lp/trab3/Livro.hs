@@ -8,8 +8,11 @@
 -- Definição do módulo Livro
 module Livro
 ( Livro(..)
-, toString
+--, toString
 ) where
+
+-- Importando Data.hs
+import Data
 
 -- Definição da estrutura Livro
 data Livro  = Livro {
@@ -17,11 +20,11 @@ data Livro  = Livro {
     titulo  :: String,
     autor   :: String,
     assunto :: String,
-    dataPub :: String,
+    dataPub :: Data,
     editora :: String,
     resumo  :: String
-} deriving (Show)
+} deriving (Show, Eq)
 
 -- Função que imprime os dados de um livro
-toString :: Livro -> IO()
-toString (Livro c t a ass d e r) = putStr(show c ++ "\n" ++ t ++ "\n" ++ a ++ "\n"  ++ ass ++ "\n" ++ d ++ "\n" ++ e ++ "\n" ++ r ++ "\n")
+--toString :: Livro -> IO()
+--toString (Livro c t a ass d e r) = putStr(show c ++ "\n" ++ t ++ "\n" ++ a ++ "\n"  ++ ass ++ "\n" ++ d ++ "\n" ++ e ++ "\n" ++ r ++ "\n")
