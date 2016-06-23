@@ -1,0 +1,7 @@
+5432
+The Art of Computer Programming
+Dijkstra
+Computacao
+23/09/1982
+Macgraw Hill
+Teoria da Computacao

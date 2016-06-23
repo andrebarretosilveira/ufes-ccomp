@@ -2,9 +2,7 @@ import System.Environment
 import Catalogo
 
 main = do
-    [f] <- getArgs
-    contents <- readFile f
+    contents <- readFile "catalogo.txt"
     let listaInfo = splitOn "" (lines contents)
-    let livros = criaListaLivros [] listaInfo
-    return livros
-    --writeFile g lineslist
+    let catalogo = Catalogo (criaListaLivros [] listaInfo)
+    writeFile "saida.txt" (show catalogo)

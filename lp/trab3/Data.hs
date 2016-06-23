@@ -12,11 +12,15 @@ module Data
 
 -- Definição da estrutura Data
 data Data = Data {
-    dia :: Int,
-    mes :: Int,
-    ano :: Int
-} deriving (Show, Eq)
+    dia :: String,
+    mes :: String,
+    ano :: String
+} deriving (Eq)
 
+-- Como mostrar uma Data
+instance Show Data where
+    show (Data dia mes ano) = id dia ++ "/" ++ id mes ++ "/" ++ id ano
 
---instance Ord Data where
-    --compare (Data a b c) (Data d e f) = a > b
+-- Como comparar Datas
+instance Ord Data where
+    compare (Data a b c) (Data d e f) = (c++b++a) `compare` (f++e++d)

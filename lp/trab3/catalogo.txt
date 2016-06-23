@@ -1,0 +1,45 @@
+5432
+The Art of Computer Programming
+Dijkstra
+Computacao
+23/09/1982
+Macgraw Hill
+Teoria da Computacao
+
+12120
+Linguagens de Programacao
+Flavio Miguel Varejao
+Computacao
+01/03/2004
+Elsevier
+Conceitos e 
+Tecnicas
+de Linguagens
+de Programacao
+
+1234
+Introducao a Programacao Usando C
+Flavio Miguel Varejao
+Computacao
+01/01/2015
+Elsevier
+Introducao a 
+Tecnicas de Programacao
+Usando a Linguagem de Programacao C
+
+9889
+A Scanner Darkly
+Philip K. Dick
+Ficcao Cientifica
+13/07/1977
+Masterworks
+Androides se rebelam
+contra seus criadores
+
+2224
+O Mundo de Sofia
+Jostein Gaarder
+Filosofia
+12/10/1995
+Cia das Letras
+Romance que conta a historia da filosofia
