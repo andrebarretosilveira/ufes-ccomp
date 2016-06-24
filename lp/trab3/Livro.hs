@@ -26,5 +26,5 @@ data Livro  = Livro {
 
 -- Como mostrar um Livro
 instance Show Livro where
-    show (Livro c t a ass d e r) = show c ++ "\n" ++ id t ++ "\n" ++ id a ++ "\n" ++ id ass ++ "\n" ++ show d ++ "\n" ++ id e ++ "\n" ++ id r ++ "\n"
+    show (Livro c t a ass d e r) = show c ++ "\n" ++ id t ++ "\n" ++ id a ++ "\n" ++ id ass ++ "\n" ++ show d ++ "\n" ++ id e ++ "\n" ++ id r
 

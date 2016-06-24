@@ -25,11 +25,15 @@ data Catalogo = Catalogo {
 
 -- Como mostrar um Catalogo
 instance Show Catalogo where
-    show (Catalogo livros) = show (livros !! 0)
+    show (Catalogo []) = ""
+    show (Catalogo (x:xs)) = show x ++ "\n\n" ++ show (Catalogo xs)
 
 -- Função que cria a lista de livros
 criaListaLivros _ [] = []
-criaListaLivros l xss = adicionaLivro l (livroFromList (head xss)) ++ criaListaLivros l (tail xss)
+criaListaLivros l (xs:xss) = adicionaLivro l (livroFromList xs) ++ criaListaLivros l xss
+
+-- Função para adicionar um livro em uma lista
+adicionaLivro xs (Livro c t a ass d e r) = xs ++ [Livro c t a ass d e r]
 
 -- Função de leitura de um livro
 livroFromList xs = Livro c t a ass d e r
@@ -42,8 +46,8 @@ livroFromList xs = Livro c t a ass d e r
           r   = xs!!6
           [dia,mes,ano] = splitOn '/' (xs!!4)
 
--- Função para adicionar um livro em uma lista
-adicionaLivro xs (Livro c t a ass d e r) = xs ++ [Livro c t a ass d e r]
+--toStringList (Catalogo []) = []
+--toStringList (Catalogo (x:xs)) = show x : toStringList (Catalogo xs)
 
 -- Separar uma lista de strings em uma lista de lista de strings
 splitOn _ [] = []
