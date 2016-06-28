@@ -34,26 +34,27 @@ instance Show Livro where
 
 -- Como comparar um Livro...
 -- 1. por código (crescente):
-comparaLivroPorCodigo (Livro c1 _ _ _ _ _ _) (Livro c2 _ _ _ _ _ _)
+comparaLivroPorCodigo l1 l2
     | cod1 <= cod2  = True
     | otherwise     = False
-    where cod1 = read c1 :: Int
-          cod2 = read c2 :: Int
+
+    where cod1 = read (codigo l1) :: Int
+          cod2 = read (codigo l2) :: Int
 
 -- 2. por título (decrescente):
-comparaLivroPorTitulo (Livro c1 t1 a1 ass1 d1 e1 r1) (Livro c2 t2 a2 ass2 d2 e2 r2)
-    | t1 > t2   = True
-    | t1 == t2  = not (comparaLivroPorCodigo (Livro c1 t1 a1 ass1 d1 e1 r1) (Livro c2 t2 a2 ass2 d2 e2 r2))
-    | otherwise = False
+comparaLivroPorTitulo l1 l2
+    | titulo l1 > titulo l2   = True
+    | titulo l1 == titulo l2  = not (comparaLivroPorCodigo l1 l2)
+    | otherwise               = False
 
 -- 3. por autor (crescente):
-comparaLivroPorAutor (Livro c1 t1 a1 ass1 d1 e1 r1) (Livro c2 t2 a2 ass2 d2 e2 r2)
-    | a1 < a2   = True
-    | a1 == a2  = comparaLivroPorCodigo (Livro c1 t1 a1 ass1 d1 e1 r1) (Livro c2 t2 a2 ass2 d2 e2 r2)
-    | otherwise = False
+comparaLivroPorAutor l1 l2
+    | autor l1 < autor l2   = True
+    | autor l1 == autor l2  = comparaLivroPorCodigo l1 l2
+    | otherwise             = False
 
 -- 3. por data (decrescente):
-comparaLivroPorData (Livro c1 t1 a1 ass1 d1 e1 r1) (Livro c2 t2 a2 ass2 d2 e2 r2)
-    | d1 > d2   = True
-    | d1 == d2  = not (comparaLivroPorCodigo (Livro c1 t1 a1 ass1 d1 e1 r1) (Livro c2 t2 a2 ass2 d2 e2 r2))
-    | otherwise = False
+comparaLivroPorData l1 l2
+    | dataPub l1 > dataPub l2   = True
+    | dataPub l1 == dataPub l2  = not (comparaLivroPorCodigo l1 l2)
+    | otherwise                 = False
