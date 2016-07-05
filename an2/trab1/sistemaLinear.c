@@ -44,7 +44,7 @@ Ponto* discretizaDominio(Dados* dados)
 	hx = (dados->fimX - dados->inicioX)/((double)n-1);
 	hy = (dados->fimY - dados->inicioY)/((double)m-1);
 
-	vetorPontos = calloc((size_t)(n*m),sizeof(Ponto));
+	vetorPontos = (Ponto*)calloc((size_t)(n*m),sizeof(Ponto));
 
 	pos = 0;
 	for(i = 1; i <= dados->qtdX; i++)

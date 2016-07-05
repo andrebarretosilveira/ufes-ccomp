@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Introdu\347\343o}{}% 1
+\BOOKMARK [1][-]{section.2}{Referencial Te\363rico}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Sistemas lineares de grande porte}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{T\351cnica de Compacta\347\343o de matriz CSR}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Precondicionamento}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Reordenamento}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.5}{M\351todos Iterativos N\343o Estacion\341rios}{section.2}% 7
+\BOOKMARK [3][-]{subsubsection.2.5.1}{GMRES}{subsection.2.5}% 8
+\BOOKMARK [1][-]{section.3}{Experimentos Num\351ricos}{}% 9
+\BOOKMARK [2][-]{subsection.3.1}{Hardware utilizado}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.2}{Matrizes utilizadas}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.3}{Experimentos}{section.3}% 12
+\BOOKMARK [3][-]{subsubsection.3.3.1}{rail\1375177}{subsection.3.3}% 13
+\BOOKMARK [3][-]{subsubsection.3.3.2}{aft01}{subsection.3.3}% 14
+\BOOKMARK [3][-]{subsubsection.3.3.3}{FEM\1373D\137thermal1}{subsection.3.3}% 15
+\BOOKMARK [3][-]{subsubsection.3.3.4}{Dubcova2}{subsection.3.3}% 16
+\BOOKMARK [1][-]{section.4}{Conclus\343o}{}% 17

@@ -1,0 +1,12 @@
+
+== Informações para executar o Trabalho 2 de SO ==
+
+Compilar:
+ 1. Abra a pasta do trabalho no terminal
+ 2. Execute 'make'
+
+Executar:
+ 1. Em uma aba/terminal execute: 'make runC'
+ 2. E na outra aba/terminal:     'make runJava'
+
+ Obs.: A ordem não importa
