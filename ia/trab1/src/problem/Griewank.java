@@ -14,7 +14,7 @@ public class Griewank extends Problem {
 		numberOfVariables_ = numberOfVariables;
 		numberOfObjectives_ = 1;
 		numberOfConstraints_ = 0;
-		problemName_ = "SumSquare";
+		problemName_ = "Griewank";
 		lowerLimit_ = new double[numberOfVariables_];
 		upperLimit_ = new double[numberOfVariables_];
 		

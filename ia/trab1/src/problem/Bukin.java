@@ -14,14 +14,10 @@ public class Bukin extends Problem {
 		numberOfVariables_ = 2;
 		numberOfObjectives_ = 1;
 		numberOfConstraints_ = 0;
-		problemName_ = "SumSquare";
+		problemName_ = "Bukin";
 		lowerLimit_ = new double[numberOfVariables_];
 		upperLimit_ = new double[numberOfVariables_];
 		
-//		for(int i=0; i < numberOfVariables_; i++) {
-//			lowerLimit_[i] = -10.0;
-//			upperLimit_[i] = +10.0;
-//		}
 		lowerLimit_[0] = -15.0;
 		upperLimit_[0] = -5.0;
 		lowerLimit_[1] = -3.0;

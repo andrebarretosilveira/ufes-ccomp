@@ -14,7 +14,7 @@ public class Eggholder extends Problem {
 		numberOfVariables_ = 2;
 		numberOfObjectives_ = 1;
 		numberOfConstraints_ = 0;
-		problemName_ = "SumSquare";
+		problemName_ = "Eggholder";
 		lowerLimit_ = new double[numberOfVariables_];
 		upperLimit_ = new double[numberOfVariables_];
 		
