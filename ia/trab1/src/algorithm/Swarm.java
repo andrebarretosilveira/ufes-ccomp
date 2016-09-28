@@ -5,6 +5,7 @@ import java.util.List;
 
 import jmetal.core.Problem;
 import jmetal.core.Solution;
+import jmetal.core.Variable;
 import jmetal.util.JMException;
 
 public class Swarm {
@@ -25,10 +26,7 @@ public class Swarm {
 		}
 		
 		// Inicializando a melhor solução aleatoriamente
-		this.bestSolution.setObjective(0, 
-				particles.get(0).getBestSolution().getObjective(0));
-		this.bestSolution.setDecisionVariables(particles.get(0).
-				getBestSolution().getDecisionVariables().clone());
+		Swarm.copySolution(this.bestSolution, this.particles.get(0).getBestSolution());
 	}
 	
 	public void evaluateParticlesFitness() throws JMException {
@@ -38,33 +36,46 @@ public class Swarm {
 		
 	}
 	
-	public void updateBests() {
-		for (Particle particle : particles) {
+	public void updateBests() throws JMException {
+		for (Particle particle : this.particles) {
 			Solution individualBest = particle.updateIndividualBest();
 			if(individualBest.getObjective(0) < this.bestSolution.getObjective(0)) {
-				this.bestSolution.setObjective(0, individualBest.getObjective(0));
-				this.bestSolution.setDecisionVariables(
-						individualBest.getDecisionVariables().clone());
+				Swarm.copySolution(this.bestSolution, individualBest);
 			}
 		}
-		
-		System.out.println("\nBest Global: " + this.bestSolution.getObjective(0));
 	}
 	
 	public void updateParticlesVelocityPosition() throws JMException {
-		for (Particle particle : particles) {
+		for (Particle particle : this.particles) {
 			particle.updateVelocity();
 			particle.updatePosition();
 		}
 	}
 
 	public PSOAlgorithm getPso() {
-		return pso;
+		return this.pso;
 	}
 	
 	public Solution getBestSolution() {
-		return bestSolution;
+		return this.bestSolution;
 	}
 
+	/**
+	 * Copies the solution src to the solution dest
+	 * @param dest Solution to be replaced with the src's contents
+	 * @param src  Solution that is to be copied
+	 * @throws JMException 
+	 */
+	static protected void copySolution(Solution dest, Solution src)
+			throws JMException {
+		dest.setObjective(0, src.getObjective(0));
+		
+		Variable[] srcVariables  = src.getDecisionVariables();
+		Variable[] destVariables = dest.getDecisionVariables();
+		
+		for (int i = 0; i < srcVariables.length; i++) {
+			destVariables[i].setValue(srcVariables[i].getValue());
+		}
+	}
 
 }

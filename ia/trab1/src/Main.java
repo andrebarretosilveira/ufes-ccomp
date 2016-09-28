@@ -1,6 +1,4 @@
 
-import java.util.Random;
-
 import algorithm.PSOAlgorithm;
 import problem.*;
 import jmetal.core.Algorithm;
@@ -17,14 +15,13 @@ public class Main {
 
 		problem = new Bukin("Real");
 		pso = new PSOAlgorithm(problem);
-		pso.setInputParameter("maxEvaluations", 10);
-		pso.setInputParameter("numberOfParticles", 10);
+		pso.setInputParameter("maxEvaluations", 25000);
+		pso.setInputParameter("numberOfParticles", 30);
 		
-		// Gerando valores aleatórios para as constantes
-		Random r = new Random();
-		pso.setInputParameter("w",  0.8 + (1.2 - 0.8) * r.nextDouble());
-		pso.setInputParameter("c1", 1.1 + (2 - 1.1) * r.nextDouble());
-		pso.setInputParameter("c2", 1.1 + (2 - 1.1) * r.nextDouble());
+		// Fixando valores para as constantes
+		pso.setInputParameter("w",  0.85); // coef. Inércia
+		pso.setInputParameter("c1", 1.80); // coef. Cognitivo
+		pso.setInputParameter("c2", 2.00); // coef. Social
 
 		long tempoInicial = System.currentTimeMillis();
 		SolutionSet solution = pso.execute();

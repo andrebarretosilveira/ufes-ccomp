@@ -35,36 +35,29 @@ public class Particle {
 			var[i].setValue(lower + (upper - lower) * r.nextDouble());
 		}
 				
-		// Inicializando a partícula e atualizando o melhor individual
+		// Calculando a solução inicial e atualizando o melhor individual
 		this.evaluateFitness();
-		this.bestSolution.setObjective(0, this.solution.getObjective(0));
-		this.bestSolution.setDecisionVariables(var.clone());
+		Swarm.copySolution(this.bestSolution, this.solution);
 	}
 	
 	public void evaluateFitness() throws JMException {
 		this.problem.evaluate(this.solution);
 	}
 	
-	public Solution updateIndividualBest() {
-		double newFitness = this.solution.getObjective(0);
-		System.out.println("newFitness: " + newFitness + " | BestSolution: " + this.bestSolution.getObjective(0));
-		if(newFitness < this.bestSolution.getObjective(0)) {
-			this.bestSolution.setObjective(0, newFitness);
-			this.bestSolution.setDecisionVariables(
-					this.solution.getDecisionVariables().clone());
+	public Solution updateIndividualBest() throws JMException {
+		if(this.solution.getObjective(0) < this.bestSolution.getObjective(0)) {
+			Swarm.copySolution(this.bestSolution, this.solution);
 		}
-		
-		System.out.println("Best Ind.: " + this.bestSolution.getObjective(0));
-		
+				
 		return this.bestSolution;
 	}
 	
 	public void updateVelocity() throws JMException {
-		// Constantes usadas na atualização da velocidade
 		Algorithm pso = this.swarm.getPso();
 		double w  = (double) pso.getInputParameter("w");
 		double c1 = (double) pso.getInputParameter("c1");
 		double c2 = (double) pso.getInputParameter("c2");
+		
 		Random rand = new Random();		
 		double r1 = rand.nextDouble();
 		double r2 = rand.nextDouble();
@@ -75,14 +68,15 @@ public class Particle {
 			double bestGlobalI = this.swarm.getBestSolution().
 					getDecisionVariables()[i].getValue();
 			
-			this.velocity[i] = w*this.velocity[i] + c1*r1*(bestI - newI) +
-					c2*r2*(bestGlobalI - newI);
+			this.velocity[i] = w*this.velocity[i] +
+					           c1*r1*(bestI - newI) +
+					           c2*r2*(bestGlobalI - newI);
 		}
 	}
 	
 	public void updatePosition() throws JMException {
 		Variable[] pos = this.solution.getDecisionVariables();
-		for (int i = 0; i < this.problem.getNumberOfVariables(); i++) {
+		for (int i = 0; i < pos.length; i++) {
 			pos[i].setValue(pos[i].getValue() + this.velocity[i]);
 		}
 	}
