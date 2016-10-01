@@ -6,11 +6,11 @@ import jmetal.core.Variable;
 import jmetal.encodings.solutionType.RealSolutionType;
 import jmetal.util.JMException;
 
-public class Bukin extends Problem {
+public class BukinProblem extends Problem {
 
 	private static final long serialVersionUID = 5571463567262502626L;
 
-	public Bukin(String solutionType) {
+	public BukinProblem(String solutionType) {
 		numberOfVariables_ = 2;
 		numberOfObjectives_ = 1;
 		numberOfConstraints_ = 0;
