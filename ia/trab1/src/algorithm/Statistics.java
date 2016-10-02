@@ -26,6 +26,10 @@ public class Statistics {
 	private double         meanBestSolution, bestSolutionSD;
 	private double[]       meanBestSolutionCoord;
 	
+	/**
+	 * Construtor do objeto Statistics
+	 * @param pso Algoritmo PSO cujos dados são coletados
+	 */
 	public Statistics(PSOAlgorithm pso) {
 		this.pso = pso;
 		this.evaluations = new ArrayList<Integer>();
@@ -33,6 +37,12 @@ public class Statistics {
 		this.bestSolutions = new ArrayList<Solution>();
 	}
 
+	/**
+	 * Gera o relatório de saída do programa a partir
+	 * das variáveis estatísticas de avaliações, tempos
+	 * de execução e soluções ótimas encontradas
+	 * @throws JMException
+	 */
 	public void generateReport() throws JMException {
 		this.setEvaluationStats();
 		this.setExecutionStats();
@@ -45,30 +55,37 @@ public class Statistics {
 		coordenadas += "]";
 		
 		System.out.println(this.pso.getProblem().getName().toUpperCase());
+		System.out.println("- Parâmetros usados:");
+		System.out.println("  - Coef. Inércia w:              " + this.pso.getInputParameter("w"));
+		System.out.println("  - Coef. Cognitivo c1:           " + this.pso.getInputParameter("c1"));
+		System.out.println("  - Coef. Social c2:              " + this.pso.getInputParameter("c2"));
+		System.out.println("  - Número de partículas:         " + this.pso.getInputParameter("numberOfParticles"));
+		System.out.println("  - Limite para convergência:     " + this.pso.getInputParameter("convergenceLimit"));
 		
-//		System.out.println(this.evaluations.toString());
 		System.out.println("- Avaliações:");
 		System.out.println("  - Número médio de avaliações:   " + this.meanEvaluation);
 		System.out.println("  - Número mínimo de avaliações:  " + this.minEvaluation);
 		System.out.println("  - Número máximo de avaliações:  " + this.maxEvaluation);
 		System.out.println("  - Desvio padrão:                " + this.evaluationSD);
 		
-//		System.out.println(this.executionTimes.toString());
 		System.out.println("- Tempos de Execução:");
 		System.out.println("  - Tempo médio de execução:      " + this.meanExecutionTime + " ms");
 		System.out.println("  - Tempo mínimo de execução:     " + this.minExecutionTime + " ms");
 		System.out.println("  - Tempo máximo de execução:     " + this.maxExecutionTime + " ms");
 		System.out.println("  - Desvio padrão:                " + this.executionTimeSD + " ms");
 		
-//		System.out.println(this.bestSolutions.toString());
 		System.out.println("- Ótimos encontrados:");
 		System.out.println("  - Valor médio dos ótimos:       " + this.meanBestSolution);
 		System.out.println("  - Valor mínimo dos ótimos:      " + this.minBestSolution);
 		System.out.println("  - Valor máximo dos ótimos:      " + this.maxBestSolution);
 		System.out.println("  - Desvio padrão:                " + this.bestSolutionSD);
-		System.out.println("  - Média das coordenadas:        " + coordenadas);
+		System.out.println("  - Média das coordenadas:        " + coordenadas + "\n");
 	}
 	
+	/**
+	 * Preenche as variáveis estatísticas referentes
+	 * ao número de avaliações da função problema
+	 */
 	public void setEvaluationStats() {
 		int max, min;
 		double mean = 0;
@@ -104,6 +121,10 @@ public class Statistics {
 		this.evaluationSD = sd;
 	}
 	
+	/**
+	 * Preenche as variáveis estatísticas referentes
+	 * aos tempos de execução da função problema
+	 */
 	public void setExecutionStats()	{
 		long max, min;
 		double mean = 0;
@@ -139,6 +160,10 @@ public class Statistics {
 		this.executionTimeSD = sd;
 	}
 	
+	/**
+	 * Preenche as variáveis estatísticas referentes
+	 * as soluções ótimas encontradas da função problema
+	 */
 	public void setSolutionStats() throws JMException {
 		double max, min;
 		double mean = 0;
@@ -200,9 +225,8 @@ public class Statistics {
 		this.bestSolutionSD = sd;
 	}
 	
-	/** 
-	 * Getters and Setters 
-	 */
+	
+	/* Getters & Setters */
 
 	public List<Integer> getEvaluations() {
 		return evaluations;

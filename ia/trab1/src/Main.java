@@ -4,41 +4,52 @@ import algorithm.Statistics;
 import problem.*;
 import jmetal.core.Algorithm;
 import jmetal.core.Problem;
-import jmetal.core.SolutionSet;
-import jmetal.core.Variable;
 import jmetal.util.JMException;
 
 public class Main {
 
 	public static void main(String[] args) throws ClassNotFoundException, JMException {
-		Problem problem;
-		Algorithm pso;
+		Problem bukin = new BukinProblem("Real");
+		Problem eggholder = new EggholderProblem("Real");
+		Problem griewank = new GriewankProblem("Real", 3);
 		
-//		problem = new BukinProblem("Real");
-//		problem = new EggholderProblem("Real");
-		problem = new GriewankProblem("Real", 3);
+		Algorithm psoBukin = new PSOAlgorithm(bukin);
+		psoBukin.setInputParameter("maxEvaluations",  25000);
+		psoBukin.setInputParameter("numberOfParticles",  30);
+		psoBukin.setInputParameter("convergenceLimit", 1000);
+		psoBukin.setInputParameter("w",  0.8); // coef. Inércia
+		psoBukin.setInputParameter("c1", 0.9); // coef. Cognitivo
+		psoBukin.setInputParameter("c2", 0.9); // coef. Social
 		
-		pso = new PSOAlgorithm(problem);
-		pso.setInputParameter("maxEvaluations",  25000);
-		pso.setInputParameter("numberOfParticles",  30);
-		pso.setInputParameter("convergenceLimit", 1000);
+		Algorithm psoEggholder = new PSOAlgorithm(eggholder);
+		psoEggholder.setInputParameter("maxEvaluations",  25000);
+		psoEggholder.setInputParameter("numberOfParticles",  30);
+		psoEggholder.setInputParameter("convergenceLimit", 1000);
+		psoEggholder.setInputParameter("w",  0.8); // coef. Inércia
+		psoEggholder.setInputParameter("c1", 1.2); // coef. Cognitivo
+		psoEggholder.setInputParameter("c2", 1.2); // coef. Social
 		
-		// Fixando valores para as constantes
-		pso.setInputParameter("w",  0.8); // coef. Inércia
-		pso.setInputParameter("c1", 1.2); // coef. Cognitivo
-		pso.setInputParameter("c2", 1.2); // coef. Social
+		Algorithm psoGriewank = new PSOAlgorithm(griewank);
+		psoGriewank.setInputParameter("maxEvaluations",  25000);
+		psoGriewank.setInputParameter("numberOfParticles",  30);
+		psoGriewank.setInputParameter("convergenceLimit", 1000);
+		psoGriewank.setInputParameter("w",  0.8); // coef. Inércia
+		psoGriewank.setInputParameter("c1", 0.2); // coef. Cognitivo
+		psoGriewank.setInputParameter("c2", 0.2); // coef. Social
 
-		long tempoInicial = System.currentTimeMillis();
-		SolutionSet solution = null;
 		for (int i = 0; i < 10; i++) {
-			solution = pso.execute();
+			psoBukin.execute();
+			psoEggholder.execute();
+			psoGriewank.execute();
 		}
-		long tempo = System.currentTimeMillis() - tempoInicial;
-		
-		System.out.println("Tempo total de execucao: " + tempo + "ms\n");
-		
-		Statistics stats = (Statistics) pso.getOutputParameter("statistics");
-		stats.generateReport();
+				
+		Statistics bukinStats = (Statistics) psoBukin.getOutputParameter("statistics");
+		Statistics eggholderStats = (Statistics) psoEggholder.getOutputParameter("statistics");
+		Statistics griewankStats = (Statistics) psoGriewank.getOutputParameter("statistics");
+
+		bukinStats.generateReport();
+		eggholderStats.generateReport();
+		griewankStats.generateReport();
 	}
 
 }

@@ -15,7 +15,15 @@ public class Particle {
 	private Solution bestSolution;
 	private double[] velocity;
 	
-	public Particle(Swarm swarm, Problem problem, PSOAlgorithm pso)
+	/**
+	 * Construtor de uma Partícula do Enchame
+	 * @param swarm Enchame ao qual esta partícula pertence
+	 * @param pso Algoritmo PSO referente a esta partícula
+	 * @param problem Função problema onde esta partícula se encontra
+	 * @throws ClassNotFoundException
+	 * @throws JMException
+	 */
+	public Particle(Swarm swarm, PSOAlgorithm pso, Problem problem)
 			throws ClassNotFoundException, JMException {
 		
 		int dimensions = problem.getNumberOfVariables();
@@ -35,8 +43,10 @@ public class Particle {
 	
 	/**
 	 * Executa a função evaluate do problema para a solução
-	 * desta Partícula. Verifica se a mesma se encontra nos
-	 * limites definidos pelo problema.
+	 * desta Partícula.
+	 * Verifica se a mesma se encontra nos limites definidos
+	 * pelo problema. Caso não esteja, a partícula é
+	 * reinicializada
 	 * @throws JMException
 	 */
 	public void evaluateFitness() throws JMException {
@@ -56,6 +66,12 @@ public class Particle {
 		}
 	}
 	
+	/**
+	 * Atualiza a melhor solução individual caso esta seja
+	 * pior que a nova solução encontrada neste momeneto
+	 * @return A melhor solução atual
+	 * @throws JMException
+	 */
 	public Solution updateIndividualBest() throws JMException {
 		double fitness = this.solution.getObjective(0);
 		
@@ -141,6 +157,8 @@ public class Particle {
 		
 		return true;
 	}
+	
+	/* Getters & Setters */
 	
 	public Solution getBestSolution() {
 		return this.bestSolution;

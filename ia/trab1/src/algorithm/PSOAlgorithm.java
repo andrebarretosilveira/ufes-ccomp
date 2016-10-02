@@ -15,6 +15,10 @@ public class PSOAlgorithm extends Algorithm {
 	private int numberOfParticles, convergenceLimit;
 	private boolean converged;
 
+	/**
+	 * Construtor do algoritmo PSO
+	 * @param problem Problema que o PSO deve resolver
+	 */
 	public PSOAlgorithm(Problem problem) {
 		super(problem);
 		this.statistics = new Statistics(this);
@@ -52,18 +56,15 @@ public class PSOAlgorithm extends Algorithm {
 		return result;
 	}
 	
-	public void generateReport() throws JMException {
-		this.statistics.generateReport();
-	}
-	
+	/**
+	 * Incrementa em 1 o número de avaliações
+	 */
 	public void incrementEvaluations() {
 		this.evaluations++;
 	}
 	
 	
-	/** 
-	 * Getters and Setters 
-	 */
+	/* Getters & Setters */
 
 	public int getMaxEvaluations() {
 		return maxEvaluations;

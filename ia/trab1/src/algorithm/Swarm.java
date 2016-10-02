@@ -14,7 +14,15 @@ public class Swarm {
 	private Solution bestSolution;
 	private List<Particle> particles;
 	private int convergenceCounter;
-		
+	
+	/**
+	 * Construtor do objeto Enchame
+	 * @param pso Algorimo PSO ao qual este enchame pertence
+	 * @param problem Problema que este enchame deve resolver
+	 * @param numberOfParticles Número de partícula a serem criadas
+	 * @throws ClassNotFoundException
+	 * @throws JMException
+	 */
 	public Swarm(PSOAlgorithm pso, Problem problem, Integer numberOfParticles)
 			throws ClassNotFoundException, JMException {
 		
@@ -25,7 +33,7 @@ public class Swarm {
 		
 		// Criando as Partículas do Enchame
 		for(int i=0; i < numberOfParticles; i++) {
-			this.particles.add(i, new Particle(this, problem, pso));
+			this.particles.add(i, new Particle(this, pso, problem));
 		}
 		
 		// Inicializando a melhor solução global
@@ -37,7 +45,9 @@ public class Swarm {
 	 * um Problema. O Enchame envia a todas as partículas
 	 * comandos para atualizar seus objetivos, atualizar
 	 * as melhores soluções individuais e atualizar suas
-	 * velocidades e posições.
+	 * velocidades e posições. Além disto também opera
+	 * um contador para verificar se o critério de
+	 * convergência foi alcançado.
 	 * @throws JMException
 	 * @throws InterruptedException 
 	 */
@@ -86,10 +96,9 @@ public class Swarm {
 		}
 	}
 	
-	public PSOAlgorithm getPso() {
-		return this.pso;
-	}
 	
+	/* Getters & Setters */
+		
 	public Solution getBestSolution() {
 		return this.bestSolution;
 	}
