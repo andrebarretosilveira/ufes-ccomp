@@ -2,7 +2,6 @@ package algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import jmetal.core.Problem;
 import jmetal.core.Solution;
@@ -14,13 +13,15 @@ public class Swarm {
 	private PSOAlgorithm pso;
 	private Solution bestSolution;
 	private List<Particle> particles;
-	
+	private int convergenceCounter;
+		
 	public Swarm(PSOAlgorithm pso, Problem problem, Integer numberOfParticles)
 			throws ClassNotFoundException, JMException {
 		
 		this.pso = pso;
 		this.bestSolution = new Solution(problem);
 		this.particles = new ArrayList<Particle>(numberOfParticles);
+		this.convergenceCounter = 0;
 		
 		// Criando as Partículas do Enchame
 		for(int i=0; i < numberOfParticles; i++) {
@@ -40,9 +41,8 @@ public class Swarm {
 	 * @throws JMException
 	 * @throws InterruptedException 
 	 */
-	public void searchMinimun() throws JMException, InterruptedException {
+	public void searchMinimun() throws JMException {
 		for (Particle particle : this.particles) {
-			
 			// Envia o comando para atualizar o objetivo
 			// das partículas do Enchame
 			particle.evaluateFitness();
@@ -52,24 +52,20 @@ public class Swarm {
 			Solution individualBest = particle.updateIndividualBest();
 			if(individualBest.getObjective(0) < this.bestSolution.getObjective(0)) {
 				Swarm.copySolution(this.bestSolution, individualBest);
+				this.convergenceCounter = 0;
+			}
+			else {
+				this.convergenceCounter++;
+			}
+			
+			// Verifica se condição de convergência foi alcançada
+			if(this.convergenceCounter > this.pso.getConvergenceLimit()) {
+				this.pso.setConverged(true);
 			}
 			
 			// Atualiza a velocidade e posição das partículas
 			particle.updateVelocityPosition();
-			
-//			System.out.println("evalation = " + this.pso.getEvaluations() + " / " + maxEvaluations);
-//			System.out.println(this.bestSolution.getObjective(0));
-//			TimeUnit.MILLISECONDS.sleep(10);
 		}
-	}
-	
-
-	public PSOAlgorithm getPso() {
-		return this.pso;
-	}
-	
-	public Solution getBestSolution() {
-		return this.bestSolution;
 	}
 
 	/**
@@ -88,6 +84,14 @@ public class Swarm {
 		for (int i = 0; i < srcVariables.length; i++) {
 			destVariables[i].setValue(srcVariables[i].getValue());
 		}
+	}
+	
+	public PSOAlgorithm getPso() {
+		return this.pso;
+	}
+	
+	public Solution getBestSolution() {
+		return this.bestSolution;
 	}
 
 }

@@ -10,48 +10,60 @@ public class PSOAlgorithm extends Algorithm {
 
 	private static final long serialVersionUID = 842390733642333476L;
 	private Swarm swarm;
-	private int evaluations, maxEvaluations, numberOfParticles;
-	private boolean hasConverged;
+	private Statistics statistics;
+	private int evaluations, maxEvaluations;
+	private int numberOfParticles, convergenceLimit;
+	private boolean converged;
 
 	public PSOAlgorithm(Problem problem) {
 		super(problem);
-		
+		this.statistics = new Statistics(this);
 	}
 
 	@Override
 	public SolutionSet execute() throws JMException, ClassNotFoundException {
+		long initTime = System.currentTimeMillis();
+		
+		this.evaluations = 0;
+		this.converged = false;
+		
 		this.maxEvaluations    = ((int) getInputParameter("maxEvaluations"));
 		this.numberOfParticles = ((int) getInputParameter("numberOfParticles"));
-		this.evaluations = 0;
+		this.convergenceLimit  = ((int) getInputParameter("convergenceLimit"));
 		
 		this.swarm = new Swarm(this, problem_, numberOfParticles);
-
-//		this.evaluations++;
 		
-		while (this.evaluations < this.maxEvaluations) {
-			try {
-				swarm.searchMinimun();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-//			swarm.evaluateParticlesFitness();
-//			swarm.updateBests();
-//			swarm.updateParticlesVelocityPosition();
-//			evaluations++;
+		while (this.evaluations < this.maxEvaluations && !this.converged) {
+			swarm.searchMinimun();
 		}
 
 		setOutputParameter("evaluations", this.evaluations);
+		setOutputParameter("statistics", this.statistics);
 
 		SolutionSet result = new SolutionSet(1);
 		result.add(this.swarm.getBestSolution());
+		
+		long executionTime = System.currentTimeMillis() - initTime;
+		
+		this.statistics.getEvaluations().add(this.evaluations);
+		this.statistics.getBestSolutions().add(this.swarm.getBestSolution());
+		this.statistics.getExecutionTimes().add(executionTime);
 
 		return result;
+	}
+	
+	public void generateReport() throws JMException {
+		this.statistics.generateReport();
 	}
 	
 	public void incrementEvaluations() {
 		this.evaluations++;
 	}
+	
+	
+	/** 
+	 * Getters and Setters 
+	 */
 
 	public int getMaxEvaluations() {
 		return maxEvaluations;
@@ -75,6 +87,22 @@ public class PSOAlgorithm extends Algorithm {
 
 	public void setEvaluations(int evaluations) {
 		this.evaluations = evaluations;
+	}
+	
+	public boolean hasConverged() {
+		return converged;
+	}
+
+	public void setConverged(boolean converged) {
+		this.converged = converged;
+	}
+
+	public int getConvergenceLimit() {
+		return convergenceLimit;
+	}
+
+	public void setConvergenceLimit(int convergenceLimit) {
+		this.convergenceLimit = convergenceLimit;
 	}
 
 }
