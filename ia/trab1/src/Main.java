@@ -18,24 +18,24 @@ public class Main {
 		psoBukin.setInputParameter("numberOfParticles",  30);
 		psoBukin.setInputParameter("convergenceLimit", 1000);
 		psoBukin.setInputParameter("w",  0.8); // coef. Inércia
-		psoBukin.setInputParameter("c1", 0.9); // coef. Cognitivo
-		psoBukin.setInputParameter("c2", 0.9); // coef. Social
+		psoBukin.setInputParameter("c1", 1.8); // coef. Cognitivo
+		psoBukin.setInputParameter("c2", 1.8); // coef. Social
 		
 		Algorithm psoEggholder = new PSOAlgorithm(eggholder);
 		psoEggholder.setInputParameter("maxEvaluations",  25000);
 		psoEggholder.setInputParameter("numberOfParticles",  30);
 		psoEggholder.setInputParameter("convergenceLimit", 1000);
 		psoEggholder.setInputParameter("w",  0.8); // coef. Inércia
-		psoEggholder.setInputParameter("c1", 1.2); // coef. Cognitivo
-		psoEggholder.setInputParameter("c2", 1.2); // coef. Social
+		psoEggholder.setInputParameter("c1", 1.0); // coef. Cognitivo
+		psoEggholder.setInputParameter("c2", 1.0); // coef. Social
 		
 		Algorithm psoGriewank = new PSOAlgorithm(griewank);
 		psoGriewank.setInputParameter("maxEvaluations",  25000);
 		psoGriewank.setInputParameter("numberOfParticles",  30);
 		psoGriewank.setInputParameter("convergenceLimit", 1000);
 		psoGriewank.setInputParameter("w",  0.8); // coef. Inércia
-		psoGriewank.setInputParameter("c1", 0.2); // coef. Cognitivo
-		psoGriewank.setInputParameter("c2", 0.2); // coef. Social
+		psoGriewank.setInputParameter("c1", 1.6); // coef. Cognitivo
+		psoGriewank.setInputParameter("c2", 1.6); // coef. Social
 
 		for (int i = 0; i < 10; i++) {
 			psoBukin.execute();

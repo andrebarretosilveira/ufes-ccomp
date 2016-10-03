@@ -41,7 +41,6 @@ public class PSOAlgorithm extends Algorithm {
 			swarm.searchMinimun();
 		}
 
-		setOutputParameter("evaluations", this.evaluations);
 		setOutputParameter("statistics", this.statistics);
 
 		SolutionSet result = new SolutionSet(1);
