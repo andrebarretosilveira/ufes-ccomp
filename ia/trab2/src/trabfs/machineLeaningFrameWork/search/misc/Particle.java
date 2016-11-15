@@ -1,9 +1,9 @@
 package trabfs.machineLeaningFrameWork.search.misc;
 
-import java.util.Random;
 import trabfs.machineLeaningFrameWork.core.AvaliadordeSolucao;
 import trabfs.machineLeaningFrameWork.core.Solucao;
 import trabfs.machineLeaningFrameWork.search.metaheuristics.BPSO;
+import java.util.Random;
 
 /**
  * Classe Partícula que é usada pelo BPSO para auxiliar

@@ -31,7 +31,7 @@ public class BPSO extends Search {
 	public BPSO() {
 		this.maxCalls = 500;
 		this.numberOfParticles = 10;
-		this.convergenceLimit = 50;
+		this.convergenceLimit = 100;
 		this.swarm = new ArrayList<Particle>(this.numberOfParticles);
 	}
 

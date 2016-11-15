@@ -13,10 +13,11 @@ public class Do {
     public static void main(String[] args){
         
         // instanciando o método de busca
-        Search metodo = new BPSO();
+    	Search metodo = new BPSO();
+//        Search metodo = new TabuSearch();
 
         // instanciando o problema        
-        Problema p = new Problema("entrada/ionosphere.arff");
+        Problema p = new Problema("entrada/soybean.arff");
         
         // executando o método
         Result r = metodo.startSearch(p);   
