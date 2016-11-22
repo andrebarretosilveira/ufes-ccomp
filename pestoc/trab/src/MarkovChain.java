@@ -3,21 +3,37 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+
+/**
+ * Objeto que reúne os métodos para a criação e geração de
+ * texto aleatório através de um texto de exemplo.
+ * @author dellief
+ *
+ */
 
 public class MarkovChain {
 	private Map<String, ArrayList<Character>> map;
 	private int analysisLevel;
-	private int outputSize;
 	
-	public MarkovChain(int analysisLevel, int outputSize) {
+	/**
+	 * Cria uma instância da classe {@link MarkovChain}, recebendo
+	 * o parâmetro para definir o nível de aprendizado da cadeia.
+	 * @param analysisLevel Nível do aprendizado ou tamanho das
+	 * palavras do mapeamento.
+	 */
+	public MarkovChain(int analysisLevel) {
 		this.map = new HashMap<String, ArrayList<Character>>();
 		this.analysisLevel = analysisLevel;
-		this.outputSize = outputSize;
 	}
 	
+	/**
+	 * Constrói o mapeamento palavra-letras que caracteriza a
+	 * Cadeia de Markov através da leitura de um arquivo de texto.
+	 * @param filePath Caminho do arquivo de texto
+	 * @throws IOException Se houve erro ao ler o arquivo
+	 */
 	public void createFromFile(String filePath) throws IOException {
 		String fileContents = readFile(filePath);
 		String word = null;
@@ -31,13 +47,18 @@ public class MarkovChain {
 		}
 	}
 	
-	public void writeRandomText() {
+	/**
+	 * Realiza a geração do texto aleatório através da Cadeia de Markov,
+	 * iniciando em um estado e mudando de estado, armazenando e
+	 * incrementando o texto final com cada novo estado da cadeia.
+	 * @return Texto aleatório gerado através da Cadeia de Markov.
+	 */
+	public String generateRandomText(int outputSize) {
 		Random rand = new Random();
 		int randomPos = rand.nextInt(map.size());
 		String text = (String) map.keySet().toArray()[randomPos];
-		int i;
 		
-		for (i = text.length(); i < outputSize; i++) {
+		for (int i = text.length(); i < outputSize; i++) {
 			String key = text.substring(i-analysisLevel, i);
 			ArrayList<Character> value = this.map.get(key);
 			if(value == null || value.size() == 0) {
@@ -51,47 +72,18 @@ public class MarkovChain {
 			}
 		}
 		
-		System.out.println("[" + i + "]" + text);
+		return text;
 	}
 	
+	/**
+	 * Realiza a leitura completa de um arquivo e o
+	 * converte em uma string
+	 * @param filePath Caminho do arquivo
+	 * @return Conteúdo do arquivo como string
+	 * @throws IOException Se não foi possível ler o arquivo
+	 */
 	private String readFile(String filePath) throws IOException {
 		byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
 		return new String(fileBytes);
-	}
-	
-	public static void printMap(Map mp) {
-	    Iterator it = mp.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry pair = (Map.Entry)it.next();
-	        System.out.println(pair.getKey() + " = " + pair.getValue());
-	    }
-	}
-	
-	/*
-	 * Getters & Setters
-	 */
-
-	public Map<String, ArrayList<Character>> getMap() {
-		return map;
-	}
-
-	public void setMap(Map<String, ArrayList<Character>> map) {
-		this.map = map;
-	}
-
-	public int getAnalysisLevel() {
-		return analysisLevel;
-	}
-
-	public void setAnalysisLevel(int analysisLevel) {
-		this.analysisLevel = analysisLevel;
-	}
-
-	public int getOutputSize() {
-		return outputSize;
-	}
-
-	public void setOutputSize(int outputSize) {
-		this.outputSize = outputSize;
 	}
 }

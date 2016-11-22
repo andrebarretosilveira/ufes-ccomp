@@ -1,0 +1,5 @@
+Para executar o trabalho:
+java -jar trab.jar [nome_do_arquivo] [nivel_de_aprendizado] [tamanho_do_texto_saida]
+
+Exemplo:
+java -jar trab.jar hamlet.txt 5 300
