@@ -11,6 +11,7 @@ public class Main {
 				System.out.println("3. Tamanho do texto de saída");
 				return;
 			}
+			long tStart = System.currentTimeMillis();
 			
 			String fileName = args[0];
 			int analysisLevel = Integer.parseInt(args[1]);
@@ -20,6 +21,12 @@ public class Main {
 			markovChain.createFromFile(fileName);
 			String text = markovChain.generateRandomText(outputSize);
 			System.out.println(text);
+			
+			long tEnd = System.currentTimeMillis();
+			long tDelta = tEnd - tStart;
+			double elapsedSeconds = tDelta / 1000.0;
+			
+			System.out.println("Tempo: " + elapsedSeconds + "s");
 			
 		} catch (NumberFormatException e) {
 			System.out.println("Argumentos inválidos. Use apenas números inteiros.");

@@ -39,11 +39,12 @@ public class MarkovChain {
 		String word = null;
 		for (int i = 0; i < fileContents.length() - analysisLevel + 1; i++) {
 			word = fileContents.substring(i, i+analysisLevel);
-			this.map.put(word, new ArrayList<Character>());
-		}
-		for (int i = 0; i < fileContents.length() - analysisLevel; i++) {
-			word = fileContents.substring(i, i+analysisLevel);
-			this.map.get(word).add(fileContents.charAt(i+analysisLevel));
+			if(!this.map.containsKey(word)) {
+				this.map.put(word, new ArrayList<Character>());
+			}
+			else {
+				this.map.get(word).add(fileContents.charAt(i+analysisLevel));
+			}
 		}
 	}
 	
@@ -56,14 +57,15 @@ public class MarkovChain {
 	public String generateRandomText(int outputSize) {
 		Random rand = new Random();
 		int randomPos = rand.nextInt(map.size());
-		String text = (String) map.keySet().toArray()[randomPos];
+		Object[] mapStrings = (Object[]) map.keySet().toArray();
+		String text = (String) mapStrings[randomPos];
 		
 		for (int i = text.length(); i < outputSize; i++) {
 			String key = text.substring(i-analysisLevel, i);
 			ArrayList<Character> value = this.map.get(key);
 			if(value == null || value.size() == 0) {
 				randomPos = rand.nextInt(map.size());
-				text += " " + (String) map.keySet().toArray()[randomPos];
+				text += " " + (String) mapStrings[randomPos];
 				i += analysisLevel;
 			} else {
 				randomPos = rand.nextInt(value.size());
