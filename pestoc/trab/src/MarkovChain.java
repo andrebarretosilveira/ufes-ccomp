@@ -8,8 +8,9 @@ import java.util.Random;
 
 /**
  * Objeto que reúne os métodos para a criação e geração de
- * texto aleatório através de um texto de exemplo.
- * @author dellief
+ * texto aleatório com base em textos de exemplo através
+ * de uma implementação de cadeia de Markov
+ * @author André Barreto Silveira
  *
  */
 
