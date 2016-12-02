@@ -38,13 +38,17 @@ public class MarkovChain {
 	public void createFromFile(String filePath) throws IOException {
 		String fileContents = readFile(filePath);
 		String word = null;
-		for (int i = 0; i < fileContents.length() - analysisLevel + 1; i++) {
-			word = fileContents.substring(i, i+analysisLevel);
+		int pos;
+		int limit = fileContents.length() - analysisLevel;
+		
+		for (int i = 0; i < limit; i++) {		
+			pos = i + analysisLevel;
+			word = fileContents.substring(i, pos);
 			if(!this.map.containsKey(word)) {
 				this.map.put(word, new ArrayList<Character>());
 			}
 			else {
-				this.map.get(word).add(fileContents.charAt(i+analysisLevel));
+				this.map.get(word).add(fileContents.charAt(pos));
 			}
 		}
 	}
