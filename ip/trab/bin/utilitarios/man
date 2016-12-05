@@ -1,0 +1,17 @@
+.\" Pagina de Manual para Comunicação cliente servidor trabalho de interfaces e perifericos. UFES - 2016/2
+.\" Contate andre.dellief@gmail.com e/ou igor.ventorim@gmail.com para duvidas.
+.TH man 8 "06 Novembro 2016" "1.0" "Trabalho IP pagina de manual"
+.SH NAME
+Trabalho Interfaces e Perifericos \- create a new LDAP user 
+.SH SYNOPSIS
+nuseradd [USERNAME]
+.SH DESCRIPTION
+nuseradd is high level shell program for adding users to LDAP server.  On Debian, administrators should usually use nuseradd.debian(8) instead.
+.SH OPTIONS
+The nuseradd does not take any options. However, you can supply username.
+.SH SEE ALSO
+useradd(8), passwd(5), nuseradd.debian(8) 
+.SH BUGS
+Nao foram encontrado bugs.
+.SH AUTHOR
+Andre Barreto(andre.dellief@gmail.com) e Igor Ventorim(igor.ventorim@gmail.com)

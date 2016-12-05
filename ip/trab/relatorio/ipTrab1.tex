@@ -1,0 +1,394 @@
+% ------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
+% Relatório de Trabalho 2 de Algoritmos Numéricos 2
+% André Barreto
+% Igor Ventorim
+% ------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
+
+\documentclass[
+	11pt,				% tamanho da fonte
+	oneside,			% para impressão apenas no verso. Oposto a twoside
+	a4paper,			% tamanho do papel. 
+	english,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	]{article}
+
+
+% ---
+% PACOTES
+% ---
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{nomencl}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{makeidx}
+\usepackage{multirow,tabularx}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{url}
+\usepackage[brazilian]{babel}
+\usepackage[brazilian,hyperpageref]{backref}
+\usepackage{amsmath}
+\usepackage{mathtools,amssymb}
+\usepackage{pgfplots}
+\usepackage{lipsum}
+\usepackage[portuguese,linesnumbered,vlined]{algorithm2e}	% Gerar pseudo-códigos
+% ---
+
+\chardef\_=`_
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+  
+% ---
+% Configurações do pacote listings
+% ---
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.571428571,0.571428571,0.571428571}
+\definecolor{mymauve}{rgb}{0.5714285718,0,0.82}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.571428571,0.571428571,0.571428571}
+\definecolor{codepurple}{rgb}{0.5714285718,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstset{
+	backgroundcolor=\color{white},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	commentstyle=\color{mygreen},
+	deletekeywords={...},
+	escapeinside={\%*}{*)},
+	extendedchars=true,
+	keepspaces=true,
+	keywordstyle=\color{blue},
+	language=C,
+	otherkeywords={*,...},
+	numbers=left,
+	numbersep=5pt,
+	numberstyle=\tiny\color{mygray},
+	rulecolor=\color{black},
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	stepnumber=1,
+	stringstyle=\color{mymauve},
+	tabsize=2,
+	title=\lstname
+}
+% ---
+	
+% ---
+% Informações de dados para CAPA
+% ---
+\title{\textbf{Implementação de comunicação entre servidor de arquivos e cliente}}
+\author{
+André Barreto e Igor Ventorim\\\\
+\normalsize Universidade Federal do Espírito Santo\\
+}
+\date{2016}
+% ---
+
+% ---
+% Configurações de aparência do PDF final
+% ---
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+	pdftitle={\@title}, 
+	pdfauthor={\@author},
+	pdfsubject={Escalonamento de Jobs},
+	pdfcreator={LaTeX with abnTeX2},
+	pdfkeywords={abnt}{latex}{abntex}{abntex2}{atigo científico}, 
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	filecolor=magenta,
+	urlcolor=blue,
+	bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% ---
+% Compila o indice
+% ---
+\makeindex
+% ---
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+\setlength{\parindent}{1cm}
+\setlength{\parskip}{0.2cm}
+% ---
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+% ---
+
+% Seleciona o idioma do documento
+\selectlanguage{brazil}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing
+
+% Caminho da pasta de imagens
+\graphicspath{ {Imagens/} }
+
+% ------------------------------------------------------------------------------
+% Página de Título
+% ------------------------------------------------------------------------------
+\begin{titlepage}
+	\centering
+	{\scshape \large Universidade Federal do Espírito Santo\par}
+	{\large Departamento de Informática\par}
+	\vspace{1cm}
+	{\large André Barreto\\Igor Ventorim\par}
+	
+	\vfill
+	
+	{\LARGE \bfseries Implementação de comunicação entre servidor de arquivos e cliente\par}
+	\vspace{1cm}
+	{\large Trabalho de Interfaces e Periféricos\par}
+
+	\vfill
+
+	{\large Vitória\par}
+	{\large 2016\par}
+\end{titlepage}
+\addtocounter{page}{1}
+
+% ------------------------------------------------------------------------------
+% Introdução
+% ------------------------------------------------------------------------------
+\section{Introdução}
+Neste trabalho temos como finalidade realizar a comunicação de um servidor de arquivos com um cliente através de um protocolo a ser criado especificamente para tal objetivo.
+
+A solução adotada em nosso trabalho foi a API protocol buffers da google, o protocolo é um mecanismo eficiente, flexível e automatizado adotado no mercado, capaz de realizar a serialização de dados estruturados. O protocolo funciona da seguinte forma, é definido como será a estrutura dos dados, através desta nomeclatura é estruturada a linguagem de marcação gerando um arquivo .proto, cada mensagem do protocolo buffer é um registro lógico pequeno de informações, contendo uma série de pares nome-valor, a partir do qual se gera o arquivo final a ser utilizado na linguagem através de um script disponibilizado pela google, ao qual é capaz de interpretar a estrutura definida no .proto e gerar o código fonte.
+
+A partir do codigo fonte na linguagem específica e seguindo a documentação da API é possível realizar a comunicação através do protocolo definido.
+
+% ------------------------------------------------------------------------------
+% Protocolo
+% ------------------------------------------------------------------------------
+\section{Protocolo}
+O método de comunicação utilizado neste trabalho foi implementado através da API \textit{protocol buffers} do Google. Esta API resolve os aspectos mais tecnológicos da comunicação nos termos das mensagens que devem ser enviadas e como devem ser lidas. Com isto, o problema se resumiu em como serão as mensagens trocadas entre o cliente e servidor, fazendo uma simples configuração em um arquivo \textit{.proto}.
+
+Em suma, deve-se configurar os tipos de mensagens que serão enviados e recebidos pelos dois lados da comunicação. Nesta solução, exitem dois tipos de mensagem: \textit{Command} e \textit{Response}, enviados pelo cliente e servidor, respectivamente. O servidor recebe um Command do cliente e o cliente recebe um Response do servidor para cada comunicação bem sucedida. Para auxiliar na configuração destes dois tipos de mensagem, existem dois enumerados: \textit{CommandType} e \textit{StatusCode}, que resumem os tipos de comandos que o cliente pode solicitar e os tipos de erros que podem ocorrer na execução destas solicitações na parte do servidor, respectivamente.
+
+A seguir, são descritos os tipos enumerados e as mensagens do protocolo.
+
+\subsection{Tipos enumerados}
+\textit{CommandType} e \textit{StatusCode} são tipos enumerados criados para definir os possíveis casos de solicitação e resultados de execução, utilizados pelo cliente e servidor, respectivamente. Eles são definidos como a seguir:
+
+\begin{center}
+\textbf{CommandType}
+\end{center}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+LS & RM \\
+\hline
+CD & CP \\
+\hline
+MV & CAT \\
+\hline
+MKDIR & UPLOAD \\
+\hline
+RMDIR & DOWNLOAD \\
+\hline
+\end{tabular}
+\caption{Possíveis atribuições de CommandType}
+\label{tab:matrizes}
+\end{table}
+
+Descrição dos possíveis valores do CommandType:
+\begin{itemize}
+ \item LS - Solicita a listagem de arquivos do diretório atual
+ \item CD - Solicita uma mudança de diretório
+ \item MV - Solicita a mudança de um arquivo de local
+ \item MKDIR - Solicita a criação de uma pasta
+ \item RMDIR - Solicita a remoção de uma pasta
+ \item RM - Solicita a remoção de um arquivo
+ \item CP - Solicita a cópia de um arquivo
+ \item CAT - Solicita o envio do conteúdo de um arquivo para mostrar na tela do cliente
+ \item UPLOAD - Solicita o envio ao servidor um arquivo
+ \item DOWNLOAD - Solicita o envio do servidor ao cliente de um arquivo
+\end{itemize}
+
+\begin{center}
+\textbf{StatusCode}
+\end{center}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+SUCCESS & ERR\_ARGS \\
+\hline
+ERR\_PERMISS & ERR\_DESC \\
+\hline
+\end{tabular}
+\caption{Possíveis atribuições de StatusCode}
+\label{tab:matrizes}
+\end{table}
+
+Descrição dos possíveis valores do StatusCode:
+\begin{itemize}
+ \item SUCCESS - Informa ao cliente que a solicitação foi realizada com sucesso. Todos os outros casos são casos de erro.
+ \item ERR\_PERMISS - Informa ao cliente que houve erro na solicitação por falta de privilégios de usuário.
+ \item ERR\_ARGS - Informa ao cliente que houve erro por conta de algum erro nos argumentos passados junto ao comando desejado
+ \item ERR\_DESC - Informa ao cliente que houve algum erro não previsto no âmbito do servidor. Majoritariamente por conta de falhas de baixo nível ao tentar executar uma solicitação que deveria ser bem sucedida.
+\end{itemize}
+
+
+\subsection{Mensagem Command}
+A mensagem \textit{Command} é a mensagem enviada pelo cliente e recebida pelo servidor. Nela conterão as informações que definirão qual comando  está sendo solicitado e todos os argumentos necessários para realizar tal comando. Exceto o primeiro, todos os outros campos são opcionais.
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+CommandType \textit{type} & string \textit{arg0} & string \textit{arg1} & bytes \textit{data} \\
+\hline
+\end{tabular}
+\caption{Formato do pacote Command}
+\label{tab:matrizes}
+\end{table}
+
+\subsection{Mensagem Response}
+A mensagem \textit{Response} é a mensagem de resposta do servidor a um comando solicitado pelo cliente. Nesta mensagem são informados o resultado da execução da solicitação, isto é, se foi realizado com sucesso ou qual erro ocorreu, e opcionalmente é enviado dados solicitados pelo cliente. O campo \textit{response} é opcional, utilizado quando é necessário enviar dados ao cliente.
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+StatusCode \textit{status} & bytes \textit{response} \\
+\hline
+\end{tabular}
+\caption{Formato do pacote Response}
+\label{tab:matrizes}
+\end{table}
+
+\subsection{Processamento das mensagens}
+Com os tipos de mensagens especificados, existe a lógica básica que o cliente e servidor deverão realizar para entender e utilizar as informações de cada mensagem.
+
+\noindent \textbf{Servidor}:
+\begin{enumerate}
+ \item Recebe uma solicitação (mensagem do tipo \textit{Command})
+ \item Reconhece o \textit{CommandType} da mensagem
+ \item Recupera os argumentos da mensagem, caso sejam necessários para o comando em questão
+ \item Realiza a solicitação
+\end{enumerate}
+
+\noindent \textbf{Cliente}:
+\begin{enumerate}
+ \item Recebe uma resposta (mensagem do tipo \textit{Response})
+ \item Avalia o \textit{StatusCode} da mensagem, reconhecendo se houve erro ou não na solicitação
+ \item Realiza processamentos internos de acordo com o \textit{StatusCode}, informando ao usuário o resultado
+\end{enumerate}
+
+\subsection{Arquivo de configuração do protocolo}
+Com as especificações descritas nessa seção, segue aqui um exemplo de arquivo de configuração do protocol buffers.
+
+\begin{verbatim}
+syntax = "proto3";
+
+option java_outer_classname = "CommandsProto";
+
+enum CommandType {
+  LS = 0;
+  CD = 1;
+  MV = 2;
+  MKDIR = 3;
+  RMDIR = 4;
+  RM = 5;
+  CP = 6;
+  CAT = 7;
+  UPLOAD = 8;
+  DOWNLOAD = 9;
+}
+
+enum StatusCode {
+  SUCCESS = 0;
+  ERR_PERMISS = 1;
+  ERR_ARGS = 2;
+  ERR_DESC = 3;
+}
+
+message Command {
+  CommandType type = 1;
+  string arg0 =  2;
+  string arg1 = 3;
+  bytes data = 4;
+}
+
+message Response {
+  StatusCode statusCode = 1;
+  bytes response = 2;
+}
+\end{verbatim}
+
+% ------------------------------------------------------------------------------
+% Implementação
+% ------------------------------------------------------------------------------
+\section{Implementação}
+Nossa implementação para uma melhor organização foi dividida em quatro módulos, sendo eles cliente, servidor, protocolo e utilitários.
+
+\textbf{Cliente}: neste módulo foram implementadas todas as funcionalidades que se referem somente ao cliente, sendo composto pela seguintes classes: Client, ClientMain, ClientException e ClientOperation.
+
+\begin{itemize}
+ \item Client: Classe responsável por realizar a comunicação entre a interface e as operações do cliente. 
+ \item ClientMain: Classe principal do cliente, responsável pela execução.
+ \item ClientException: Classe que trata as exceções geradas pelo cliente.
+ \item ClientOperarion: Classe de operações do cliente, responsável por tratar todas as funções correspondentes ao domínio do problema.
+\end{itemize}
+
+\textbf{Servidor}: neste módulo foram implementadas todas as funcionalidades que se referem somente ao servidor, sendo composto pelas seguintes classes:
+Server, ServerMain, ServerException e ServerOperation.
+
+\begin{itemize}
+ \item Server: Classe responsável por realizar a comunicação entre interface e operações do servidor que implementa runnable para que seja possível a conexão de vários clientes no servidor.
+ \item ServerMain: Classe principal do servidor, responsável por sua execução.
+ \item ServerException: Classe responsável por tratar as exceções que ocorrerem no servidor.
+ \item ServerOperation: Classe que contém todas as operações referentes ao domínio do problema no lado do servidor.
+\end{itemize}
+
+\textbf{Protocolo}: este módulo foi separado para o arquivo gerado pelo protocol buffers, contendo a classe CommandsProto ao qual contém todas as funcionalidades responsável por prover a utilização do protocol buffers, onde todo código utilizado é segundo a documentação da google uma caixa 
+preta, ao qual o desenvolvedor só precisa saber os métodos que existem e oque retornam, porém não interessando como os quais funcionam por dentro.
+
+\textbf{Utilitários}: neste módulo foram implementadas todas as funcionalidades que se referem para ambos(cliente e servidor), ao qual contém as classes: CommandCode, Message e StatusCode.
+
+% ------------------------------------------------------------------------------
+% Interoperabilidade
+% ------------------------------------------------------------------------------
+\section{Interoperabilidade}
+Este trabalho foi testado com dois outros grupos, todos utilizando o mesmo protocolo definido neste documento:
+\begin{itemize}
+ \item Lucas Piske e Jeferson Batista
+ \item Eric Marchetti e Vinicius Arruda
+\end{itemize}
+
+% ------------------------------------------------------------------------------
+% Conclusão
+% ------------------------------------------------------------------------------
+\section{Conclusão} \label{sec:conc}
+Neste trabalho foi visto a importância de um protocolo para a comunicação via rede. Também foi visto a dificuldade de se criar tal protocolo pensando em todos os problemas ao qual podem ocorrer.
+
+Para a resolução deste problema foi utilizado a API protocol buffers do Google, que provém todo o serviço do protocolo apenas a partir da definição de uma estrutura a sua preferência e da utilização dos recursos da API. Foi notado que a curva de aprendizado para a utilização da API causa determinado atraso de produção porém pode ser recompensado após a integração da API de forma correta no projeto, gerando ganho de produção com a não preocupação de problemas que devem ser tratados na comunicação do protocolo, como por exemplo tamanho do arquivo a ser enviado pelo fluxo. 
+
+Em nosso trabalho foi implementado um servidor multi-thread ao qual permite a comunicação de vários clientes pela internet, onde pode ser testado a eficiência do protocolo buffer em casos reais, ao qual se tem aprovação para ser utilizado em nosso dia a dia.
+
+\end{document}
