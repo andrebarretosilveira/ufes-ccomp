@@ -1,0 +1,6254 @@
+/**
+ * FUNÇÕES PARA A MANIPULAÇÃO DA ARVORE B
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <wchar.h>
+#include <wctype.h>
+#include "word.h"
+#include "hash.h"
+#include "arvoreB.h"
+#include "preProcess.h"
+
+#define BUFFER 100
+#define MIN_OCUP (M/2 - 1)  /* Minímo de ocupação de um nó */
+
+/**
+ * [buscaArvB - Lê um arquivo apontado por fin realiza buscas na árvore B]
+ * @param raiz   [Ponteiro para a arvore B a ser recriada]
+ * @param fin    [Ponteiro para arquivo onde se encontram as palavras a serem buscadas]
+ */
+void buscaArvB(ArvoreB *raiz, FILE *fin)
+{
+    char *palavra = malloc(BUFFER*sizeof(char));
+    wchar_t *linha = malloc(BUFFER*sizeof(wchar_t));
+    wchar_t *ptr, *token, wordGroup[BUFFER];
+    tpWord *word;
+    documentList *docList = NULL;
+
+    while(fgetws(linha, BUFFER, fin) != NULL) { /* Lendo linha por linha */
+        /* Remover '\n' lido pelo fgetws */
+        if ((ptr = wcschr(linha, L'\n')) != NULL)
+            *ptr = L'\0';
+
+        /* Salvando busca original */
+        wcsncpy(wordGroup, linha, BUFFER);
+
+        /* Busca de frase (possui aspas) */
+        if(linha[0] == '"') {
+            docList = sentenceSearchArvB(raiz, wordGroup);
+            if(docList != NULL) {
+                printf("%ls\n", linha);
+                printDocumentList(docList);
+                freeDocList(&docList);
+            }
+        }
+
+        else {
+            /* Dividindo a linha em tokens (palavras) */
+            token = wcstok(linha, L" ", &ptr);
+            token = wcstok(NULL, L" ", &ptr);
+
+            /* Recopiando a busca original */
+            wcsncpy(linha, wordGroup, BUFFER);
+
+            /* Busca de múltiplas palavras */
+            if(token != NULL) {
+                docList = multiSearchArvB(raiz, wordGroup);
+                if(docList != NULL) {
+                    printf("%ls\n", linha);
+                    printDocumentList(docList);
+                    freeDocList(&docList);
+                }
+            }
+
+            /* Busca simples de uma palavra */
+            else {
+                clearWord(palavra, linha);
+                word = searchArvB(raiz, palavra);
+                if(word != NULL) {
+                    printf("%s\n", palavra);
+                    printDocumentList(word->documents);
+                }
+            }
+        }
+    }
+    free(palavra);
+    free(linha);
+}
+
+/**
+ * [importArvB - Lê um arquivo apontado por fin e recria a árvore B]
+ * @param raiz   [Ponteiro para a arvore B a ser recriada]
+ * @param fin    [Ponteiro para arquivo a ler o índice]
+ */
+void importArvB(ArvoreB **raiz, FILE *fin)
+{
+    tpWord *word;
+    char *in = malloc(BUFFER*sizeof(char));
+    char *palavra = malloc(BUFFER*sizeof(char));
+    char *doc = malloc(BUFFER*sizeof(char));
+    int pos;
+
+    while(fscanf(fin, "%s", in) != EOF) {
+        /* Inserir palavra criada na árvore */
+        if(strcmp(in, ";") == 0)
+            *raiz = insereArvB(*raiz, word);
+
+        /* Inserir documento e posições na word */
+        else if(strcmp(in, "-") == 0) {
+            fscanf(fin, "%s", doc);
+            fscanf(fin, "%d", &pos);
+            while(pos != -1) {
+                insertDocument(&word->documents, doc, pos);
+                fscanf(fin, "%d", &pos);
+            }
+        }
+
+        /* Criar estrutura da palavra */
+        else {
+            strcpy(palavra, in);
+            word = inicializaWord(palavra);
+        }
+    }
+
+    free(in);
+    free(palavra);
+    free(doc);
+}
+
+/**
+ * [geraIndex - Cria o arquivo de índices apontado por fout da árvore raiz]
+ * @param raiz   [Ponteiro para arvore B]
+ * @param fout   [Ponteiro para arquivo a ser escrito]
+ */
+void geraIndex(ArvoreB *raiz, FILE *fout)
+{
+    int i;
+    tpWord *word;
+    documentList *doclist;
+    posList *poslist;
+
+    if(raiz != NULL) {
+        for(i = 0; i < raiz->n; i++) {
+            geraIndex(raiz->p[i], fout); /* Chamada recursiva */
+            word = raiz->word[i];
+            fprintf(fout, "%s", word->string);
+            doclist = word->documents;
+
+            while(doclist != NULL) { /* Imprimir lista de documentos */
+                fprintf(fout, "\n- %s\n", doclist->document);
+                poslist = doclist->pos;
+
+                while(poslist != NULL) { /* Imprimir lista de posições */
+                    fprintf(fout, "%d ", poslist->pos);
+                    poslist = poslist->prox;
+                }
+                fprintf(fout, "-1");
+                doclist = doclist->prox;
+            }
+            fprintf(fout, "\n;\n");
+        }
+        geraIndex(raiz->p[i], fout);
+    }
+}
+
+/**
+ * [searchArvB - Busca na árvore B por uma palavra indicada]
+ * @param raiz   [Ponteiro para arvore B]
+ * @param word   [Palavra a ser buscada na árvore]
+ * @return       [Ponteiro para palavra encontrada]
+ */
+tpWord *searchArvB(ArvoreB *raiz, char *word)
+{
+    int pos;
+
+    if(raiz == NULL)
+        return NULL;
+
+    pos = buscaBinaria(raiz, word);
+
+    if(strcmp(raiz->word[pos]->string, word) == 0)
+        return raiz->word[pos]; /* Palavra encontrada */
+
+    if(strcmp(raiz->word[pos]->string, word) > 0)
+        return searchArvB(raiz->p[pos], word); /* Buscar a esquerda (subarvore) */
+    else
+        return searchArvB(raiz->p[pos+1], word); /* Buscar a direita (subarvore) */
+
+    return NULL;
+}
+
+/**
+ * [multiSearchArvB - Busca na árvore para encontrar múltiplas palavras em um mesmo documento]
+ * @param raiz   [Ponteiro para arvore B]
+ * @param linha  [Palavras a sererem buscadas na árvore]
+ * @return       [Ponteiro para palavra encontrada]
+ */
+documentList *multiSearchArvB(ArvoreB *raiz, wchar_t *linha)
+{
+    int manter = 0;
+    char *palavra = malloc(BUFFER*sizeof(char));
+    wchar_t *token, *ptr;
+    tpWord *word, *word2;
+    documentList *dLSearch = NULL, *dL = NULL, *aux = NULL;
+    documentList *secondList = NULL;
+
+    /* Dividindo a linha em tokens (palavras) */
+    token = wcstok(linha, L" ", &ptr);
+    token = wcstok(NULL, L" ", &ptr);
+
+    clearWord(palavra, linha);
+
+    if(token == NULL) {
+        word = searchArvB(raiz, palavra);
+        free(palavra);
+        if(word) {
+            aux = word->documents;
+            while(aux != NULL)
+        	{
+        		insertDocumentSearch(&dL, aux->document);
+        		aux = aux->prox;
+        	}
+            return dL;
+        }
+        return NULL;
+    }
+
+    word = searchArvB(raiz, palavra);
+
+    if(word == NULL) {
+        free(palavra);
+        return NULL;
+    }
+
+    aux = word->documents;
+
+    while(aux != NULL)
+	{
+		insertDocumentSearch(&dL, aux->document);
+		aux = aux->prox;
+	}
+
+    dLSearch = word->documents;
+
+    while(token != NULL)
+	{
+        clearWord(palavra, token);
+        word2 = searchArvB(raiz, palavra);
+		if(!word2) {
+            freeDocList(&dL);
+            free(palavra);
+			return NULL;
+        }
+
+		while(dLSearch != NULL)
+		{
+            secondList = word2->documents;
+			while(secondList != NULL)
+			{
+                if(!strcmp(dLSearch->document,secondList->document))
+				{
+					manter = 1;
+					break;
+				}
+				secondList = secondList->prox;
+			}
+            if(manter == 0)
+				removeDocument(&dL, dLSearch->document);
+
+			dLSearch = dLSearch->prox;
+            manter = 0;
+		}
+        dLSearch = word->documents;
+        token = wcstok(NULL, L" ", &ptr); /* Iterador de palavras */
+    }
+    free(palavra);
+    return dL;
+}
+
+/**
+ * [sentenceSearchArvB - Busca na árvore para encontrar palavras em sequência (entre aspas)]
+ * @param raiz   [Ponteiro para arvore B]
+ * @param linha  [Palavras a sererem buscadas na árvore]
+ * @return       [Ponteiro para lista de documentos onde se encontra a frase]
+ */
+documentList *sentenceSearchArvB(ArvoreB *raiz, wchar_t *linha)
+{
+    int iterate;
+    documentList *testList, *aux , *docWord1, *docWord2;
+    tpWord *word, *nextWord;
+    char *palavra = malloc(BUFFER*sizeof(char));
+    wchar_t *token, *ptr, *wcharAux = malloc(BUFFER*sizeof(wchar_t));
+
+    /* Remover aspas */
+    swscanf(linha, L"\"%l[^\"]", linha);
+    wcsncpy(wcharAux, linha, BUFFER);
+
+    /* Pegando lista de documentos em comum entras as palavras */
+    testList = multiSearchArvB(raiz, wcharAux);
+    aux = testList;
+
+    /* Encerra a busca avançada se a lista retornada for nula */
+    if(testList == NULL) {
+        free(palavra);
+        free(wcharAux);
+        return NULL;
+    }
+
+    /* Dividindo a linha em tokens (palavras) */
+    token = wcstok(linha, L" ", &ptr);
+    token = wcstok(NULL, L" ", &ptr);
+
+    /* Primeira palavra */
+    clearWord(palavra, linha);
+    word = searchArvB(raiz, palavra);
+
+    while(token != NULL)
+    {
+        /* Próximas palavras */
+        clearWord(palavra, token);
+        nextWord = searchArvB(raiz, palavra);
+
+        while(aux != NULL)
+        {
+            iterate = 1;
+            docWord1 = searchDocument(word->documents,aux->document);
+            docWord2 = searchDocument(nextWord->documents,aux->document);
+
+            if((!docWord1 || !docWord2) || !checkPosition(docWord1, docWord2)) {
+                strcpy(palavra, aux->document);
+                aux = aux->prox; iterate = 0;
+                removeDocument(&testList, palavra);
+            }
+
+            if(testList == NULL) {
+                free(palavra);
+                free(wcharAux);
+                return NULL;
+            }
+
+            if(aux != NULL && iterate)
+                aux = aux->prox;
+        }
+
+        wcsncpy(linha, token, BUFFER);
+        token = wcstok(NULL, L" ", &ptr);
+        aux = testList;
+    }
+    free(palavra);
+    free(wcharAux);
+    return testList;
+}
+
+/**
+ * [fillArvB - Preenche a ArvoreB raiz com a lista de palavras list]
+ * @param raiz   [Ponteiro para arvore B]
+ * @param list   [Lista de palavras a serem inseridas]
+ */
+void fillArvB(ArvoreB **raiz, wordList *list)
+{
+    while(list != NULL) {
+        *raiz = insereArvB(*raiz, list->word);
+        list = list->prox;
+    }
+}
+
+/**
+ * [insereArvB - INSERE UM PALAVRA tpWord NA ARVORE-B arv]
+ * @param raiz   [Ponteiro para arvore B]
+ * @param word   [Ponteiro para a palavra a ser inserida]
+ * @return       [Ponteiro para nova árvore B]
+ */
+ArvoreB *insereArvB(ArvoreB *raiz, tpWord *word)
+{
+    int h;
+    ArvoreB *filho_dir, *nova_raiz;
+    tpWord *wordReturn = NULL;
+
+    filho_dir = insere(raiz, word, &h, &wordReturn);
+    if(h) { // Aumetará a altura da árvore
+        nova_raiz = criaArvB();
+        nova_raiz->n = 1;
+        nova_raiz->word[0] = wordReturn;
+        nova_raiz->p[0] = raiz;
+        nova_raiz->p[1] = filho_dir;
+
+        return(nova_raiz);
+    }
+    else return(raiz);
+}
+
+/**
+ * [insereWord - Insere uma palavra na sub-árvore raiz]
+ * @param raiz       [Ponteiro para arvore B]
+ * @param word       [Palavra ser inserida]
+ * @param filhodir   [Ponteiro para um filho à direita do nó]
+ */
+void insereWord(ArvoreB *raiz, tpWord *word, ArvoreB *filhodir)
+{
+    int k, pos;
+
+    k = raiz->n;
+    /* Busca para obter a posição ideal para inserir a nova palavra */
+    pos = buscaBinaria(raiz, word->string);
+    if(raiz->word[pos] != NULL)
+        if(strcmp(raiz->word[pos]->string, word->string) < 0) pos++;
+
+    /* Realiza o remanejamento para manter as palavras ordenadas */
+    while (k > pos && strcmp(word->string, raiz->word[k-1]->string) < 0) {
+        raiz->word[k] = raiz->word[k-1];
+        raiz->p[k+1] = raiz->p[k];
+        k--;
+    }
+    /* insere a palavra na posição ideal */
+    raiz->word[pos] = word;
+    raiz->p[pos+1] = filhodir;
+    raiz->n++;
+}
+
+/**
+ * [insere - Realiza a busca recursiva do nó para inserir a palavra e faz as subdivisões quando necessárias]
+ * @param raiz          [Ponteiro para arvore B]
+ * @param word          [Palavra ser inserida]
+ * @param h             [Variável de controle booleana]
+ * @param wordReturn    [Palavra retornada de chamadas recursivas. A que será inserida]
+ */
+ArvoreB *insere(ArvoreB *raiz, tpWord *word, int *h, tpWord **wordReturn)
+{
+    int i, pos;
+    tpWord *wordMediano; /* Auxiliar para armazenar a palavra que irá subir para o pai */
+    ArvoreB *temp, *filho_dir; /* Ponteiro para o filho à direita da palavra */
+
+    if (raiz == NULL) {
+        /* O nó anterior é o ideal para inserir a nova palavra (chegou em um nó folha) */
+        *h = 1;
+        *wordReturn = word;
+        return (NULL);
+    }
+    /* Busca para obter a posição ideal para inserir a nova palavra */
+    pos = buscaBinaria(raiz, word->string);
+    if(raiz->word[pos] != NULL)
+        if(strcmp(raiz->word[pos]->string, word->string) < 0) pos++;
+
+    if (raiz->n > pos && strcmp(raiz->word[pos]->string, word->string) == 0) {
+        /* Palavra já existe na Árvore */
+        *h = 0;
+        return (NULL);
+    }
+    /* Desce na árvore até encontrar o nó folha para inserir a palavra. */
+    filho_dir = insere(raiz->p[pos], word, h, wordReturn);
+
+    if (*h) { /* Se 1 deve inserir a wordReturn no nó. */
+        if (raiz->n < M-1) { /* Tem espaço na página */
+            insereWord(raiz, *wordReturn, filho_dir);
+            *h = 0;
+            return (NULL);
+        }
+        /* OVERFLOW. Precisa subdividir */
+        temp = criaArvB();
+
+        /* Elemento mediano que vai subir para o pai */
+        wordMediano = raiz->word[MIN_OCUP];
+
+        /* Insere metade do nó raiz no temp (efetua subdivisão) */
+        temp->p[0] = raiz->p[MIN_OCUP+1];
+        for(i = MIN_OCUP + 1; i < M-1; i++)
+            insereWord(temp, raiz->word[i], raiz->p[i+1]);
+
+        /* Atualiza nó raiz. */
+        for (i = MIN_OCUP + 1; i < M; i++) {
+            raiz->word[i-1] = NULL;
+            raiz->p[i] = NULL;
+        }
+        raiz->n = MIN_OCUP;
+
+        /* Verifica em qual nó será inserida a nova palavra */
+        if (pos <= MIN_OCUP)
+            insereWord(raiz, *wordReturn, filho_dir);
+        else
+            insereWord(temp, *wordReturn, filho_dir);
+
+        /* Retorna o mediano para inserí-lo no nó pai e o temp como filho direito do mediano. */
+        *wordReturn = wordMediano;
+        return(temp);
+    }
+    return (NULL);
+}
+
+/**
+ * [buscaBinaria - Realiza uma busca binária para encontrar a posição para o elemento]
+ * @param raiz   [Ponteiro para arvore B]
+ * @param word   [Palavra ser inserida]
+ * @return       [Posicao a inserir a palavra]
+ */
+int buscaBinaria(ArvoreB *raiz, char *palavra)
+{
+    int li, m = 0, ls;
+    li = 0; ls = (raiz->n)-1;
+    while (li <= ls) {
+        m = (li + ls)/2;
+        if(strcmp(raiz->word[m]->string, palavra) == 0) return m;
+        if(strcmp(raiz->word[m]->string, palavra) < 0) li = m + 1;
+        else ls = m - 1;
+    }
+    /* Retorna a posição apropriada */
+    return m;
+}
+
+void printArvB(ArvoreB *raiz)
+{
+    int i;
+
+    if(raiz != NULL) {
+        for(i = 0; i < raiz->n; i++) {
+            printArvB(raiz->p[i]);
+            printf("%s %d", raiz->word[i]->string, i);
+        }
+        printArvB(raiz->p[i]);
+    }
+    printf("\n");
+}
+
+/**
+ * [criaArvB - INICIALIZA A ARVORE B]
+ * @return  [Ponteiro para estrutura da arvore B]
+ */
+ArvoreB *criaArvB() {
+    int i;
+
+    ArvoreB *arv = malloc(sizeof(ArvoreB));
+    arv->n = 0;
+    for(i = 0; i < M-1; i++) {
+        arv->word[i] = NULL;
+        arv->p[i] = NULL;
+    }
+    arv->p[M-1] = NULL;
+
+    return arv;
+}
+
+/**
+ * [freeArvB - Libera arvore e tudo que há de bom]
+ * @param raiz   [Ponteiro para arvore B]
+ */
+void freeArvB(ArvoreB *raiz)
+{
+    int i;
+
+    if(raiz != NULL) {
+        for(i = 0; i < raiz->n; i++) {
+            freeArvB(raiz->p[i]);
+            freeWord(raiz->word[i]);
+        }
+        freeArvB(raiz->p[raiz->n]);
+        free(raiz);
+    }
+}
+/**
+ * IMPLEMENTAÇÕES DE BRANCH AND BOUND
+ */
+
+#include "bb.h"
+
+/**
+ * Realiza o escalonamento de Jobs, encontrando o menor deles (exato)
+ * @param  jobs Vetor de Jobs a serem escalonados
+ * @param  N    Quantidade de Jobs
+ * @param  W    Constante para o algoritmo Beam Search
+ * @return      Uma sequência de menor custo
+ */
+Path *branchBound(Job **jobs, const int N, const int W)
+{
+    int i, j, minCost, ubMax,lbMin;
+    SkewHeap *sh = NULL, *shAtual;
+    Path *path, *minPath, *menorCaminhoBS;
+
+    menorCaminhoBS = beamSearch(jobs, N, W);
+    minPath = menorCaminhoBS;
+    minCost = menorCaminhoBS->pathCost;
+    ubMax = penalidadeTotal(jobs, N);
+    lbMin = penalidadeMinima(jobs, N);
+
+    /* Primeiro caso */
+    path = criaPath(NULL, lbMin, ubMax, 0, createList());
+    shAtual = geraPossibilidadesBB(jobs, path, N);
+    sh = shAtual;
+
+    /* Demais casos */
+    for(i = 1; i < N; i++)
+    {
+        shAtual = NULL;
+        path = removeMin(&sh); // Caminho a ser avaliado
+
+        while(path != NULL && path->pathCost < minCost)
+        {
+            // Caminho em questão possui custo menor que o menor
+            // caminho encontrado até o momento
+
+            if(path->pathCost == path->ub)
+            {
+                for(j = 0; j < N; j++)
+                {
+                    // Preenchendo o caminho de forma
+                    if(!isElementList(path->caminho, j)) insertList(path->caminho, j);
+                }
+                //Atualizando menor caminho
+                freePath(minPath);
+                minPath = path;
+                minCost = path->ub;
+            }
+            else
+                shAtual = mergeSkewHeap(shAtual, geraPossibilidadesBB(jobs, path, N));
+
+            path = removeMin(&sh); // Caminho a ser avaliado
+        }
+        if(path != NULL) freePath(path);
+
+        freeSkewHeap(sh);
+        sh = shAtual;
+    }
+
+    return(minPath);
+}
+
+/**
+ * Cria uma lista de possíveis caminhos a serem seguidos a partir de um
+ * caminho já percorrido
+ * @param  jobs Vetor de Jobs
+ * @param  p    Caminho percorrido
+ * @param  N    Quantidade de Jobs
+ * @return      Lista de possibilidades
+ */
+SkewHeap *geraPossibilidadesBB(Job** jobs, Path *p, const int N)
+{
+    int i, lb, ub, tempo;
+    SkewHeap *sh = NULL;
+    Path *newPath;
+    typeList *newList;
+
+    for(i = 0; i < N; i++) {
+        if(!isElementList(p->caminho, i)) {
+            ub = p->ub;
+            lb = p->pathCost + calculaLB(jobs,p,N,i);
+
+            if(!hasPenalidade(p, jobs[i]))
+            {
+                ub -= jobs[i]->penalidade;          // Diminui do ubMax se não houve penalidade
+            }
+            tempo = p->tempoGasto + jobs[i]->tempo; // Atualiza tempo gasto
+            newList = dupList(p->caminho);          // Dushica a lista de caminho
+            insertList(newList, i);                 // Adiciona um passo ao caminho
+            newPath = criaPath(jobs[i], lb, ub, tempo, newList);
+            sh = mergeSkewHeap(sh, criaSkewHeap(newPath));
+        }
+    }
+
+    freePath(p); // Path utilizado para gerar o sh. Não é mais necessário
+    return sh;
+}
+
+/**
+ * Calcula um incremento ao Lower Bound de um Caminho
+ * @param  jobs Vetor de Jobs
+ * @param  p    Caminho a ser avaliando
+ * @param  N    Quantidade de Jobs
+ * @return      Valor a incrementar no Lower Bound de p
+ */
+int calculaLB(Job **jobs,Path *p, const int N,const int pos)
+{
+    int i, soma = 0;
+    p->tempoGasto += jobs[pos]->tempo;
+    for(i = 0; i < N; i++) {
+        if(!isElementList(p->caminho, i)) {
+
+            if (hasPenalidade(p, jobs[i]) && ((p->tempoGasto - jobs[pos]->tempo + jobs[i]->tempo)  <= jobs[i]->deadline) && i != pos)
+             { soma += jobs[i]->penalidade; }
+        }
+    }
+    p->tempoGasto -= jobs[pos]->tempo;
+
+    if(hasPenalidade(p,jobs[pos]) && (p->tempoGasto + jobs[pos]->tempo) <= jobs[pos]->deadline)
+        soma += jobs[pos]->penalidade;
+
+    return soma;
+}
+
+/**
+ * Analiza se haverá penalidade ao realizar o próximo Job dado um Caminho
+ * @param  p   Caminho percorrido
+ * @param  job Job a ser realizado
+ * @return     1 se houver penalidade, 0 se não
+ */
+int hasPenalidade(Path *p, Job *job)
+{
+    return (p->tempoGasto + job->tempo > job->deadline);
+}
+/**
+ * IMPLEMENTAÇÕES DE BEAM SEARCH
+ */
+
+#include "bs.h"
+
+/**
+ * [beamSearch - Realiza a heurística Beam Seach para escalonar Jobs]
+ * @param  jobs [Vetor de Jobs a serem escalonados]
+ * @param  N    [Quantidade de Jobs / Tamanho do vetor Jobs]
+ * @param  w    [Quantidade de Jobs selecionados por nível]
+ * @return      [Ponteiro para SkewHeap com o caminho de menor custo na raiz]
+ */
+Path *beamSearch(Job **jobs, const int N, const int W)
+{
+    int i, j;
+    SkewHeap *sh, *shAtual;
+    Path *path, *minPath;
+
+    sh = NULL;
+
+    /* Primeiro caso */
+    path = criaPath(NULL, penalidadeMinima(jobs, N), 0, 0, createList());
+    shAtual = mergeSkewHeap(NULL, geraPossibilidades(jobs, path, N));
+    sh = shAtual;
+
+    /* Demais casos */
+    for(i = 1; i < N; i++) {
+        shAtual = NULL;
+        j = 0;
+        while(j < W && sh != NULL) {
+            path = removeMin(&sh);
+            shAtual = mergeSkewHeap(shAtual, geraPossibilidades(jobs, path, N));
+            j++;
+        }
+
+        freeSkewHeap(sh);
+        sh = shAtual;
+    }
+
+    minPath = removeMin(&sh);
+    freeSkewHeap(sh);
+
+    return(minPath);
+}
+
+/**
+ * [geraPossibilidades - Criar árvore de possibilidades para um determinado caminho]
+ * @param  jobs  [Vetor que contém os Jobs]
+ * @param  p     [Ponteiro para o caminho de referência]
+ * @param  N     [Quantidade de jobs / Tamanho do vetor 'jobs']
+ * @return       [SkewHeap contendo as possibilidades a partir do caminho p]
+ */
+SkewHeap *geraPossibilidades(Job** jobs, Path *p, const int N)
+{
+    int i, custo, tempo;
+    SkewHeap *sh = NULL;
+    Path *newPath;
+    typeList *newList;
+
+    for(i = 0; i < N; i++) {
+        if(!isElementList(p->caminho, i)) {
+            custo = p->pathCost + calculaLB(jobs,p,N,i);
+            tempo = p->tempoGasto + jobs[i]->tempo; // Atualiza tempo gasto
+            newList = dupList(p->caminho);          // Duplica a lista de caminho
+            insertList(newList, i);                 // Adiciona um passo ao caminho
+            newPath = criaPath(jobs[i], custo, 0, tempo, newList);
+            sh = mergeSkewHeap(sh, criaSkewHeap(newPath));
+        }
+    }
+
+    freePath(p); // Path utilizado para gerar a sh. Não é mais necessário
+    return sh;
+}
+
+/**
+ * [calculaCusto - Dado um Path e um Job, retorna o custo (penalidade) do processamento]
+ * [deste job considerando o tempo já gasto pelo caminho p]
+ * [@param  p   Path percorrido até o job]
+ * [@param  job Job atual sendo avaliado]
+ * [@return     Penalidade do processamento em questão]
+ */
+int calculaCusto(Path *p, Job *job)
+{
+    if(p->tempoGasto + job->tempo > job->deadline)
+        return p->pathCost + job->penalidade;
+    else
+        return p->pathCost;
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include "contorno.h"
+
+/**
+ * [createLPoints Alocando espaço na memória para o vetor de pontos]
+ * @param  N [Quantidade de pontos X]
+ * @param  M [Quantidade de pontos Y]]
+ * @return   [Vetor de pontos criado na memória]
+ */
+Points* createLPoints(const int N, const int M)
+{
+	Points *new = calloc((size_t)(N*M),sizeof(Points));
+	return new;
+}
+
+/**
+ * [freeLPoints Libera da memória vetor de pontos]
+ * @param lPoints [Vetor de pontos a ser liberado]
+ */
+void freeLPoints(Points *lPoints)
+{
+	free(lPoints);
+}
+
+/**
+ * [discretiza Discretiza dominios e gera pontos]
+ * @param lPoints [Vetor de pontos a ser encontrado]
+ * @param input   [Dados de entrada]
+ */
+void discretiza(Points *lPoints, Data *input)
+{
+	int i,j,pos = 0;
+	double hx,hy;
+
+	hx = (input->endX - input->beginX)/((double)input->amountX-1);
+	hy = (input->endY - input->beginY)/((double)input->amountY-1);
+
+	for( i = 1; i <= input->amountX;i++)
+		for( j = 1; j <= input->amountY;j++)
+		{
+			lPoints[pos].x = input->beginX + (double)(j - 1)*(hx);
+			lPoints[pos].y = input->beginY + (double)(i - 1)*(hy);
+			pos++;
+		}
+}
+
+/**
+ * [createVIndependent Criando vetor independente]
+ * @param  lPoints [Vetor com todos os pontos discretizados]
+ * @param  input   [Dados de entrada]
+ * @return         [Vetor independente]
+ */
+double *createVIndependent(Points *lPoints,Data *input)
+{
+
+	double *vetIndependent;
+	int i, qtdElementos;
+	qtdElementos = (input->amountX * input->amountY);
+
+	vetIndependent = calloc((size_t)qtdElementos,sizeof(double));
+
+    ae_open();
+    
+    for(i = 0; i < qtdElementos;i++)
+	{
+        ae_set("x", lPoints[i].x);
+        ae_set("y", lPoints[i].y);
+        ae_set("e", 2.718281);
+		vetIndependent[i] = ae_eval(input->Fxy);
+	}
+    ae_close();
+
+	return vetIndependent;
+
+}
+
+/**
+ * [insertContourn Inserindo valor de contorno na matriz]
+ * @param matrix         [Matriz pentadiagonal]
+ * @param vetIndependent [Vetor independente]
+ * @param index          [Indice I]
+ * @param valor          [Valor de contorno]
+ * @param input          [Dados de entrada]
+ */
+void insertContourn(double **matrix, double *vetIndependent, Data *input)
+{
+	int i,j, qtdElementos;
+	int index;
+	qtdElementos = (input->amountX * input->amountY);
+
+	for( j = 0; j < input->contour;j++)
+	{
+		index = generatorNewIndex(input->elements[j].x,input->elements[j].y,input->amountX);
+		vetIndependent[index] = input->elements[j].value;
+		for(i = 0; i < qtdElementos ; i++)
+		{
+			if(i == index)
+			{
+				matrix[index][i] = 1;
+			}else
+				matrix[index][i] = 0;
+		}
+	}
+}
+
+/**
+ * [generatorNewIndex Transforma indice i,j em indice I]
+ * @param  i       [Indice i do elemento]
+ * @param  j       [Indice j do elemento]
+ * @param  amountX [Quantidade de colunas da matriz]
+ * @return         [Indice I]
+ */
+int generatorNewIndex(int i, int j, int amountX)
+{
+	return i + ((j-1) * amountX) - 1 ;
+}
+
+/**
+ * [createMatrix Cria matriz pentadiagonal]
+ * @param  input [Dados de entrada]
+ * @param  a     [Constante a]
+ * @param  b     [Constante b]
+ * @param  c     [Constante c]
+ * @return       [Matriz pentadiagonal]
+ */
+double **createMatrix(Data *input,double a, double b, double c)
+{
+	double hx,hy, **matrix;
+	double aI,bI,cI,dI,eI;
+	int qtdElementos, i, j;
+
+	/*Lendo tamanho da matriz*/
+	qtdElementos = (input->amountX * input->amountY);
+
+	/*CALCULANDO hx e hy*/
+	hx = (input->endX - input->beginX)/((double)input->amountX-1);
+	hy = (input->endY - input->beginY)/((double)input->amountY-1);
+
+	/*VALORES DOS ELEMENTOS DA MATRIZ*/
+	aI = c + 2 *((1/(hx*hx)) + (1/(hy*hy)));
+	bI = (-1/(hx*hx)) - (a/(2*hx));
+	cI = (-1/(hx*hx)) + (a/(2*hx));
+	dI = (-1/(hy*hy)) - (b/(2*hy));
+	eI = (-1/(hy*hy)) + (b/(2*hy));
+
+	/*ALOCANDO ESPAÇO DA MATRIZ*/
+	matrix = calloc((size_t)qtdElementos,sizeof(double*));
+	for(i = 0; i < qtdElementos; i++)
+		matrix[i] = calloc((size_t)qtdElementos,sizeof(double));
+
+	/*CONSTRUINDO MATRIZ*/
+	for(i = 0; i < qtdElementos; i++)
+		for( j = 0; j < qtdElementos; j++)
+		{
+			if( i == j)
+				matrix[i][j] = aI;
+			else if ((j+1) == i)
+				matrix[i][j] = bI;
+			else if((j-1) == i)
+				matrix[i][j] = cI;
+			else if((j+input->amountX) == i) /*CONFERIR -> i - 1ou i - else if((j+input->amount) == i-1)*/
+				matrix[i][j] = dI;
+			else if ((j-input->amountX) == i) /*CONFERIR -> i-1 ou i  - else if ((j-input->amount) == i-1)*/
+				matrix[i][j] = eI;
+			else
+				matrix[i][j] = 0;
+		}
+
+	return matrix;
+}
+
+/**
+ * [freeMatrix Liberando memória da matriz]
+ * @param Matrix [Matriz a ser liberada da memória]
+ * @param input  [Dados de entrada]
+ */
+    void freeMatrix(double** matrix, Data *input)
+{
+	int i,size;
+
+	size = (input->amountX * input->amountY);
+	for(i = 0; i < size; i++)
+		free(matrix[i]);
+
+	free(matrix);
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include "csr.h"
+
+
+#define SEE_DATA 0
+
+
+#define get_memory(ptr, size) ((ptr) = malloc(size));if((ptr) == NULL){fprintf(stderr, "Out of memory.\n");exit(EXIT_FAILURE);}
+
+
+#if	SEE_DATA
+static void printCSR(CSR* csr);
+#endif
+
+
+static COO* new_coo(size_t n, size_t nnz);
+static void freeCOO(COO* coo);
+
+
+static COO* new_coo(size_t n, size_t nnz)
+{
+	COO* new;
+
+	get_memory(new, sizeof(COO));
+
+	new->n = n;
+	new->nnz = nnz - n;
+
+	get_memory(new->column_index, new->nnz * sizeof(size_t));
+	get_memory(new->row_index, new->nnz * sizeof(size_t));
+	get_memory(new->A, new->nnz * sizeof(double));
+	get_memory(new->d, n * sizeof(double));
+	get_memory(new->b, n * sizeof(double));
+
+	return new;
+}
+
+
+CSR* new_csr(size_t n, size_t nnz)
+{
+	CSR* new;
+
+	get_memory(new, sizeof(CSR));
+
+	new->n = n;
+	new->nnz = nnz;
+
+	get_memory(new->column_index, nnz * sizeof(size_t));
+	get_memory(new->row_ptr, (n + 1) * sizeof(size_t));
+	get_memory(new->A, nnz * sizeof(double));
+
+	new->d = NULL;  /* d receberá o d de COO */
+	new->b = NULL;  /* b receberá o b de COO */
+
+	return new;
+}
+
+
+static void freeCOO(COO* coo)
+{
+	free(coo->column_index);
+	free(coo->row_index);
+	free(coo->A);
+	free(coo);
+}
+
+
+void freeCSR(CSR* csr)
+{
+	free(csr->column_index);
+	free(csr->row_ptr);
+	free(csr->A);
+	free(csr->d);
+	free(csr->b);
+	free(csr);
+}
+
+
+CSR* get_csr(const char* file_name)
+{
+	FILE* stream;
+	COO* coo;
+	size_t i, j, x, y, n, nnz;
+	double temp_A;
+
+	stream  = fopen(file_name, "r");
+
+	if(stream == NULL)
+	{
+		fprintf(stderr, "Error while opening file %s.\n", file_name);
+		exit(EXIT_FAILURE);
+	}
+
+	fscanf(stream, "%lu %lu %lu", &n, &n, &nnz);
+
+#if	SEE_DATA
+	fprintf(stdout, "%lu %lu %lu\n", n, n, nnz);
+#endif
+
+	coo = new_coo(n, nnz);
+
+
+	i = j = 0;
+	while(nnz > 0)
+	{
+		nnz--;
+
+		fscanf(stream, "%lu %lu %lf", &x, &y, &temp_A);
+
+		if(x == y)
+		{
+			coo->d[i++] = temp_A;
+		#if	SEE_DATA
+				fprintf(stdout, "---Diagonal[%lu][%lu]: %f\n", x-1, y-1, temp_A);
+		#endif
+				}
+				else
+				{
+					coo->row_index[j] = x - 1;
+					coo->column_index[j] = y - 1;
+					coo->A[j++] = temp_A;
+		#if	SEE_DATA
+				fprintf(stdout, "NaoDiagonal[%lu][%lu]: %f\n", x-1, y-1, temp_A);
+		#endif
+		}
+
+	}
+
+
+	for(i = 0; i < n; i++)
+	{
+		fscanf(stream, "%lf", &coo->b[i]);
+#if	SEE_DATA
+		fprintf(stdout, "%f\n", coo->b[i]);
+#endif
+	}
+
+
+	fclose(stream);
+
+	return coo2csr(coo);
+}
+
+
+CSR* coo2csr(COO* coo)
+{
+	size_t k;
+	size_t j;
+	size_t i;
+	size_t temp_s;
+	double temp_d;
+	CSR* csr;
+
+
+	csr = new_csr(coo->n, coo->nnz);
+
+
+   	for(k = 0; k < coo->n + 1; k++)
+    	csr->row_ptr[k] = 0;
+
+   /* determine row-lengths. */
+
+   for(k = 0; k < coo->nnz; k++)
+      csr->row_ptr[coo->row_index[k]] = csr->row_ptr[coo->row_index[k]] + 1;
+
+   /* starting position of each row.. */
+
+   k = 0;
+   for(j = 0; j < coo->n + 1; j++)
+   {
+      temp_s = csr->row_ptr[j];
+      csr->row_ptr[j] = k;
+      k = k + temp_s;
+   }
+
+   /* go through the structure  once more. Fill in output matrix. */
+
+   for(k = 0; k < coo->nnz; k++)
+   {
+      i = coo->row_index[k];
+      j = coo->column_index[k];
+      temp_d = coo->A[k];
+      temp_s = csr->row_ptr[i];
+      csr->A[temp_s] = temp_d;
+      csr->column_index[temp_s] = j;
+      csr->row_ptr[i] = temp_s + 1;
+   }
+
+   /* shift back csr->row_ptr */
+   for(j = coo->n - 1;; j--)
+   {
+      csr->row_ptr[j + 1] = csr->row_ptr[j];
+      if(j == 0)
+      	break;
+   }
+	 csr->row_ptr[0] = 0;
+
+
+	csr->d = coo->d;
+	csr->b = coo->b;
+
+
+	freeCOO(coo);
+#if	SEE_DATA
+	printCSR(csr);
+#endif
+
+
+	return csr;
+}
+
+
+#if	SEE_DATA
+static void printCSR(CSR* csr)
+{
+	size_t i;
+
+	fprintf(stdout, "\n");
+	fprintf(stdout, "n: %lu\n", csr->n);
+	fprintf(stdout, "nnz: %lu\n", csr->nnz);
+
+	fprintf(stdout, "\nA:\n");
+	for(i = 0; i < csr->nnz; i++)
+		fprintf(stdout, "%f ", csr->A[i]);
+
+	fprintf(stdout, "\nColumn Index:\n");
+	for(i = 0; i < csr->nnz; i++)
+		fprintf(stdout, "%lu ", csr->column_index[i]);
+
+	fprintf(stdout, "\nRow ptr:\n");
+	for(i = 0; i < csr->n + 1; i++)
+		fprintf(stdout, "%lu ", csr->row_ptr[i]);
+
+	fprintf(stdout, "\nDiagonal:\n");
+	for(i = 0; i < csr->n; i++)
+		fprintf(stdout, "%f ", csr->d[i]);
+
+	fprintf(stdout, "\nb:\n");
+	for(i = 0; i < csr->n; i++)
+		fprintf(stdout, "%f ", csr->b[i]);
+
+	fprintf(stdout, "\n");
+
+}
+#endif
+/*
+ * IMPLEMENTAÇÕES DOS ALGORITMOS "EFICIENTES":
+ * QUICKSORT, MERGESORT, heapSort
+ */
+
+
+#include "efficientSorting.h"
+
+#define SWAP(r,s) ({ int t=r; r=s; s=t; })
+#define IS_LESS(v1, v2) (v1 < v2)
+
+void mergeSort(int* v, const int N)
+{
+    if (N < 2) return;
+    int metade = N/2;
+    mergeSort(v, metade);
+    mergeSort(v + metade, N - metade);
+    merge(v, N, metade);
+}
+void merge(int* v, const int N, int metade)
+{
+    int i = 0, j = metade, k;
+    int* vorTemp = malloc(N * sizeof(int));
+    for (k = 0; k < N; k++) {
+        vorTemp[k] = j == N   ? v[i++]
+        : i == metade           ? v[j++]
+        : v[j] < v[i]           ? v[j++]
+        :                         v[i++];
+    }
+    for (i = 0; i < N; i++) {
+        v[i] = vorTemp[i];
+    }
+    free(vorTemp);
+}
+
+void heapSort(int* v, const int N)
+{
+    int start, end;
+
+    /* make heap */
+    for (start = (N-2)/2; start >=0; start--) {
+        siftDown(v, start, N);
+    }
+
+    for (end=N-1; end > 0; end--) {
+        SWAP(v[end],v[0]);
+        siftDown(v, 0, end);
+    }
+}
+void siftDown(int* v, int start, int end)
+{
+    int root = start;
+
+    while ( root*2+1 < end ) {
+        int child = 2*root + 1;
+        if ((child + 1 < end) && IS_LESS(v[child],v[child+1])) {
+            child += 1;
+        }
+        if (IS_LESS(v[root], v[child])) {
+            SWAP( v[child], v[root] );
+            root = child;
+        }
+        else return;
+    }
+}
+
+void quickSortPrimeiro(int *v, int left, int right)
+{
+	int i = left, j = right, pivo;
+
+	pivo = v[left];
+	while(i <= j)
+	{
+		while(v[i] < pivo) i++;
+		while(v[j] > pivo) j--;
+		if(i <= j)
+		{
+			SWAP(v[i], v[j]);
+			i++; j--;
+		}
+	}
+	if(j > left) quickSortPrimeiro(v, left, j);
+	if(i < right) quickSortPrimeiro(v, i, right);
+}
+
+void quickSortCentral(int* v, const int N)
+{
+    int i, j, pivo;
+
+    if (N < 2) return;
+    pivo = v[N/2];
+    for (i = 0, j = N - 1;; i++, j--) {
+        while (v[i] < pivo) i++;
+        while (pivo < v[j]) j--;
+        if (i >= j) break;
+
+        SWAP(v[i], v[j]);
+    }
+
+    quickSortCentral(v, i);
+    quickSortCentral(v + i, N - i);
+}
+
+void quickSortMediana3(int* v, int left, int right)
+{
+    int i = left, j = right, pivo, mid;
+
+    mid = (left + right) / 2;
+
+    if(v[right] < v[left])
+        SWAP(v[right], v[left]);
+
+    if(v[mid] < v[left])
+        SWAP(v[mid], v[left]);
+
+    if(v[right] < v[mid])
+        SWAP(v[right], v[mid]);
+
+    pivo = v[mid];
+
+	while(i <= j)
+	{
+		while(v[i] < pivo) i++;
+		while(v[j] > pivo) j--;
+		if(i <= j)
+		{
+			SWAP(v[i], v[j]);
+			i++; j--;
+		}
+	}
+	if(j > left) quickSortMediana3(v, left, j);
+	if(i < right) quickSortMediana3(v, i, right);
+}
+
+void quickSortRandom(int* v, int left, int right)
+{
+    int i = left, j = right, pivo, pos;
+
+    pos = left + rand() % (right - left + 1);
+	pivo = v[pos];
+	while(i <= j)
+	{
+		while(v[i] < pivo) i++;
+		while(v[j] > pivo) j--;
+		if(i <= j)
+		{
+			SWAP(v[i], v[j]);
+			i++; j--;
+		}
+	}
+	if(j > left) quickSortRandom(v, left, j);
+	if(i < right) quickSortRandom(v, i, right);
+}
+
+void rankSort(int* v, const int N)
+{
+    int i, j, z, max = 1000000;
+
+    int *count = calloc((max + 1), sizeof(int));
+
+    for(i = 0; i < N; i++) count[v[i]]++;
+    for(i = 0, z = 0; i <= max; i++) {
+        for(j = 0; j < count[i]; j++) {
+            v[z++] = i;
+        }
+    }
+
+    free(count);
+}
+
+void radixSort(int* v, const int N)
+{
+    int i, d = 1, lim = 1000000, pos;
+    Queue** filas = malloc(10*sizeof(Queue));
+
+    for(i = 0; i < 10; i++)
+        filas[i] = criaQueue();
+
+    while(d <= lim) {
+        pos = 0;
+        for(i = 0; i < N; i++)
+		      enfileira(filas[(v[i]/d)%10], v[i]);
+
+		for(i = 0; i < 10; i++) {
+			while( !isVazio(filas[i]) ) {
+				v[pos] = desenfileira(filas[i]);
+				pos++;
+			}
+		}
+        d = d * 10;
+    }
+
+    for(i = 0; i < 10; i++)
+        freeQueue(filas[i]);
+
+    free(filas);
+}
+
+void radixSortBinario(int* v, const int N)
+{
+    int i, d = 1, lim = 10000000, pos, filaPos;
+    Queue** filas = malloc(2*sizeof(Queue));
+
+    for(i = 0; i < 2; i++)
+        filas[i] = criaQueue();
+
+    while(d <= lim) {
+        pos = 0;
+        for(i = 0; i < N; i++) {
+            if(v[i] & d) filaPos = 1;
+            else filaPos = 0;
+            enfileira(filas[filaPos], v[i]);
+          }
+
+		for(i = 0; i < 2; i++) {
+			while( !isVazio(filas[i]) ) {
+				v[pos] = desenfileira(filas[i]);
+				pos++;
+			}
+		}
+        d = d << 1;
+    }
+
+    for(i = 0; i < 2; i++)
+        freeQueue(filas[i]);
+
+    free(filas);
+}
+/*                                                 *
+ * 					Solucao Exata				   *
+ *                                                 */ 
+#include <stdio.h>
+#include <stdlib.h>
+#include "exato.h"
+#include "outros.h"
+
+int geraMelhorCaminho(int n, int *vetorCaminho,float **matCusto,int *melhorCaminho,int posAtual){
+	int *num = alocaVetor(n+1), i, j, k,*vetorPadrao = alocaVetor(n);
+	int melhorCusto = 9999, custoAtual = 0;
+	/*prepara o vetor com uma permutacao
+	possivel,no caso 0 1 2,
+	para mais na frente 
+	a funcao permutar esses valores*/
+	for(i=0;i< n;i++){
+		vetorPadrao[i] = i;
+	}
+
+	while ( num[n] == 0 ) {            
+		for(i=0; i < n; i++) {
+			if ( semRepeticao(num, n) ) {
+				for(j=1; j < n; j++) {
+					vetorCaminho[j] = vetorPadrao[num[j]];
+				}
+				custoAtual = geraCusto(matCusto,vetorCaminho,n);
+				//Gera o melhor custo com o melhor caminho
+				if(custoAtual < melhorCusto ){
+					melhorCusto =  custoAtual;
+					for(k=0;k < n;k++)
+						melhorCaminho[k] = vetorCaminho[k];
+				}	
+			}
+			/*Comeca da segunda posicao pois o caixeiro sempre sai da primeira cidade*/
+			num[1]++;
+		}
+		/*distribui os vai-uns*/
+		for(i=0; i < n; i++) {
+			if(num[i] == n) {
+				num[i] = 0;
+				num[i+1]++;
+
+			}
+		}
+
+	}
+	free(vetorPadrao);
+	free(num);
+	return melhorCusto;
+}
+
+int geraCusto(float **matCusto,int *vetorCaminho,int n){
+	int i, posAtual, prox;
+	int custo =0;
+	for(i=0;i< n;i++){
+		//So calcula o custo de um vetor que comeca da cidade 0
+		if(vetorCaminho[0] == 0){
+			posAtual = vetorCaminho[i];
+			if(i+1 < n)
+				prox = vetorCaminho[i+1];
+			else
+				//No final,calcula o custo da cidade x a cidade 0	
+				prox = 0;
+				//Para nao entrar os valores 9999
+			if(posAtual != prox)
+				custo += matCusto[posAtual][prox]; 
+		}	
+	}
+		return custo;
+}
+/* Funcao que retorna verdadeiro se
+ num nao contem algarismos repetidos
+  e zero caso contrario. */
+char semRepeticao(int *num, int r) {
+	int i, j ;
+ 
+	for(i=0; i < r; i++) {
+		for(j=0; j < r && i != j; j++) {
+			if(num[i] == num[j]) {
+				return 0;
+			}
+		}
+	}
+ 
+	return 1 ;
+}
+
+/*0.003
+0.002
+0.003
+0.003
+0.017
+0.099
+1.876
+45.235
+1236.984
+*/
+#include <stdio.h>
+#include <stdlib.h>
+
+void lerMatriz(char *file_name,double **matrix,double *b)
+{
+	FILE* stream;
+	size_t i,j,k;
+	size_t n;
+	size_t nnz;
+
+
+	stream  = fopen(file_name, "r");
+
+	fscanf(stream, "%lu %lu %lu", &n, &n, &nnz); /* im getting errors while suppressing with * */
+	//fprintf(stdout, "%lu %lu %lu\n", n, n, nnz); /* debug */
+
+	matrix = calloc(n,sizeof(double*));
+	b = calloc(n,sizeof(double));
+
+
+	for(i = 0; i < n; i++)
+	{
+		b[i] = 0;
+		matrix[i] = calloc(n,sizeof(double));
+		for(j = 0; j < n; j++)
+			matrix[i][j] = 0;
+	}
+
+	for(k = 0; k < nnz; k++)
+	{
+
+		fscanf(stream, "%lu %lu ", &i, &j);
+		fscanf(stream, "%lf", &matrix[i-1][j-1]);
+	}
+
+	for(k = 0; k < n; k++)
+		fscanf(stream, "%lf", &b[i]);
+
+	FILE *out = fopen("matriz.txt","w");
+
+
+	for(i = 0; i < n; i++)
+	{
+		for(j = 0; j < n; j++)
+			if(matrix[i][j] != 0)
+			{
+				fprintf(out,"%f ",matrix[i][j]);
+			}else
+				fprintf(out,"0 ");
+			fprintf(out,"\n");
+
+	}
+
+	fclose(out);
+	fclose(stream);
+
+}
+/**
+ * FUNÇÕES PARA EXECUTAR A ELIMINAÇÃO DE GAUSS
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "gauss.h"
+
+/**
+ * [elimGaussS - FAZ A ELIMINAÇÃO GAUSSIANA DE UMA MATRIZ ESPARSA sparse]
+ * @param sparse [Estrutura onde é armazenada a matriz esparsa]
+ */
+ void elimGauss(Sparse *sparse)
+ {
+     List *aux;
+     size_t j, k, N = sparse->n;
+     double m, valt, vpivo, newValue;
+     struct timespec Start, End;
+     double Elapsed_Time;
+
+     clock_gettime(CLOCK_MONOTONIC, &Start);
+
+     // Iterando para cada linha (linha do pivô)
+     for(k = 0; k < N-1; k++) {
+         // Iterando para cada linha abaixo da linha do pivô
+         for(aux = sparse->matrix[k]; aux != NULL; aux = aux->next) {
+             if(aux->row > k) {
+                 m = - aux->value/sparse->diagonal[k];
+                 aux->value = 0.0;
+                 // Iterando na coluna da linha i para modificar os valores
+                 for(j = k + 1; j < N; j++) {
+                 	vpivo = get(sparse, k, j);          // Valor da linha do pivô
+                 	if(vpivo != 0.0) {
+                        valt = get(sparse, aux->row, j);    // Valor da linha sendo alterada
+                        newValue = valt + m * vpivo;        // Combinação das linhas
+                        set(sparse, aux->row, j, newValue);     // Modifica o valor
+                     }
+                 }
+                 // Modificar o valor do vetor independente
+                 sparse->b[aux->row] += m * sparse->b[k];
+             }
+         }
+     }
+
+     // Gerar o vetor solução
+     substRetroativas(sparse);
+
+     clock_gettime(CLOCK_MONOTONIC, &End);
+     Elapsed_Time = End.tv_sec - Start.tv_sec + 1e-9*(End.tv_nsec - Start.tv_nsec);
+
+     printf("O Tempo de execucao da Eliminacao de Gauss foi %f segundos.\n", Elapsed_Time);
+ }
+
+/**
+ * [substRetroativas - CALCULA O VETOR SOLUÇÃO DE UM SISTEMA TRIANGULAR SUPERIOR]
+ * @param sparse [Estrutura onde é armazenada a matriz esparsa]
+ * Vetor solução é armazenado em sparse->b
+ */
+void substRetroativas(Sparse *sparse)
+{
+    size_t i, j;
+    size_t N = sparse->n;
+    double soma;
+
+    sparse->b[N-1] = sparse->b[N-1]/sparse->diagonal[N-1];
+    for(i = N-1; i > 0; i--) {
+        soma = 0;
+        for(j = i; j < N; j++)
+            soma = soma + get(sparse, i-1, j) * sparse->b[j];
+
+        sparse->b[i-1] = (sparse->b[i-1] - soma)/sparse->diagonal[i-1];
+    }
+}
+
+/*
+void pivotParcial(double **A, double *b, int k, int n) {
+    int i, j, p;
+    double maior, tmp;
+
+    p = k;
+    maior = abs(A[k][k]);
+    for(i = k+1; i < n; i++) {
+        if(abs(A[i][k]) > maior) {
+            maior = abs(A[i][k]);
+            p = i;
+        }
+    }
+    if(p != k) {
+        printf("Pivoteou\n");
+        for(j = k; j < n; j++) {
+            tmp = A[k][j];
+            A[k][j] = A[p][j];
+            A[p][j] = tmp;
+        }
+        tmp = b[k];
+        b[k] = b[p];
+        b[p] = tmp;
+    }
+}
+*/
+/**
+ * [elimGauss - FUNÇÃO QUE GERA MATRIZ TRIANGULAR SUPERIOR]
+ * @param A     [Matriz de coeficientes a ser transformada]
+ * @param b     [Vetor independente]
+ * @param n     [Ordem da matriz A]
+ */
+/*
+void elimGauss(double **A, double *b, int n) {
+    int i, j, k;
+    double m;
+
+    for(k = 0; k < n-1; k++) {
+        pivotParcial(A, b, k, n);
+        for(i = k+1; i < n; i++) {
+            m = -A[i][k]/A[k][k];
+            for(j = k; j < n; j++)
+                A[i][j] = A[i][j] + m*A[k][j];
+
+            b[i] = b[i] + m*b[k];
+        }
+    }
+}
+
+*/
+/**
+ * Gerador de sequências inteiras
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#define MAX 1000000
+
+int main(int argc, char** argv)
+{
+    int i, num;
+
+	if(argc != 3) {
+		printf("Sintaxe: ./gera [Tipo] [Quantidade de números]\n");
+        return 0;
+    }
+
+    int n = atoi(argv[2]);
+    srand( (unsigned)time(NULL) );
+
+    /* Gerar em ordem aleatória */
+	if(!strcmp(argv[1], "-a"))
+    {
+        for(i = 0; i < n; i++) {
+            num = rand()%n;
+            printf("%d\n", num);
+        }
+	}
+
+    /* Gerar em ordem crescente */
+    else if(!strcmp(argv[1], "-c"))
+    {
+        num = rand()%5;
+        printf("%d\n", num);
+
+        for(i = 1; i < n; i++) {
+            num += rand()%3;
+            if(num >= MAX)
+                printf("%d\n", MAX);
+            else
+                printf("%d\n", num);
+        }
+    }
+
+    /* Gerar em ordem decrescente */
+    else if(!strcmp(argv[1], "-d"))
+    {
+        int dec;
+
+        num = (MAX - 5) + rand()%5;
+        printf("%d\n", num);
+
+        for(i = 1; i < n; i++) {
+            dec = rand()%3;
+            num -= dec;
+            if(num <= 0)
+                printf("0\n");
+            else
+                printf("%d\n", num);
+        }
+    }
+    else
+        printf("Opcao '%s' inexistente\n", argv[1]);
+
+	return 0;
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "listInt.h"
+#include "skewHeap.h"
+
+void createFileJobs(int qtdJobs)
+{
+		int tempo,penalidade,multa;
+		FILE *arq = fopen("jobs.txt","w");
+
+		int i;
+		srand( (unsigned)time(NULL) );
+
+		for(i = 0; i < qtdJobs; i++)
+		{
+			tempo = rand()%qtdJobs+1;
+			penalidade = tempo + rand()%qtdJobs + 1;
+			multa = rand()%10+1; 
+			fprintf(arq,"%d %d %d\n",tempo,penalidade,multa);
+		}
+		
+		fclose(arq);
+}
+
+int main(int argc, char** argv)
+{
+	typeList *new;
+	new = createList();
+	if(argc == 2)
+	{
+		int qtdJobs = atoi(argv[1]);
+		createFileJobs(qtdJobs);
+	}
+	else
+	{
+		fprintf(stdout, "Usage: %s [Quantidade de jobs que deseja gerar]\n", argv[0]);
+	}
+
+	return 0;
+}/**
+ * FUNÇOES PARA A MANIPULAÇAO DE HASHS
+ * @LAST-UPDATE 11-10-2015
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "word.h"
+#include "hash.h"
+#include <wchar.h>
+#include <wctype.h>
+ #include "preProcess.h"
+#define BUFFER 100 /* TAMANHO MAXIMA DE PALAVRA A SER ARMAZENADA*/
+
+/**
+ * [gerarSizeHash - Gerar tamanho ideal para Hash]
+ * @param  list [Lista de palavras populada]
+ * @return      [Tamanho ideal para a HASH]
+ */
+int gerarSizeHash(wordList *list)
+{
+	int size = 2 * sizeList(list);
+	size =	geraPrimo(size);
+
+	return size;
+}
+
+
+/**
+ * [hashKey - Geradora de Chaves para a tabela HASH]
+ * @param  word      [Palavra a ser gerada a chave]
+ * @param  sizeTable [Tamanho da tabela hash]
+ * @return           [Chave gerada pela hashKey]
+ */
+int hashKey(char *word, const int sizeTable)
+{
+	int codigo = 1;
+	unsigned int i;
+
+	for(i = 0; i < strlen(word);i++)
+		codigo = (31*codigo + (int)word[i])%sizeTable;
+
+
+	return abs(codigo%sizeTable);
+}
+
+
+/**
+ * [hashKey2 - Geradora de chaves 2 para a tabela HASH ]
+ * @param  word      [Palavra a ser gerada a chave]
+ * @param  sizeTable [Tamanho da tabela hash]
+ * @return           [Chave gerada pela hashKey2]
+ */
+int hashKey2(char *word, const int sizeTable)
+{
+	int codigo = hashKey(word,sizeTable);
+
+	return 1 + (codigo%(sizeTable-1));
+}
+
+/**
+ * [createHashTb - Cria a Hash Table]
+ * @param hashTable [Endereço de onde sera armazenado a HashTable]
+ * @param sizeTable [Tamanho da Hash Table]
+ */
+void createHashTb(wordList ***hashTable, const int sizeTable)
+{
+	int i;
+
+	*hashTable = malloc((unsigned int)sizeTable * sizeof(wordList*));
+
+	for(i = 0; i < sizeTable; i++)
+    	(*hashTable)[i] = NULL;
+}
+
+
+/**
+ * [fillHash - Popula a hash com uma lista de palavras]
+ * @param hashTable [Hash a ser preenchida]
+ * @param list      [Lista de palavras que preenchera a hash]
+ * @param sizeTable [Tamanho da hash]
+ * @param type      [Tipo da hash, Encadeada, Linear ou ReHashing]
+ */
+void fillHash(wordList **hashTable, wordList *list, const int sizeTable, char type)
+{
+
+
+ 	if( type == 'E')
+ 	{
+ 		/* PREENCHENDO HASH ENCADEADA */
+	 	while(list != NULL)
+		{
+			insertHashE(hashTable,list->word,hashKey(list->word->string,sizeTable));
+			list = list->prox;
+		}
+	}else if( type == 'L')
+	{
+		/* PREENCHENDO HASH LINEAR */
+		while(list != NULL)
+		{
+			insertHashL(hashTable,list->word,hashKey(list->word->string,sizeTable),sizeTable);
+			list = list->prox;
+		}
+	}else if( type == 'R')
+	{
+		/* PREENCHENDO RE-HASHING */
+		while(list != NULL)
+		{
+			insertHashR(hashTable,list->word,hashKey(list->word->string,sizeTable),hashKey2(list->word->string,sizeTable),sizeTable);
+			list = list->prox;
+		}
+	}else
+		/* TIPO DE HASH NAO ENCONTRADO */
+		printf("ERROR - Tipo de hash informado nao existe!");
+
+}
+
+ /**
+ * [insertWordHash - Inserindo palavra na tabela hash]
+ * @param word [Palavra a ser inserida]
+ * @param list [Lista de palavras a ser populada]
+ */
+void insertWordHash(tpWord *word, wordList** list)
+{
+		wordList *new = malloc(sizeof(wordList));
+	    new->word = word;
+		new->prox = *list;
+		*list = new;
+}
+
+/**
+ * [insertHashE - Inserir palavras na Hash de modo encadeado]
+ * @param hashTable [Endereço da tabela Hash]
+ * @param p         [Palavra a ser inserida na HashTable]
+ * @param hashKey   [Posiçao da Hash a ser inserido a palavra]
+ */
+void insertHashE(wordList **hashTable, tpWord *p, int hashKey)
+{
+
+			insertWordHash(p, &hashTable[hashKey]);
+
+}
+
+/**
+ * [printHashE - Funçao que imprimi a hash encadeada]
+ * @param hashTable [Tabela Hash encadeada que deseja imprimir]
+ * @param size       [Tamanho da tabela hash]
+ */
+void printHashE(wordList **hashTable, const int size)
+{
+	int i;
+	for(i = 0; i < size; i++)
+	{
+		printf("\nEncadeamento [ %d ]: \n",i);
+		printWordList(hashTable[i]);
+
+	}
+}
+
+/**
+ * [insertHashL - Inserir palavras na Hash de modo linear]
+ * @param hashTable [Endereço da tabela Hash]
+ * @param p         [Palavra a ser inserida na Hash Table]
+ * @param hashKey   [Chave seletora da posiçao na tabela hash]
+ * @param sizeTable [Tamanho da tabela hash]
+ */
+void insertHashL(wordList **hashTable, tpWord *p, int hashKey, const int sizeTable)
+{
+	/*CONFERINDO SE OCORRE COLISAO */
+	if(hashTable[hashKey] != NULL)
+	{
+			insertHashL(hashTable,p,(hashKey+1) % sizeTable,sizeTable);
+	}else
+	{
+
+		insertWordHash(p, &hashTable[hashKey]);
+
+	}
+
+}
+
+
+/**
+ * [insertHashR - Inserir palavras na Hash de modo duplo]
+ * @param hashTable [Endereço da tabela Hash]
+ * @param p         [Palavra a ser inserida na Hash Table]
+ * @param hashKey   [Chave seletora da posiçao na tabela hash, utilizando HASHKEY1]
+ * @param hashKey2  [Chave seletora da posiçao na tabela hash, utilizando HASHKEY2]
+ * @param sizeTable [Tamanho da tabela hash]
+ */
+void insertHashR(wordList **hashTable, tpWord *p, int hashKey, int hashKey2,const int sizeTable)
+{
+	/* CONFERINDO SE OCORRE COLISAO */
+	if(hashTable[hashKey] != NULL)
+	{
+		insertHashR(hashTable,p,(hashKey+hashKey2)%sizeTable, hashKey2,sizeTable);
+	}else
+	{
+
+		insertWordHash(p, &hashTable[hashKey]);
+	}
+
+}
+
+/**
+ * [sizeOccupating - VERIFICA QUANTIDADE DE ESPAÇOS ESTAO PREENCHIDOS NA HASH]
+ * @param  hashTable [Table hash]
+ * @param  size      [Tamanho da tabela hash]
+ * @return           [Quantidade de elementos preenchidos na tabela hash]
+ */
+int sizeOccupating(wordList **hashTable, const int size)
+{
+	int i, count;
+
+	for(i = 0; i < size; i++)
+	{
+		if(hashTable[i] != NULL)
+			count++;
+	}
+
+	return count;
+}
+
+/**
+ * [hashExportE - Exportando tabela hash encadeada para um arquivo]
+ * @param hashTable [Tabela hash encadeada populada]
+ * @param size      [Tamanho da tabela hash]
+ */
+void hashExportE(wordList **hashTable,const int size, char *file)
+{
+	int i;
+	wordList *aux;
+	documentList *aux2;
+	posList *aux3;
+	/* INICIALIZANDO ARQUIVO OUTFILE */
+	FILE *outFile = fopen(file,"w");
+
+	if(!outFile)
+	{
+		printf("Erro ao gerar outFile!");
+	}
+	/* EXPORTANDO TIPO DA HASH E TAMANHO */
+	fprintf(outFile,"E %d \n",size);
+
+	for( i = 0; i < size; i++)
+	{
+		aux = hashTable[i];
+		/* EXPORTANDO INDICE E QUANTIDADE DE PALAVRAS ENCADEADA */
+		if(aux != NULL)
+			fprintf(outFile,"%d %d\n",i,sizeList(aux));
+		/* EXPORTANDO PALAVRAS DA HASH */
+		while(aux != NULL)
+		{
+			fprintf(outFile,"%s %d ",aux->word->string, sizeDocList(aux->word->documents));
+				/* EXPORTANDO DOCUMENTOS QUE ESTAO AS PALAVRAS DA HASH */
+				aux2 = aux->word->documents;
+				while(aux2 != NULL)
+				{
+
+					aux3 = aux2->pos;
+					fprintf(outFile,"\n%s %d \n",aux2->document,sizePosList(aux3));
+					/* EXPORTANDO POSIÇÕES QUE ESTAO NOS DOCUMENTOS DA HASH */
+					while(aux3 != NULL)
+					{
+						fprintf(outFile,"%d ",aux3->pos);
+						aux3 = aux3->prox;
+					}
+					aux2 = aux2->prox;
+
+				}
+			fprintf(outFile,"\n\n");
+			aux = aux->prox;
+		}
+
+	}
+	
+	fclose(outFile);
+}
+
+/**
+ * [hashExportLR - Exportando tabela Hash Linear ou ReHashing]
+ * @param hashTable [Tabela Hash Linear ou ReHashing populada]
+ * @param size      [Tamanho da hash]
+ * @param type      [Tipo da Hash, Linear ou ReHashing]
+ */
+void hashExportLR(wordList **hashTable,const int size,char type, char *file)
+{
+	int i;
+	wordList *aux;	/* VARIAVEL AUXILIAR PARA NAO ALTERAR A LISTA DE PALAVRAS */
+	documentList *aux2;	/* VARIAVEL AUXILIAR PARA NAO ALTERAR A LISTA DE DOCUMENTOS */
+	posList *aux3; /* VARIAVEL AUXILIAR PARA NAO ALTERAR A LISTA DE POSIÇOES */
+	/*  INICIALIZANDO ARQUIVO OUTFILE */
+	FILE *outFile = fopen(file,"w");
+
+	if(!outFile)
+	{
+		printf("Erro ao gerar outFile!");
+	}
+
+
+	/* EXPORTANDO TIPO DA HASH E TAMANHO */
+	fprintf(outFile,"%c %d\n",type,size);
+	for( i = 0; i < size; i++)
+	{
+		aux = hashTable[i];
+		/* EXPORTANDO INDICE */
+		if(aux != NULL)
+			fprintf(outFile,"%d \n",i);
+
+		/* EXPORTANDO PALAVRAS DA HASH */
+		if(aux != NULL)
+		{
+			fprintf(outFile,"%s %d \n",aux->word->string, sizeDocList(aux->word->documents));
+
+			/* EXPORTANDO DOCUMENTOS QUE ESTAO AS PALAVRAS DA HASH */
+			aux2 = aux->word->documents;
+			while(aux2 != NULL)
+			{
+				aux3 = aux2->pos;
+				fprintf(outFile,"%s %d \n",aux2->document,sizePosList(aux3));
+
+				/* EXPORTANDO POSIÇÕES QUE ESTAO NOS DOCUMENTOS DA HASH */
+				while(aux3 != NULL)
+				{
+					fprintf(outFile,"%d ",aux3->pos);
+
+					aux3 = aux3->prox;
+				}
+
+				aux2 = aux2->prox;
+
+			}
+		fprintf(outFile,"\n\n");
+		}
+
+	}
+
+	fclose(outFile);
+
+}
+
+/**
+ * [hashImport - RECONSTRUINDO A TABELA HASH APARTIR DE UM ARQUIVO]
+ * @param hashTable [Endereço da tabela hash a ser reconstruida]
+ */
+int hashImport(wordList ***hashTable, char *file)
+{
+	char type, word[50], doc[50];
+	int i,size,qtdWords = 0,qtdDoc = 0,qtdPos = 0,k = 0,j = 0,pos = 0,hashKey = 0;
+	/* INICIALIZANDO ARQUIVO OUTFILE */
+	FILE *outFile = fopen(file,"r");
+
+	if(!outFile)
+	{
+		printf("Erro ao gerar outFile!");
+	}
+
+	/* Lendo tipo e tamanho da hash */
+	fscanf(outFile,"%c %d \n",&type,&size);
+
+	*hashTable = malloc((unsigned int)size * sizeof(wordList*));
+    for(i = 0; i < size; i++)
+        (*hashTable)[i] = NULL;
+
+
+	if(type == 'E')
+	{
+		/* Importando Hash do tipo E de um arquivo */
+		while(fscanf(outFile,"%d %d \n ",&hashKey,&qtdWords) != EOF)
+		{
+			/* Restaurando chave e quantidade de palavras na lista encadeada */
+
+			/* printf("%d ",i); */
+			for(k = 0; k < qtdWords; k++)
+			{
+				/* Restaurando palavra e quantidade de documentos com esta palavra */
+				fscanf(outFile,"%s %d ",word,&qtdDoc);
+
+				/* printf("%s ",word);*/
+
+				for(j = 0; j < qtdDoc; j++)
+				{
+					/* Restaurando documento e posiçao da palavra */
+					fscanf(outFile,"\n%s %d \n",doc, &qtdPos);
+					/* printf("%s %d ",doc,pos); */
+					for(i = 0; i < qtdPos; i++)
+					{
+						/* Restaurando posiçao da palavra no documento */
+						fscanf(outFile,"%d ",&pos);
+						/* Inserindo a palavra com o dados restaurados na hash */
+						insertWord(word,&((*hashTable)[hashKey]),doc,pos);
+					}
+
+				}
+				fscanf(outFile,"\n\n");
+			}
+			/*printf("\n");	*/
+		}
+
+	}else
+	{
+
+		/* Importando Hash do tipo L ou R de um arquivo */
+		while(!feof(outFile))
+		{
+			/* Restaurando chave */
+			fscanf(outFile,"%d ", &hashKey);
+			/*printf("%d ",i); */
+
+				/*Restaurando palavra e quantidade de documentos com esta palavra */
+				fscanf(outFile,"%s %d ",word, &qtdDoc);
+				/*printf("%s ",word);*/
+
+				for(j = 0; j < qtdDoc; j++)
+				{
+					/* Restaurando documento e posiçao da palavra */
+					fscanf(outFile,"%s %d ",doc, &qtdPos);
+					/*printf("%s %d ",doc,pos);*/
+					for(i = 0; i < qtdPos; i++)
+					{
+						/* Restaurando posiçao da palavra no documento */
+						fscanf(outFile,"%d ",&pos);
+						/*Inserindo a palavra com o dados restaurados na hash */
+						insertWord(word,&((*hashTable)[hashKey]),doc,pos);
+					}
+					fscanf(outFile,"\n");
+				}
+			/*printf("\n");	*/
+			fscanf(outFile,"\n\n");
+		}
+	}
+
+	fclose(outFile);
+
+    return size;
+
+}
+
+/**
+ * [freeHash - LIBERANDO MEMORIA ALOCADA PARA A TABELA HASH]
+ * @param hashTable [Tabela hash a ser liberada]
+ * @param sizeHash  [Tamanho da tabela hash]
+ */
+void freeHash(wordList **hashTable, int sizeHash)
+{
+	int i;
+	wordList *aux;
+
+	for(i = 0; i < sizeHash; i++)
+	{
+		while(hashTable[i] != NULL)
+		{
+			aux = hashTable[i];
+			/* LIBERANDO LISTA DE DOCUMENTOS */
+			freeDocList(&hashTable[i]->word->documents);
+			free(aux->word->string);
+			free(aux->word);
+			hashTable[i] = hashTable[i]->prox;
+			free(aux);
+
+		}
+
+	}
+
+	/*free(*hashTable); */
+	free(hashTable);
+}
+
+/**
+ * [buscaHash - REALIZANDO QUERIES]
+ * @param tpHash [Tipo de Hash a realizar a query]
+ * @param index  [Nome do arquivo onde a hash está indexada]
+ * @param query  [Nome do arquivo onde está armazenada as queries]
+ */
+void buscaHash(char tpHash,char *index ,char *query)
+{
+	wordList **hashTable = NULL;	/* HASH A SER RESTAURADA*/
+ 	char word[BUFFER],wordGroup[BUFFER];	/* MAIOR PALAVRA A SER ARMAZENADA*/
+ 	int sizeHash = hashImport(&hashTable,index); /* RESTAURANDO A HASH E SEU TAMANHO*/
+ 	FILE *arq = fopen(query,"r");	/* INICIANDO ARQUIVO DE CONSULTA*/
+ 	char *token = NULL;
+ 	wchar_t linha[BUFFER];
+
+
+
+	/** PERCORRENDO O ARQUIVO DE QUERIES */
+	while(fwscanf(arq,L"%l[^\n]\n",linha) != EOF)
+	{
+        // REALIZANDO BUSCA COM ASPAS
+		if(linha[0] == '"')
+		{
+			// REMOVENDO ACENTOS E PONTUAÇÃO
+            swscanf(linha,L"\"%l[^\"]",linha);
+            clearWord(word,linha);
+   	        sprintf(wordGroup,"\"%s\"",word);
+            strcpy(word,wordGroup);
+
+			documentList *result = searchHashAsp(hashTable,sizeHash,word,tpHash);
+			// IMPRIMINDO RESULTADO DE BUSCA COM ASPAS
+			if(result != NULL)
+			{
+				printf("%s\n",wordGroup);
+				printDocumentList(result);
+				freeDocList(&result);
+			}
+
+		}else
+		{
+			// LIMPANDO ACENTOS DA PALAVRA
+			clearWord(word,linha);
+			strcpy(wordGroup,word);
+			token = strtok(word," ");
+			token = strtok(NULL, " ");
+			// BUSCA DE MULTI PALAVRAS
+			if(token != NULL)
+			{
+				strcpy(word,wordGroup);
+				documentList *result = searchHashLine(hashTable,sizeHash,word,tpHash);
+				if(result != NULL)
+				{
+					printf("%s\n",wordGroup);
+					printDocumentList(result);
+					freeDocList(&result);
+				}
+			//BUSCA DE UMA PALAVRA
+			}else
+			{
+				wordList *listW1;
+				listW1 = searchType(hashTable, word,tpHash, sizeHash);
+				if(listW1)
+				{
+					printf("%s\n",word);
+					printDocumentList(listW1->word->documents);
+				}
+			}
+
+
+		}
+		strcpy(word,"");
+	}
+
+
+	/** LIBERANDO MEMORIA ALOCADA PARA A HASH TABLE */
+	freeHash(hashTable,sizeHash);
+	fclose(arq);
+}
+
+/**
+ * [searchType - SELECIONANDO TIPO DE HASH A SER BUSCAR]
+ * @param  hashTable [Tabela hash]
+ * @param  word      [Palavra a ser buscada]
+ * @param  type      [Tipo da hash a ser buscada]
+ * @param  sizeHash  [Tamanho da hash]
+ * @return           [Palavra encontrada]
+ */
+wordList* searchType(wordList **hashTable, char *word,char type, int sizeHash)
+{
+	int key = hashKey(word,sizeHash);
+	wordList *aux = hashTable[key];
+	if(type == 'E')
+	{
+		aux = searchHashE(aux,word);
+		return aux;
+	}else
+	if(type == 'L')
+	{
+		aux = searchHashL(hashTable,sizeHash,word);
+		return aux;
+	}else
+	if (type == 'R')
+	{
+		aux = searchHashR(hashTable,sizeHash,word);
+		return aux;
+	}else
+		printf("Tipo informado invalido.");
+
+	return NULL;
+}
+
+/**
+ * [searchHashE - Busca na hash tipo E]
+ * @param  hashTable [Tabela hash]
+ * @param  word      [Palavra a ser buscada]
+ * @return           [Estrutura da palavra encontrada]
+ */
+wordList* searchHashE(wordList *hashTable,char *word)
+{
+
+	wordList *aux = hashTable;
+
+
+	while(aux != NULL && strcmp(aux->word->string,word))
+	{
+		aux = aux->prox;
+	}
+		return aux;
+}
+
+/**
+ * [searchHashLine - REALIZA A BUSCA DE VÁRIAS PALAVRAS NO MESMO DOCUMENTO]
+ * @param  hashTable [Tabela Hash]
+ * @param  sizeHash  [Tamanho da tabela Hash]
+ * @param  word      [Palavra a ser buscada]
+ * @param  tpHash    [Tipo da tabela hash]
+ * @return           [Lista de documentos que possuem o conjunto da palavras]
+ */
+documentList* searchHashLine(wordList **hashTable,int sizeHash, char *word,char tpHash)
+{
+
+	int count = 0;
+	char *token;
+	wordList *listW1 = NULL,*listW2 = NULL;
+	documentList *secondList,*dLSearch = NULL, *dL = NULL, *aux = NULL;
+
+	// ARMAZENANDO A PRIMEIRA PALAVRA
+	token = strtok(word," ");
+
+	// BUSCANDO A PRIMEIRA PALAVRA
+	listW1 = searchType(hashTable, word,tpHash, sizeHash);
+	// VERIFICANDO SE A PALAVRA FOI ENCONTRADA
+	if(!listW1)
+		return NULL;
+
+	// ARMAZENANDO A SEGUNDA PALAVRA
+	token = strtok(NULL, " ");
+	aux = listW1->word->documents;
+	dLSearch = listW1->word->documents;
+	// COPIANDO LISTA DE DOCUMENTOS DA PRIMEIRA PALAVRA
+	while(aux != NULL)
+	{
+		insertDocumentSearch(&dL,aux->document);
+		aux = aux->prox;
+	}
+
+	// REALIZANDO CONSULTA DAS OUTRAS PALAVRAS
+	while(token != NULL)
+	{
+		// BUSCANDO A PALAVRA
+		listW2 = searchType(hashTable, token,tpHash, sizeHash);
+		// VERIFICANDO SE A PALAVRA FOI ENCONTRADA
+		if(!listW2) {
+            freeDocList(&dL);
+            return NULL;
+        }
+
+
+		// PERCORRENDO LISTA DE DOCUMENTOS COPIADA
+		while(dLSearch != NULL)
+		{
+			secondList = listW2->word->documents;
+			// PERCORRENDO LISTA DE DOCUMENTOS DE PALAVRAS ATUAL
+			while(secondList != NULL)
+			{
+				// VERIFICANDO SE AS PALAVRAS NÃO ESTÃO NO MESMO DOCUMENTO
+				if(!strcmp(dLSearch->document,secondList->document))
+				{
+					count++;
+					break;
+				}
+				secondList = secondList->prox;
+			}
+			// REMOVENDO DOCUMENTO QUE NÃO TEM AS PALAVRAS
+			if(count == 0)
+				removeDocument(&dL, dLSearch->document);
+
+
+			dLSearch = dLSearch->prox;
+			count = 0;
+		}
+
+		token = strtok(NULL, " ");
+		dLSearch = listW1->word->documents;
+
+	}
+	// LISTA DE DOCUMENTOS QUE CONTEM AS PALAVRAS
+	return dL;
+}
+
+/**
+ * [searchHashL - BUSCA NA HASH TIPO L]
+ * @param  hashTable [Tabela Hash]
+ * @param  sizeHash  [Tamanho da Hash]
+ * @param  word      [Palavra a ser buscada]
+ * @return           [Estrutura da palavra encontrada]
+ */
+wordList* searchHashL(wordList **hashTable,int sizeHash,char *word)
+{
+	int key = hashKey(word,sizeHash);
+	wordList *aux = hashTable[key];
+	/** BUSCANDO A PALAVRA NA HASH TIPO L */
+	while(aux != NULL && strcmp(aux->word->string,word))
+	{
+		key= (key + 1)%sizeHash;
+		aux = hashTable[key];
+	}
+	/** NÃO ENCONTRO A PALAVRA NA HASH */
+	return aux;
+}
+
+/**
+ * [searchHashR - BUSCA NA HASH TIPO R]
+ * @param  hashTable [Tabela Hash]
+ * @param  sizeHash  [Tamanho da Hash]
+ * @param  word      [Palavra a ser buscada]
+ * @return           [Estrutura da palavra encontrada]
+ */
+wordList* searchHashR(wordList **hashTable,int sizeHash,char *word)
+{
+	int key = hashKey(word,sizeHash);
+	int keyR = hashKey2(word,sizeHash);
+	wordList *aux = hashTable[key];
+	/** BUSCANDO A PALAVRA NA HASH TIPO R */
+	while(aux != NULL && strcmp(aux->word->string,word))
+	{
+		key = (key + keyR)%sizeHash;
+		aux = hashTable[key];
+	}
+	/** NÃO ENCONTRO A PALAVRA NA HASH */
+	return aux;
+}
+
+/**
+ * [searchHashAsp - BUSCANDO FRASES EM UM DOCUMENTO]
+ * @param  hashTable [Tabela Hash]
+ * @param  sizeHash  [Tamanho da tabela hash]
+ * @param  word      [Frase a ser buscada]
+ * @param  tpHash    [Tipo de Hash]
+ * @return           [Lista de documentos que possui a frase]
+ */
+documentList *searchHashAsp(wordList **hashTable,int sizeHash, char *word, char tpHash)
+{
+	documentList *testList = NULL,*aux = NULL , *docWord1 = NULL,*docWord2 = NULL ;
+	wordList *prevWord = NULL , *nextWord = NULL;
+	char *token, wordAux[BUFFER], document[BUFFER];
+	int iterate;
+
+	// REMOVENDO ASPAS
+	sscanf(word,"\"%[^\"]",word);
+	strcpy(wordAux,word);
+	// BUSCANDO LISTA DE DOCUMENTOS QUE AS PALAVRAS APARECEM
+	testList = searchHashLine(hashTable,sizeHash,wordAux,tpHash);
+
+	// CONFERINDO SE EXISTE UMA LISTA DE DOCUMENTOS QUE AS PALAVRAS APARECEM
+	if(!testList)
+		return NULL;
+
+	token = strtok(word," ");
+	token = strtok(NULL, " ");
+
+	// MONTANDO LISTA DE DOCUMENTOS QUE POSSUEM A FRASE BUSCADA
+	while(token != NULL)
+	{
+		aux = testList;
+		prevWord = searchType(hashTable, word,tpHash, sizeHash);
+		nextWord = searchType(hashTable, token,tpHash, sizeHash);
+		// PERCORRENDO LISTA DE DOCUMENTOS QUE AS PALAVRAS APARECEM
+		while(aux != NULL)
+		{
+			iterate = 1;
+			docWord1 = searchDocument(prevWord->word->documents,aux->document);
+			docWord2 = searchDocument(nextWord->word->documents,aux->document);
+			// VERIFICANDO SE A PALAVRAS ESTÃO NO DOCUMENTO E SE VEM SEGUIDAS
+
+			if(!docWord1 || !docWord2 || !checkPosition(docWord1,docWord2))
+            {
+            	strcpy(document, aux->document);
+                aux = aux->prox; iterate = 0;
+				removeDocument(&testList,document);
+			}
+
+			if(testList == NULL) return NULL;
+			if(aux != NULL && iterate)
+				aux = aux->prox;
+		}
+
+
+		word = token;
+		token = strtok(NULL, " ");
+
+	}
+
+	return testList;
+}
+
+/**
+ * [checkPosition - CONFERINDO SE UMA PALAVRA É SEGUIDO DE OUTRA EM UM DOCUMENTO]
+ * @param  d1 [Documento que contem a lista de posições que a palavra 1 aparece]
+ * @param  d2 [Documento que contem a lista de posições que a palavra 2 aparece]
+ * @return    [Verdadeiro ou Falso]
+ */
+int checkPosition(documentList *d1, documentList *d2)
+{
+	posList *p1 = d1->pos;
+	posList *p2;
+
+	while(p1 != NULL)
+	{
+		p2 = d2->pos;
+		while(p2 != NULL)
+		{
+			if( ((p1->pos) + 1) == p2->pos)
+				return 1;
+
+			p2 = p2->prox;
+		}
+		p1 = p1->prox;
+	}
+
+	return 0;
+}
+/*                                      *
+ * Heuristica Envoltório Convexo (hull) *
+ *                                      */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "hull.h"
+#include "pilha.h"
+#include "outros.h"
+
+Pilha *caminhoHull(Pilha *env, Pilha *cidadesIn) {
+    Pilha *p;
+    No *aux = cidadesIn->topo;
+
+    for(aux=cidadesIn->topo; aux != NULL; aux=aux->prox)
+        p = inserirNo(env, aux);
+
+    return env;
+}
+
+// Gera o envoltório convexo
+Pilha *envoltorioConvexo(Cidade *cidades, int n) {
+    int i;
+    Pilha *p;
+    No *no;
+
+    p = criaPilha();
+    push(p, &cidades[0]);
+    push(p, &cidades[1]);
+
+    for(i=2; i < n; i++) {
+        no = p->topo;
+        if(no->prox == NULL)
+            push(p, &cidades[i]);
+
+        else {
+            if(!curvaConvex(cidades[i].x, cidades[i].y, no->c->x, no->c->y, no->prox->c->x, no->prox->c->y)) {
+                free(pop(p));
+                i--;
+            }
+            else
+                push(p, &cidades[i]);
+        }
+    }
+
+    for(i=n-2; i >= 0; i--) {
+        no = p->topo;
+        if(no->prox == NULL)
+            push(p, &cidades[i]);
+
+        else {
+            if(!curvaConvex(cidades[i].x, cidades[i].y, no->c->x, no->c->y, no->prox->c->x, no->prox->c->y)) {
+                free(pop(p));
+                i++;
+            }
+            else
+                push(p, &cidades[i]);
+        }
+    }
+    free(pop(p));
+
+    return p;
+}
+
+// Retorna as cidades interiores ao envoltório convexo
+Pilha *cidadesInteriores(Pilha *env, Cidade *cidades, int n) {
+    int i, encontrou;
+    Pilha *p = criaPilha();
+    No *aux;
+
+    for(i=0; i < n; i++) {
+        encontrou = 0;
+        for(aux=env->topo; aux != NULL; aux=aux->prox)
+            if(cidades[i].x == aux->c->x && cidades[i].y == aux->c->y) {
+                encontrou = 1;
+                break;
+            }
+
+        if(!encontrou)
+            push(p, &cidades[i]);
+    }
+
+    return p;
+}
+
+Pilha *inserirNo(Pilha *p, No *ins) {
+    No *ant=NULL, *maisProx, *antMaisProx, *aux;
+    No *novo = criaNo(ins->c);
+    float dist, menorDist = 9999;
+    float custo1, custo2;
+
+    // Definindo variaveis para insercao
+    for(aux = p->topo; aux != NULL; aux = aux->prox) {
+        dist = dist2Pontos(novo->c->x, novo->c->y, aux->c->x, aux->c->y);
+        if(dist < menorDist) {
+            antMaisProx = ant;
+            maisProx = aux;
+            menorDist = dist;
+        }
+        ant = aux;
+    }
+
+    /** Analisar melhor caminho **/
+
+    // Caso o +prox seja o primeiro
+    if(p->topo->c->id == maisProx->c->id) {
+        // Inserindo antes
+        aux = p->topo;
+        p->topo = novo;
+        novo->prox = aux;
+        custo1 = custoCaminhoHull(p);
+
+        // Inserindo depois
+        p->topo = aux;
+        ant->prox = novo;
+        novo->prox = NULL;
+        custo2 = custoCaminhoHull(p);
+
+        if(custo1 < custo2) {
+            ant->prox = NULL;
+            aux = p->topo;
+            p->topo = novo;
+            novo->prox = aux;
+        }
+    }
+    else {
+        // Inserindo antes
+        antMaisProx->prox = novo;
+        novo->prox = maisProx;
+        custo1 = custoCaminhoHull(p);
+
+        // Inserindo depois
+        antMaisProx->prox = maisProx;
+        aux = maisProx->prox;
+        maisProx->prox = novo;
+        novo->prox = aux;
+        custo2 = custoCaminhoHull(p);
+
+        if(custo1 < custo2) {
+            maisProx->prox = aux;
+            aux = antMaisProx->prox;
+            antMaisProx->prox = novo;
+            novo->prox = aux;
+        }
+    }
+
+    return p;
+}
+
+// Retorna 1 se a curva for convexa (curva pra esquerda)
+int curvaConvex(float x1, float y1, float x2, float y2, float x3, float y3) {
+    return (x2-x1)*(y3-y1) - (y2-y1)*(x3-x1) >= 0;
+}
+
+float custoCaminhoHull(Pilha *caminho) {
+    No *no;
+    float custo = 0;
+
+    for(no=caminho->topo; no->prox != NULL; no=no->prox) {
+        custo += dist2Pontos(no->c->x, no->c->y, no->prox->c->x, no->prox->c->y);
+    }
+    custo += dist2Pontos(no->c->x, no->c->y, caminho->topo->c->x, caminho->topo->c->y);
+    
+    return custo;
+}
+
+void saidaFormatadaHull(Pilha *caminho, float custo) {
+    No *aux = caminho->topo;
+
+    while(aux->c->id != 0)
+        aux = aux->prox;
+
+    for(; aux != NULL; aux = aux->prox)
+        printf("%d\n", aux->c->id);
+
+    aux = caminho->topo;
+
+    while(aux->c->id != 0) {
+        printf("%d\n", aux->c->id);
+        aux = aux->prox;
+    }
+
+    printf("%.2f\n*\n", custo);
+}
+
+void lerCidades(Cidade *cidades, int n) {
+    int i;
+
+    for(i = 0; i < n; i++) {
+        scanf("%f %f", &cidades[i].x, &cidades[i].y);
+        cidades[i].id = i;
+    }
+}
+
+void imprimeCidades(Cidade *cidades, int n) {
+    int i;
+
+    for(i = 0; i < n; i++)
+        printf("%.2f ; %.2f  ->  %d\n", cidades[i].x, cidades[i].y, cidades[i].id);
+}
+
+void quicksort(Cidade *cidades, int lo, int hi) {
+    if(lo < hi) {
+        int p = particao(cidades, lo, hi);
+        quicksort(cidades, lo, p-1);
+        quicksort(cidades, p+1, hi);
+    }
+}
+
+int particao(Cidade *cidades, int lo, int hi) {
+    float pivot = cidades[hi].x, temp;
+    int i = lo, j;
+    
+    for(j=lo; j<hi; j++) {
+        if(cidades[j].x <= pivot) {
+            troca(cidades, i, j);
+            i++;
+        }
+    }
+    troca(cidades, i , hi);
+
+    return i;
+}
+
+void troca(Cidade *cidades, int i, int j) {
+    Cidade temp;
+
+    temp = cidades[i];
+    cidades[i] = cidades[j];
+    cidades[j] = temp;
+}
+/**
+ * IMPLEMENTAÇÕES DE FUNÇÕES JOBS
+ */
+
+#include "jobs.h"
+
+/**
+ * Armazena espaço de cria um Job
+ * @param   tempo       Tempo de processamento
+ * @param   deadline    Limite até penalidade
+ * @param   penalidade  Penalidade após execedido a deadline
+ * @param   id          Identificador do Job
+ * @return              Ponteiro para estrutura
+ */
+Job *criaJob(int id, int tempo, int deadline, int penalidade)
+{
+    Job *job = malloc(sizeof(Job));
+    job->id = id;
+    job->tempo = tempo;
+    job->deadline = deadline;
+    job->penalidade = penalidade;
+
+    return job;
+}
+
+/**
+ * Ler do stdin os dados para armazenar em 'job'
+ * @param  jobs  Vetor de Jobs a armazenar os dados
+ * @param  N     Número de Jobs a serem lidos
+ */
+void lerJobs(Job **jobs, const int N)
+{
+    int i, tempo, deadline, penalidade;
+
+    for(i = 0; i < N; i++) {
+        scanf("%d %d %d", &tempo, &deadline, &penalidade);
+        jobs[i] = criaJob(i, tempo, deadline, penalidade);
+    }
+}
+
+/**
+ * Calcula a penalidade máxima somada dos jobs
+ * @param  jobs Vetor de jobs
+ * @param  N    Tamanho do vetor
+ * @return      Total das penalidades (ub máximo)
+ */
+int penalidadeTotal(Job **jobs, const int N)
+{
+    int i, total = 0;
+
+    for(i = 0; i < N; i++) {
+        total += jobs[i]->penalidade;
+    }
+
+    return total;
+}
+
+/**
+ * Calcula a menor penalidade possível dos Jobs
+ * @param  jobs Vetor de jobs
+ * @param  N    Tamanho do vetor
+ * @return      Menor penalidade (lb mínimo)
+ */
+int penalidadeMinima(Job **jobs, const int N)
+{
+    int i, min = 0;
+
+    for(i = 0; i < N; i++) {
+        if (jobs[i]->tempo > jobs[i]->deadline)
+        {
+            min += jobs[i]->penalidade;
+        }
+    }
+
+    return min;
+}
+
+/**
+ * Imprime na tela informações do Job
+ * @param  job  Ponteiro para estrutura do Job
+ */
+void printJob(Job *job)
+{
+    printf("Job %d: %d %d %d\n",
+    job->id, job->tempo, job->deadline, job->penalidade);
+}
+
+/**
+ * Liberar espaço de memória do vetor 'jobs'
+ * @param  jobs  Vetor de Jobs alocado
+ * @param  N     Número de Jobs/Tamanho do vetor
+ */
+void freeJobs(Job **jobs, const int N)
+{
+    int i;
+
+    for(i = 0; i < N; i++) {
+        free(jobs[i]);
+    }
+    free(jobs);
+}
+/**
+ * TAD LISTA DE INTEIROS
+ */
+
+#include "listInt.h"
+
+/**
+ * [createList - Inicializa a List]
+ * @return  [Valor NULL correspondente a lista vazia]
+ */
+typeList* createList()
+{
+	typeList* lista = malloc(sizeof(typeList));
+	lista->ultimo = NULL;
+	lista->primeiro = NULL;
+	return lista;
+}
+
+/**
+ * [insertList - Insere um elemento na lista]
+ * @param  l    [Lista atual na qual deseja inserir o elemento]
+ * @param  item [Elemento que deseja se inserir na lista]
+ */
+void insertList(typeList* l, int item)
+{
+	List* new = malloc(sizeof(List));
+	if(l->ultimo == NULL)
+	{
+		l->primeiro = l->ultimo = new;
+	}else
+	{
+		l->ultimo->prox = new;
+		l->ultimo = l->ultimo->prox;
+	}
+
+	l->ultimo->id = item;
+	l->ultimo->prox = NULL;
+
+}
+
+/**
+ * Cria uma nova lista igual a desejada
+ * @param  l Ponteiro para lista a ser duplicada
+ * @return   Nova lista igual a lista l
+ */
+typeList *dupList(typeList *l)
+{
+    typeList *new = createList();
+    List *aux;
+
+    for(aux = l->primeiro; aux != NULL; aux = aux->prox)
+        insertList(new, aux->id);
+
+    return new;
+}
+
+/**
+ * [printList - Imprimi a lista]
+ * @param l [Lista ao qual deseja se imprimir]
+ */
+void printList(typeList* l)
+{
+	List *aux;
+
+	for(aux = l->primeiro; aux != NULL; aux = aux->prox)
+	{
+		printf("%d ",aux->id);
+	}
+    printf("\n");
+}
+
+/**
+ * [isListNull - Verifica se a lista está vazia]
+ * @param  l [Lista ao qual deseja se verificar se está vazia]
+ * @return   [Valor correspondente a saber se lista está vazia]
+ */
+int isListNull(typeList *l)
+{
+	return (l->primeiro == NULL);
+}
+
+/**
+ * [isElementList - Verificando se um elemento pertence a lista]
+ * @param  l [Lista ao qual deseja se conferir se tem determinado elemento]
+ * @param  v [Elemento ao qual deseja saber se pertence a lista]
+ * @return   [Valor correspondente ao elemento pertencer a lista]
+ */
+int isElementList(typeList *l, int v)
+{
+	List *aux;
+
+	for(aux = l->primeiro; aux != NULL; aux = aux->prox)
+	{
+		if(aux->id == v)
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
+/**
+ * [removeElement - Removendo um elemento da lista]
+ * @param l [Lista ao qual deseja se remover um elemento]
+ * @param v [Elemento ao qual deseja se remover da lista]
+ */
+void removeElement(typeList *l, int v)
+{
+	List* aux = NULL;
+	List* p = l->primeiro;
+
+	while(p != NULL && p->id != v)
+	{
+		aux = p;
+		p = p->prox;
+	}
+
+	 if (p == NULL)
+	 	return;
+
+	 if (p == l->primeiro && p == l->ultimo)
+	 { /* retira elemento do inicio */
+	 	l->primeiro = l->ultimo = NULL;
+	 	free(p);
+	 	return;
+	 }
+	 if(p == l->ultimo)
+	 {
+	 	l->ultimo = aux->prox = NULL;
+	 	free(p);
+	 	return;
+	 }
+	 if(p == l->primeiro)
+	 	l->primeiro = p->prox;
+	 else
+	 	aux->prox = p->prox;
+	 	free(p);
+}
+
+/**
+ * [freeList - Liberando memória da lista]
+ * @param l [Lista ao qual se deseja liberar da memória]
+ */
+void freeList(typeList *l)
+{
+	List* aux = l->primeiro;
+	while(aux != NULL)
+	{
+		List* t = aux->prox;
+		free(aux);
+		aux = t;
+	}
+	free(l);
+}
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "trab.h"
+#include "gstack.h"
+#include "psinterface.h"
+#define N 30
+#define FREE(p) if(p!=NULL){free(p);p=NULL;}
+
+void lerComandos(Comandos *c, FILE *fp);
+
+int main()
+{
+    ArvProd *a;
+    Comandos *c;
+    FILE *fp;
+    char entrada[N], *sfinal = NULL;
+    int i;
+
+    printf("Digite o nome do arquivo: ");
+    scanf("%s", entrada);
+
+    fp = fopen(entrada, "r");
+    if(fp == NULL) {
+        printf("Erro ao abrir arquivo. Abortando programa.\n");
+        exit(1);
+    }
+
+    c = inicializaComandos();
+    lerComandos(c, fp);
+    fclose(fp);
+
+    a = inicializaAxioma(c->axiom);
+    
+    for(i = 0; i < c->order; i++)
+        geraArv(a, c->regras);
+
+    sfinal = malloc(10000);
+    memset(sfinal, 0, sizeof(sfinal));
+    returnFolhas(a, sfinal);
+    genps(c->angle, c->order, c->rotate, sfinal, "saida.ps");
+
+	arvvLibera(a);
+	liberaComandos(c);
+	FREE(sfinal);
+	return 0;
+}
+
+void lerComandos(Comandos *c, FILE *fp) {
+    char word[N];
+    int num;
+    while(fscanf(fp, "%s", word) == 1) {
+        if(strcmp(word, "angle") == 0) {
+            fscanf(fp, "%d", &num);
+            c->angle = num;
+        }
+        else if(strcmp(word, "order") == 0) {
+            fscanf(fp, "%d", &num);
+            c->order = num;
+        }
+        else if(strcmp(word, "axiom") == 0) {
+            fscanf(fp, "%s", word);
+            c->axiom = malloc(strlen(word)+1);
+            strcpy(c->axiom, word);
+        }
+        else if(strcmp(word, "rotate") == 0) {
+            fscanf(fp, "%d", &num);
+            c->rotate = num;
+        }
+        else if(strlen(word) == 1) {
+            incluiRegras(fp, c, word);
+        }
+        else {
+            printf("Comando '%s' desconhecido. Abortando programa.\n", word);
+            liberaComandos(c);
+            fclose(fp);
+            exit(1);
+        }
+    }
+}
+/*                                                 *
+ * Heuristica Next Neighbor (Vizinho mais Proximo) *
+ *                                                 */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "nn.h"
+#include "outros.h"
+
+#define VISITADO 999
+
+float geraVetorCaminho(float **mat, int *vetor, int posAtual, int n) {
+    int i, prox;
+    float custo=0;
+    float **matAux = dupMatriz(mat, n, n);
+
+    i = 0;
+    vetor[i] = posAtual;
+    prox = proxCidade(matAux, posAtual, n);
+    custo += matAux[posAtual][prox];
+    posAtual = prox;
+
+    for(i=1; i < n; i++) {
+        vetor[i] = posAtual;
+        prox = proxCidade(matAux, posAtual, n);
+        custo += matAux[posAtual][prox];
+        marcaVisita(matAux, posAtual, n);
+        posAtual = prox;
+    }
+    liberaMatriz(matAux, n);
+    return custo;
+}
+
+int proxCidade(float **mat, int posAtual, int n) {
+    int i, prox=0;
+    float menorDist = VISITADO;
+
+    for(i=1; i < n; i++) {
+        if(mat[posAtual][i] < menorDist) {
+            menorDist = mat[posAtual][i];
+            prox = i;
+        }
+    }
+    return prox;
+}
+
+void marcaVisita(float **mat, int cidade, int n) {
+    int i;
+
+    for(i=0; i < n; i++) {
+        mat[i][cidade] = VISITADO;
+    }
+}
+/*                                  *
+ * Heuristica de melhoramento 2-opt * 
+ *                                  */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "opt.h"
+#include "outros.h"
+
+int *novoCaminho(float **matCusto, int *vetorCaminho, int n) {
+    int i, j;
+    int *vetAux = alocaVetor(n);
+    int *melhorCaminho = alocaVetor(n);
+
+    copiaVetor(melhorCaminho, vetorCaminho, n);
+
+    i = 0; // Unico caso diferente
+    for(j=2; j < n-1; j++) {
+        trocaAresta(vetorCaminho, vetAux, i, j, n);
+        if(custoCaminho(matCusto, vetAux, n) < custoCaminho(matCusto, melhorCaminho, n))
+            copiaVetor(melhorCaminho, vetAux, n);
+    }
+
+    for(i=1; i<n-3; i++) {
+        for(j=i+2; j<n; j++) {
+            trocaAresta(vetorCaminho, vetAux, i, j, n);
+            if(custoCaminho(matCusto, vetAux, n) < custoCaminho(matCusto, melhorCaminho, n))
+                copiaVetor(melhorCaminho, vetAux, n);
+        }
+    }
+
+    free(vetAux);
+    free(vetorCaminho);
+    return melhorCaminho;
+}
+
+void trocaAresta(int *vetorCaminho, int *novoCaminho, int pos1, int pos2, int n) {
+    int i, k;
+
+    for(i=0; i <= pos1; i++)
+        novoCaminho[i] = vetorCaminho[i];
+
+    for(i=pos1+1, k=pos2; i <= pos2; i++, k--)
+        novoCaminho[i] = vetorCaminho[k];
+
+    for(i=pos2+1; i < n; i++)
+        novoCaminho[i] = vetorCaminho[i];
+}
+
+float custoCaminho(float **matCusto, int *vetorCaminho, int n) {
+    int i;
+    float custo=0;
+
+    for(i=0; i < n-1; i++) {
+        custo += matCusto[vetorCaminho[i]][vetorCaminho[i+1]];
+    }
+    custo += matCusto[vetorCaminho[n-1]][0];
+    return custo;
+}
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "outros.h"
+
+int *alocaVetor(int n) {
+    int *vet;
+
+    vet = calloc(n, sizeof(int));
+    return vet;
+}
+
+float *alocaVetorFloat(int n) {
+    float *vet;
+
+    vet = calloc(n, sizeof(float));
+    return vet;
+}
+
+void lerVetor(float *vet, int n) { int i;
+    for(i=0; i<n; i++)
+        scanf("%f", &vet[i]);
+}
+
+void copiaVetor(int *vetDest, int *vet, int n) {
+    int i;
+
+    for(i=0; i<n; i++) {
+        vetDest[i] = vet[i];
+    }
+}
+
+void imprimeVetor(int *vet, int n) {
+    int i;
+
+    for(i=0; i < n; i++) {
+        printf("%d ", vet[i]);
+    }
+    printf("\n");
+}
+
+void imprimeVetorFloat(float *vet, int n) {
+    int i;
+
+    for(i=0; i < n; i++) {
+        printf("%.2f ", vet[i]);
+    }
+    printf("\n");
+}
+
+float **alocaMatriz(int n, int m) {
+    float **mat; 
+    int i;
+
+    mat = calloc(n, sizeof(float *));
+
+    /* aloca as colunas da matriz */
+    for (i = 0; i < n; i++) {
+        mat[i] = calloc(m, sizeof(float));
+    }
+    return mat;
+}
+
+float **dupMatriz(float **mat, int n, int m) {
+    int i, j;
+    float **nova = alocaMatriz(n, m);
+
+    for(i=0; i < n; i++) {
+        for(j=0; j < n; j++) {
+            nova[i][j] = mat[i][j];
+        }
+    }
+    return nova;
+}
+
+void lerMatriz(float **mat, int n, int m) {
+    int i, j;
+
+    for(i=0; i < n; i++) {
+        for(j=0; j < m; j++)
+            scanf("%f", &mat[i][j]);
+    }
+}
+
+void lerMatrizXY(float **mat, int n, int m) {
+    int lin, col;
+
+    for(col=0; col < m; col++) {
+        for(lin=0; lin < n; lin++)
+            scanf("%f", &mat[lin][col]);
+    }
+}
+
+void imprimeMatriz(float **mat, int n, int m) {
+    int i, j;
+
+    for(i=0; i < n; i++) {
+        for(j=0; j < m; j++)
+            printf("%7.2f  ", mat[i][j]);
+        printf("\n");
+    }
+}
+
+void liberaMatriz(float **mat, int n) {
+    int i;
+
+    for(i=0; i < n; i++) {
+        free(mat[i]);
+    }
+    free(mat);
+}
+
+float dist2Pontos(float x0, float y0, float x1, float y1) {
+    return sqrt(pow(x1-x0,2) + pow(y1-y0,2));
+}
+
+void saidaFormatada(int *vetCaminho, float custo, int n) {
+    int i;
+
+    for(i=0; i < n; i++) {
+        printf("%d\n", vetCaminho[i]);
+    }
+    printf("%.2f\n*\n", custo);
+}
+/**
+ * IMPLEMENTAÇÕES DE PATH
+ */
+
+#include "path.h"
+
+/**
+ * Cria uma estrutura do tipo path
+ * @param  job        Job a ser armazenado
+ * @param  pathCost   Custo do caminho a ser percorrido
+ * @param  ub         Upper Bound do caminho (caso bb)
+ * @param  tempoGasto Tempo gasto no caminho percorrido
+ * @param  caminho    Lista do caminho percorrido
+ * @return            Ponteiro para estrutura criada
+ */
+Path *criaPath(Job* job, int pathCost, int ub, int tempoGasto, typeList *caminho)
+{
+    Path *p = malloc(sizeof(Path));
+    p->job = job;
+    p->pathCost = pathCost;
+    p->ub = ub;
+    p->tempoGasto = tempoGasto;
+    p->caminho = caminho;
+
+    return p;
+}
+
+/**
+ * Imprime informações sobre o caminho
+ * @param p Ponteiro para path
+ */
+void printPath(Path *p)
+{
+    printf("%d: ", p->pathCost);
+    printList(p->caminho);
+}
+
+/**
+ * Libera espaço de memória de um Path
+ * @param p Ponteiro para estrutura a ser liberada
+ */
+void freePath(Path *p)
+{
+    freeList(p->caminho);
+    free(p);
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include "pilha.h"
+
+Pilha *criaPilha() {
+    Pilha *p = malloc(sizeof(Pilha));
+    p->topo = NULL;
+    return p;
+}
+
+No *criaNo(Cidade *c) {
+    No *no = malloc(sizeof(No));
+    no->c = c;
+    no->prox = NULL;
+
+    return no;
+}
+
+void *push(Pilha *p, Cidade *c) {
+    No *novo = criaNo(c);
+    novo->prox = p->topo;
+    p->topo = novo;
+}
+
+No *pop(Pilha *p) {
+    No *ret = p->topo;
+    p->topo = p->topo->prox;
+    return ret;
+}
+
+void imprimePilha(Pilha *p) {
+    No *aux;
+
+    for(aux = p->topo; aux != NULL; aux = aux->prox)
+        printf(" %.2f ; %.2f  -  id = %d\n", aux->c->x, aux->c->y, aux->c->id);
+
+    printf("\n");
+}
+
+void freePilha(Pilha *p) {
+    No *aux;
+
+    aux = p->topo;
+
+    while(aux != NULL) {
+        p->topo = p->topo->prox;
+        free(aux);
+        aux = p->topo;
+    }
+    free(p);
+}
+/**
+ * FUNÇÕES PARA O PRÉ PROCESSAMENTO DAS ENTRADAS
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <wchar.h>
+#include <wctype.h>
+#include "preProcess.h"
+
+#define BUFFER 100
+
+/**
+ * [removeAccent - Remove acento de um char]
+ * @param  c    [caractér a ser avaliado]
+ */
+void removeAccent(wchar_t *c) {
+	switch (*c) {
+		case L'á': *c=L'a'; break;
+		case L'à': *c=L'a'; break;
+		case L'ã': *c=L'a'; break;
+        case L'â': *c=L'a'; break;
+		case L'é': *c=L'e'; break;
+		case L'ê': *c=L'e'; break;
+		case L'í': *c=L'i'; break;
+        case L'î': *c=L'i'; break;
+		case L'ó': *c=L'o'; break;
+        case L'ô': *c=L'o'; break;
+        case L'õ': *c=L'o'; break;
+		case L'ú': *c=L'u'; break;
+		case L'ü': *c=L'u'; break;
+		case L'ç': *c=L'c'; break;
+
+	}
+}
+
+/**
+ * [removeAccentWord - Remove acentos de uma palavra]
+ * @param  word    [palavra a ser processada]
+ */
+void removeAccentWord(wchar_t *word) {
+    while(*word) {
+        removeAccent(word);
+        word++;
+    }
+}
+
+/**
+ * [clearWord - "limpa uma palavra", deixando apenas letras minúsculas sem acentos]
+ * @param  p    	[palavra em wchar_t* a ser processada]
+ * @param palavra	[palavra em char* onde será armazenada a conversão]
+ */
+void clearWord(char* palavra, wchar_t *p) {
+    wchar_t *src = p, *dst = p;
+
+    while(*src) {
+        if(iswpunct((unsigned char)*src)) {
+            /* Ignora este char (pontuação) */
+            src++;
+        }
+        else {
+            if(iswupper((unsigned char)*src)) {
+                /* Converte para minúsculo */
+                *src = towlower((unsigned char)*src);
+            }
+			removeAccent(src);
+            /* Copia o char */
+            *dst++ = *src++;
+        }
+    }
+    *dst = 0;
+    wcstombs(palavra, p, BUFFER);
+}
+
+/**
+ * [processDoc - Processa um documento, chamando 'clearWord' p/ cada palavra e as armazena numa lista]
+ * @param  docName	[nome do documento]
+ * @param  list		[lista a armazenar as palavras]
+ */
+void processDoc(FILE *fin, char* docName, wordList **list) {
+    wchar_t *palavra = malloc(BUFFER*sizeof(wchar_t));
+    char *word = malloc(BUFFER*sizeof(char));
+    int count = 0;
+
+    while(fscanf(fin, "%ls", palavra) != EOF) {
+        count++;
+        clearWord(word, palavra);
+		if(strcmp(word, "") != 0)
+			insertWord(word, list, docName, count);
+    }
+	free(word);
+    free(palavra);
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "lista.h"
+
+// Ler uma linha de um entrada
+char *LerLinha(FILE *file);
+// Separar os argumentos do comando (nao esta funfando)
+int SepararArgumento(char *comando, char **tipo, char **operacao, char **arg1, char **arg2, char **arg3, char **arg4, char **arg5, char **arg6);
+// Da free nos argumentos
+void LiberarArgumentos(int num_arg, char *tipo, char *operacao, char *arg1, char *arg2, char *arg3, char *arg4, char *arg5, char *arg6);
+
+int main() {
+        int num_arg, idb, idr, idc, id_cons, num;
+        float x, consumo;
+        char *comando = NULL, *tipo = NULL , *operacao = NULL, *arg1 = NULL, *arg2 = NULL;
+        char *arg3 = NULL, *arg4 = NULL, *arg5 = NULL, *arg6 = NULL;
+        char txt[40];
+        FILE *entrada = NULL, *saida = NULL;
+
+        printf("Digite o nome do arquivo de entrada: ");
+        scanf("%s", txt);
+
+        entrada = fopen(txt, "r");
+        if(entrada == NULL) {
+                printf("ERRO ao abrir o arquivo de entrada.\n");
+                return 1;
+        }
+        saida = fopen("saida.txt", "w");
+        if(saida == NULL) {
+                printf("ERRO ao abrir o arquivo de saida.\n");
+                return 1;
+        }
+
+        tcidade *Cidade = CriaCidade();
+        IncluirBairro(Cidade, 13, "Praia de Itaparica");
+        IncluirBairro(Cidade, 17, "Itapoa");
+
+        while(!feof(entrada)) {
+                comando = LerLinha(entrada);
+                if(comando[0] != '\0') {
+                        // Analise dos argumentos e utilizacao das funcoes
+                        num_arg = SepararArgumento(comando, &tipo, &operacao, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6);
+                        if(strcmp(tipo, "cidade") == 0) {
+                                if(strcmp(operacao, "medir") == 0) {
+                                        if(num_arg != 2)
+                                                fprintf(saida, "ERRO: numero de argumentos incorreto para '%s %s'\n", operacao, tipo);
+                                        else {
+                                                x = MedirCidade(Cidade);
+                                                fprintf(saida, "Consumo da Cidade = %.2f\n", x);
+                                        }
+                                }
+                                else
+                                        fprintf(saida, "ERRO: operacao \"%s\" incorreta para o tipo \"%s\"\n", operacao, tipo);
+                        }
+                        else if(strcmp(tipo, "bairro") == 0) {
+                                if(strcmp(operacao, "medir") == 0) {
+                                        if(num_arg != 3)
+                                                fprintf(saida, "ERRO: numero de argumentos incorreto para '%s %s'\n", operacao, tipo);
+                                        else {
+                                                idb = atoi(arg1);
+                                                if(idb == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg1, comando);
+                                                else {
+                                                        x = MedirBairro(Cidade, idb);
+                                                        if(x < 0)
+                                                                fprintf(saida, "ERRO: Bairro id=%d nao encontrado. Comando: '%s'\n", idb, comando);
+                                                        else 
+                                                                fprintf(saida, "Consumo do Bairro = %.2f (Bairro id=%d)\n", x, idb);
+                                                }
+                                        }
+                                }
+                                else
+                                        fprintf(saida, "ERRO: operacao \"%s\" incorreta para o tipo \"%s\".\n", operacao, tipo);
+                        }
+                        else if(strcmp(tipo, "rua") == 0) {
+                                if(strcmp(operacao, "medir") == 0) {
+                                        if(num_arg != 4)
+                                                fprintf(saida, "ERRO: numero de argumentos incorreto para '%s %s'\n", operacao, tipo);
+                                        else {
+                                                idb = atoi(arg1);
+                                                idr = atoi(arg2);
+                                                if(idb == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: %s\n", arg1, comando);
+                                                else if(idr == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: %s\n", arg2, comando);
+                                                else {
+                                                        x = MedirRua(Cidade, idb, idr);
+                                                        if(x < 0)
+                                                                fprintf(saida, "ERRO: Consumo da Rua nao pode ser calculado. (Rua id=%d, Bairro id=%d)\n", idr, idb);
+                                                        else 
+                                                                fprintf(saida, "Consumo da Rua = %.2f (Rua id=%d, Bairro id=%d)\n", x, idr, idb);
+                                                }
+                                        }
+                                }
+                                else if(strcmp(operacao, "incluir") == 0) {
+                                        if(num_arg != 5)
+                                                fprintf(saida, "ERRO: numero de argumentos incorreto para '%s %s'\n", operacao, tipo);
+                                        else {
+                                                idb = atoi(arg1);
+                                                idr = atoi(arg2);
+                                                if(idb == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg1, comando);
+                                                else if(idr == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg2, comando);
+                                                else {
+                                                        if(IncluirRua(Cidade, idb, idr, arg2))
+                                                                fprintf(saida, "ERRO: Rua nao incluida. (Rua id=%d, Bairro id=%d) \n", idr, idb);
+                                                        else 
+                                                                fprintf(saida, "Rua '%s' id=%d incluida com sucesso no bairro id=%d\n", arg3, idr, idb);
+                                                }
+                                        }
+                                }
+                                else if(strcmp(operacao, "eliminar") == 0) {
+                                        if(num_arg != 4)
+                                                fprintf(saida, "ERRO: numero de argumentos incorreto para '%s %s'\n", operacao, tipo);
+                                        else {
+                                                idb = atoi(arg1);
+                                                idr = atoi(arg2);
+                                                if(idb == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg1, comando);
+                                                else if(idr == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg2, comando);
+                                                else {
+                                                        if(EliminarRua(Cidade, idb, idr))
+                                                                fprintf(saida, "ERRO: Rua nao removida. (Rua id=%d, Bairro id=%d)\n", idr, idb);
+                                                        else 
+                                                                fprintf(saida, "Rua id=%d removida com sucesso do bairro id=%d\n", idr, idb);
+                                                }
+                                        }
+                                }
+                                else
+                                        fprintf(saida, "ERRO: operacao \"%s\" incorreta para o tipo \"%s\".\n", operacao, tipo);
+                        }
+                        else if(strcmp(tipo, "casa") == 0) {
+                                if(strcmp(operacao, "medir") == 0) {
+                                        if(num_arg != 5)
+                                                fprintf(saida, "ERRO: numero de argumentos incorreto para '%s %s'\n", operacao, tipo);
+                                        else {
+                                                idb = atoi(arg1);
+                                                idr = atoi(arg2);
+                                                idc = atoi(arg3);
+                                                if(idb == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg1, comando);
+                                                else if(idr == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg2, comando);
+                                                else if(idc == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg2, comando);
+                                                else {
+                                                        x = MedirCasa(Cidade, idb, idr, idc);
+                                                        if(x < 0)
+                                                                fprintf(saida, "ERRO: Consumo da Casa nao pode ser calculado. (Casa id=%d, Rua id=%d, Bairro id=%d)\n", idc, idr, idb);
+                                                        else 
+                                                                fprintf(saida, "Consumo da Casa = %.2f (Casa id=%d, Rua id=%d, Bairro id=%d)\n", x, idc, idr, idb);
+                                                }
+                                        }
+                                }
+                                else if(strcmp(operacao, "consumir") == 0) {
+                                        if(num_arg != 6)
+                                                fprintf(saida, "ERRO: numero de argumentos incorreto para '%s %s'\n", operacao, tipo);
+                                        else {
+                                                idb = atoi(arg1);
+                                                idr = atoi(arg2);
+                                                idc = atoi(arg3);
+                                                consumo = strtof(arg4, NULL);
+                                                if(idb == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg1, comando);
+                                                else if(idr == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg2, comando);
+                                                else if(idc == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg3, comando);
+                                                else if(consumo == 0)
+                                                        fprintf(saida, "ERRO: consumo \"%s\" invalido. Comando: '%s'\n", arg4, comando);
+                                                else {
+                                                        if(Consumir(Cidade, idb, idr, idc, consumo))
+                                                                fprintf(saida, "ERRO: Consumo nao atribuido a Casa. (Casa id=%d, Rua id=%d, Bairro id=%d)\n", idc, idr, idb);
+                                                        else 
+                                                                fprintf(saida, "Consumo %.2f atribuido a Casa id=%d, Rua id=%d, Bairro id=%d\n", consumo, idc, idr, idb);
+                                                }
+                                        }
+                                }
+                                else if(strcmp(operacao, "incluir") == 0) {
+                                        if(num_arg != 8)
+                                                fprintf(saida, "ERRO: numero de argumentos incorreto para '%s %s'\n", operacao, tipo);
+                                        else {
+                                                idb = atoi(arg1);
+                                                idr = atoi(arg2);
+                                                idc = atoi(arg3);
+                                                id_cons = atoi(arg4);
+                                                num = atoi(arg5);
+
+                                                if(idb == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg1, comando);
+
+                                                else if(idr == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg2, comando);
+
+                                                else if(idc == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg3, comando);
+
+                                                else if(id_cons == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg4, comando);
+
+                                                else if(num == 0)
+                                                        fprintf(saida, "ERRO: num \"%s\" invalido. Comando: '%s'\n", arg5, comando);
+
+                                                else {
+                                                        if(IncluirCasa(Cidade, idb, idr, idc, id_cons, num, arg6))
+                                                                fprintf(saida, "ERRO: Casa nao incluida. (Casa id=%d, Rua id=%d, Bairro id=%d)\n", idc, idr, idb);
+                                                        else
+                                                                fprintf(saida, "Casa id=%d de '%s' incluida com sucesso na Rua id=%d do Bairro id=%d\n", idc, arg6, idr, idb);
+                                                }
+                                        }
+                                }
+                                else if(strcmp(operacao, "eliminar") == 0) {
+                                        if(num_arg != 5)
+                                                fprintf(saida, "ERRO: numero de argumentos incorreto para '%s %s'\n", operacao, tipo);
+                                        else {
+                                                idb = atoi(arg1);
+                                                idr = atoi(arg2);
+                                                idc = atoi(arg3);
+
+                                                if(idb == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg1, comando);
+
+                                                else if(idr == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg2, comando);
+
+                                                else if(idc == 0)
+                                                        fprintf(saida, "ERRO: id \"%s\" invalido. Comando: '%s'\n", arg3, comando);
+
+                                                else {
+                                                        if(EliminarCasa(Cidade, idb, idr, idc)) {
+                                                                fprintf(saida, "ERRO: Casa nao removida. (Casa id=%d, Rua id=%d, Bairro id=%d)\n", idc, idr, idb);
+                                                        }
+                                                        else
+                                                                fprintf(saida, "Casa id=%d removida com sucesso da Rua id=%d do Bairro id=%d\n", idc, idr, idc);
+                                                }
+                                        }
+                                }
+                                else
+                                        fprintf(saida, "ERRO: operacao \"%s\" incorreta para o tipo \"%s\".\n", operacao, tipo);
+                        }
+                        else
+                                fprintf(saida, "ERRO: tipo \"%s\" nao existe.\n", tipo);
+
+                        LiberarArgumentos(num_arg, tipo, operacao, arg1, arg2, arg3, arg4, arg5, arg6);
+                }
+                free(comando);
+        }
+        printf("Arquivo 'saida.txt' criado.\n");
+        fclose(entrada);
+        fclose(saida);
+        LiberarCidade(Cidade);
+	return 0;
+}
+
+char *LerLinha(FILE *file) {
+        int tam = 10, cont = 0;
+        char *linha, ch;
+
+        linha = (char*)malloc(tam);
+        if (linha == NULL) {
+                printf("Erro ao alocar espaco para linha.\n");
+                exit(1);
+        }
+
+        ch = fgetc(file);
+        while ((ch != '\n') && (ch != EOF)) {
+                if (cont == tam) {
+                        tam += tam;
+                        linha = realloc(linha, tam);
+                        if (linha == NULL) {
+                                printf("Erro ao alocar espaco para linha.\n");
+                                exit(1);
+                        }
+                }
+                linha[cont] = ch;
+                cont++;
+
+                ch = fgetc(file);
+        }
+        linha[cont] = '\0';
+        linha = realloc(linha, cont+1);
+        return linha;
+}
+
+int SepararArgumento(char *comando, char **tipo, char **operacao, char **arg1, char **arg2, char **arg3, char **arg4, char **arg5, char **arg6) {
+        int pos_comando = 0, pos_arg = 0, cont_arg = 0, tam = 100;
+        char ch, arg[tam];
+
+        for(ch = '?'; ch != '\0'; pos_comando++) {
+                ch = comando[pos_comando];
+
+                // Ler argumento entre aspas
+                if(ch == '\"') {
+                        for(pos_comando++, ch = comando[pos_comando]; ch != '\"' && ch != '\0'; pos_arg++) {
+                                arg[pos_arg] = ch;
+                                pos_comando++;
+                                ch = comando[pos_comando];
+                        }
+                        if(ch != '\0') {
+                                pos_comando++;
+                                ch = comando[pos_comando];
+                        }
+                }
+                // Separar argumento
+                if(ch == ' ' || ch == '\0') {
+                        // Verifica os espacos
+                        if(pos_arg != 0) {
+                                arg[pos_arg] = '\0';
+                                switch(cont_arg) {
+                                        case 0: {
+                                                        *tipo = (char*)malloc(strlen(arg)+1);
+                                                        strcpy(*tipo, arg);
+                                                        break;
+                                                }
+                                        case 1: {
+                                                        *operacao = (char*)malloc(strlen(arg)+1);
+                                                        strcpy(*operacao, arg);
+                                                        break;
+                                                }
+                                        case 2: {
+                                                        *arg1 = (char*)malloc(strlen(arg)+1);
+                                                        strcpy(*arg1, arg);
+                                                        break;
+                                                }
+                                        case 3: {
+                                                        *arg2 = (char*)malloc(strlen(arg)+1);
+                                                        strcpy(*arg2, arg);
+                                                        break;
+                                                }
+                                        case 4: {
+                                                        *arg3 = (char*)malloc(strlen(arg)+1);
+                                                        strcpy(*arg3, arg);
+                                                        break;
+                                                }
+                                        case 5: {
+                                                        *arg4 = (char*)malloc(strlen(arg)+1);
+                                                        strcpy(*arg4, arg);
+                                                        break;
+                                                }
+                                        case 6: {
+                                                        *arg5 = (char*)malloc(strlen(arg)+1);
+                                                        strcpy(*arg5, arg);
+                                                        break;
+                                                }
+                                        case 7: {
+                                                        *arg6 = (char*)malloc(strlen(arg)+1);
+                                                        strcpy(*arg6, arg);
+                                                        break;
+                                                }
+                                }
+                                pos_arg = 0;
+                                cont_arg++;
+                        }
+                }
+                else {
+                        arg[pos_arg] = ch;
+                        pos_arg++;
+                }
+        }
+        return cont_arg;
+}
+
+void LiberarArgumentos(int num_arg, char *tipo, char *operacao, char *arg1, char *arg2, char *arg3, char *arg4, char *arg5, char *arg6) {
+        switch(num_arg) {
+                case 8: free(arg6);
+                case 7: free(arg5);
+                case 6: free(arg4);
+                case 5: free(arg3);
+                case 4: free(arg2);
+                case 3: free(arg1);
+                case 2: free(operacao);
+                case 1: free(tipo);
+        }
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "lsystem.h"
+#include "psinterface.h"
+
+
+static char buf[201];
+static FILE *ps = NULL;
+
+
+int is_valid_turtle_command( char c )
+{
+	boolean validTurtleSymbol =
+		strchr(TURTLE_GRAPHICS_SYMBOLS,(int)c) != NULL;
+	return validTurtleSymbol;
+}
+
+// Analyze symbol. If special convert or substitute
+static void psconvert( const char *s, int *pos )
+{
+	int i = *pos;
+	
+	buf[0] = s[i]; buf[1] = '\0'; (*pos)++;
+	
+	if( !is_valid_turtle_command(s[i]) )	{
+		// eliminate character
+		buf[0] = '\0'; 
+		return;
+	}
+	
+	if( s[i] == '[' )  { buf[0] = 'S'; return; }
+	if( s[i] == ']' )  { buf[0] = 'R'; return; }
+}
+
+static void finalStringPrint( FILE *ps, const char *finalstr )
+{
+	uint cnt = 0, i;
+	size_t flen = strlen(finalstr);
+
+	i = 0;
+	while( i < flen )	{
+//	for( i = 0; i < flen; i++ )	{
+		psconvert( finalstr, &i );
+//		fprintf(ps,"%c ", finalstr[i] );
+		if( buf[0] != '\0' )
+			fprintf(ps,"%s ", buf );
+		if( cnt == 30 )	{
+			fprintf(ps,"\n");
+			cnt = 0;
+		}
+	}
+	fprintf(ps,"\n");
+}
+
+
+
+static void preambulo( double angle, uint order, double rotimage,const char *psfname )
+{
+	ps = fopen( psfname, "w" );
+	if( ps == NULL ) {
+		fprintf(stderr,"Erro: Impossivel abrir arq de saida '%s'.\n", psfname );
+		exit(EXIT_FAILURE);
+	}
+	fprintf(stdout, "Gerando arquivo de saida PostScript '%s'.\n", psfname );
+	// PS header
+	fprintf(ps,"%%!PS-Adobe-2.0 EPSF-2.0\n");
+	fprintf(ps,"%%%%BoundingBox: 0 0 800 1000\n");
+	fprintf(ps,"\n\n\n");
+	fprintf(ps,"%% Preambulo\n\n");
+	fprintf(ps,"\n");
+	fprintf(ps,"/angle %.2lf def\n", angle);
+	fprintf(ps,"/order %d def\n", order);
+	fprintf(ps,"/rotateimage %.2lf def\n", rotimage);
+	fprintf(ps,"\n");
+	fprintf(ps,"/a { 360 angle div } def\n");
+
+	fprintf(ps,"/scal { 2 order neg exp } def\t%% 1/2^order\n");
+	fprintf(ps,"/sinv { 2 order exp } def\t%% 2^order\n");
+	fprintf(ps,"\n");
+	fprintf(ps,"/len 72 def\n");
+	fprintf(ps,"\n");
+	fprintf(ps,"\n");
+	fprintf(ps,"/F { len 0 rlineto } def\n");
+	fprintf(ps,"/G   { len 0 rmoveto } def\n");
+	fprintf(ps,"/+ {a rotate} def\n");
+	fprintf(ps,"/- {a neg rotate} def\n");
+	fprintf(ps,"\n");
+	fprintf(ps,"/S { gsave } def\n/R { stroke grestore } def\n");
+	fprintf(ps,"\n");
+	fprintf(ps,"/n {newpath} def\n");
+	fprintf(ps,"/l {lineto} def\n");
+	fprintf(ps,"/m {moveto} def\n");
+	fprintf(ps,"/s {stroke} def\n");
+	fprintf(ps,"\n");
+	fprintf(ps,"/pageLetterCenter { 297.72 421.2 } def\n");
+	fprintf(ps,"/linewidth 0.1 def\n");
+	fprintf(ps,"\n");
+	fprintf(ps,"gsave\n");
+	fprintf(ps,"\n");
+	fprintf(ps,"pageLetterCenter translate\n");
+	fprintf(ps,"rotateimage rotate\n");
+	fprintf(ps,"scal scal scale\n");
+	fprintf(ps,"linewidth setlinewidth\n");
+	fprintf(ps,"newpath 0 0 moveto\n");
+}
+
+
+void genps( double angle, uint order, double rotimage, const char *finalstr, const char *psfname )
+{
+	preambulo( angle, order, rotimage, psfname );
+	
+	fprintf(stdout, "String final='%s'\n", finalstr );
+	finalStringPrint(ps,finalstr);
+	
+	fprintf(ps,"stroke\n\ngrestore\n\nshowpage\n");
+	fprintf(ps,"quit\n");
+	
+	fclose( ps );
+}
+
+
+
+static void finalStringPrintTurtle( FILE *ps, const char *turtlestr )
+{
+	uint cnt = 0, i;
+	size_t flen = strlen(turtlestr);
+
+	
+	fprintf(stdout, "Turtle string=\n'%s'\n", turtlestr );
+	for( i=0; i<flen; i++ )	{
+		char c = turtlestr[i];
+		fprintf(ps,"%c", c );
+		if( c == 's' )	{
+			fprintf(ps,"\n");
+		}
+	}
+	fprintf(ps,"\n");
+}
+
+
+void genpsTurtle( double angle, uint order, double imagerotate,
+		const char *turtlestr, const char *psfname )
+{
+	preambulo( angle, order, imagerotate, psfname );
+	
+	finalStringPrintTurtle(ps,turtlestr);
+	
+	fprintf(ps,"stroke\n\ngrestore\n\nshowpage\n");
+	fprintf(ps,"quit\n");
+	
+	fclose( ps );
+}
+
+
+
+#if 0
+#endif
+/*
+ * IMPLEMENTAÇÃO DA ESTRUTURA QUEUE (FILA)
+ * UTILIZADA NO ALGORITMO RADIXSORT
+ */
+
+#include "queue.h"
+
+Queue* criaQueue()
+{
+    Queue* q = malloc(sizeof(Queue));
+    q->prim = q->ult = NULL;
+    return q;
+}
+
+void enfileira(Queue* q, int v)
+{
+    Node* node = malloc(sizeof(Node));
+    node->value = v;
+
+    if(isVazio(q))
+        q->prim = node;
+    else
+        q->ult->prox = node;
+
+    q->ult = node;
+    node->prox = NULL;
+}
+
+int desenfileira(Queue* q)
+{
+    Node* aux;
+    int valor;
+
+    valor = q->prim->value;
+
+    aux = q->prim->prox;
+    free(q->prim);
+    q->prim = aux;
+
+    if(isVazio(q))
+        q->ult = NULL;
+
+    return valor;
+}
+
+int isVazio(Queue* q)
+{
+    return q->prim == NULL;
+}
+
+void freeQueue(Queue* q)
+{
+    Node *aux, *t;
+    aux = q->ult;
+    while(aux != NULL) {
+        t = aux->prox;
+        free(aux);
+        aux = t;
+    }
+    free(q);
+}
+/*
+ * IMPLEMENTAÇÕES DOS ALGORITMOS SIMPLES:
+ * BUBBLESORT, INSERTIONSORT, SELECTIONSORT, SHAKESORT e SHELLSORT
+ */
+
+#include "simpleSorting.h"
+#define trySwap { if (v[i] < v[i - 1])\
+	{ t = v[i]; v[i] = v[i - 1]; v[i - 1] = t; t = 0;} }
+
+void bubbleSort(int *v, const int N)
+{
+    int i, aux, houveTroca = 1;
+    while (houveTroca) {
+        houveTroca = 0;
+        for (i = 0; i < N-1; i++) {
+            if (v[i] > v[i+1]) {
+                aux = v[i];
+                v[i] = v[i+1];
+                v[i+1] = aux;
+                houveTroca = 1;
+            }
+        }
+    }
+}
+
+void insertionSort(int *v, const int N)
+{
+    int i, j, valor;
+    for (i = 1; i < N; i++) {
+        valor = v[i];
+        j = i-1;
+        while ((j>=0) && (valor < v[j])) {
+            v[j+1] = v[j];
+            j--;
+        }
+        v[j+1] = valor;
+    }
+}
+
+void selectionSort (int *v, const int N)
+{
+    int i, j, minPos, tmp;
+    for (i = 0; i < N; i++) {
+        minPos = i;
+        for (j = i; j < N; j++) {
+            if (v[j] < v[minPos]) {
+                minPos = j;
+            }
+        }
+        tmp = v[i];
+        v[i] = v[minPos];
+        v[minPos] = tmp;
+    }
+}
+
+void shakeSort(int *v, const int N)
+{
+	int i, t = 0;
+	while (!t) {
+		for (i = 1, t = 1; i < N; i++) trySwap;
+		if (t) break;
+		for (i = N - 1, t = 1; i; i--) trySwap;
+	}
+}
+
+void shellSort (int* v, const int N)
+{
+    int h, i, j, t;
+    for (h = N; h /= 2;) {
+        for (i = h; i < N; i++) {
+            t = v[i];
+            for (j = i; j >= h && t < v[j - h]; j -= h) {
+                v[j] = v[j - h];
+            }
+            v[j] = t;
+        }
+    }
+}
+/**
+ * IMPLEMENTAÇÕES DE SKEW HEAP
+ */
+
+#include "skewHeap.h"
+
+/**
+ * Cria uma SkewHeap vazia
+ * @return Ponteiro para estrutura inicializada
+ */
+SkewHeap *criaSkewHeap(Path *path)
+{
+    SkewHeap *sh = malloc(sizeof(SkewHeap));
+    sh->path = path;
+    sh->lc = NULL;
+    sh->rc = NULL;
+    return sh;
+}
+
+/**
+ * Adiciona um path em uma SkillHeap
+ * @param sh  Ponteiro para estrutura onde será adicionado o path
+ * @param path Ponteiro para path a ser armazenado
+ */
+void addPath(SkewHeap **sh, Path *path)
+{
+    SkewHeap *new = criaSkewHeap(path);
+    *sh = mergeSkewHeap(*sh, new);
+}
+
+/**
+ * Remove o menor caminho da SkewHeap de paths
+ * @param  sh Ponteiro para SkewHeap
+ * @return    Menor caminho da Heap
+ */
+Path *removeMin(SkewHeap **sh)
+{
+    if(*sh == NULL)
+        return NULL;
+
+    SkewHeap *node = *sh;
+    Path *minPath = (*sh)->path;
+    *sh = mergeSkewHeap((*sh)->lc, (*sh)->rc);
+    free(node);
+
+    return minPath;
+}
+
+/**
+ * Executa um merge entre duas SkillHeaps
+ * @param  left  Ponteiro para sh da esquerda
+ * @param  right Ponteiro para sh da direita
+ * @return       SkillHeap unida
+ */
+SkewHeap *mergeSkewHeap(SkewHeap *left, SkewHeap *right)
+{
+    SkewHeap *temp;
+
+    if (left == NULL) return right;
+    if (right == NULL) return left;
+
+    if (getMinCost(left) <= getMinCost(right)) {
+        left->rc = mergeSkewHeap(left->rc, right);
+        /* Swap subtrees */
+        temp = left->lc;
+        left->lc = left->rc;
+        left->rc = temp;
+
+        return left;
+     }//else if((getMinCost(left) == getMinCost(right)) && (left->path->job != NULL && right->path->job != NULL))
+     // {
+     //      if(left->path->job->id < right->path->job->id)
+     //       {
+     //            left->rc = mergeSkewHeap(left->rc, right);
+     //             //Swap subtrees 
+     //            temp = left->lc;
+     //            left->lc = left->rc;
+     //            left->rc = temp;
+     //            return left;
+     //       }else
+     //         return mergeSkewHeap(right, left);
+         
+
+     // }
+     else {
+         return mergeSkewHeap(right, left);
+     }
+}
+
+int getMinCost(SkewHeap *sh)
+{
+    return sh->path->pathCost;
+}
+
+/**
+ * Imprime a SkewHeap em pre-order
+ * @param sh Ponteiro para SkewHeap
+ */
+void printSkewHeap(SkewHeap *sh)
+{
+    if(sh == NULL) return;
+
+    printSkewHeap(sh->lc);
+    printSkewHeap(sh->rc);
+
+    printPath(sh->path);
+}
+
+/**
+ * Libera a SkillHeap recursivamente
+ * @param sh Ponteiro para sh a ser liberada
+ */
+void freeSkewHeap(SkewHeap *sh)
+{
+    if(sh == NULL) return;
+
+    freeSkewHeap(sh->lc);
+    freeSkewHeap(sh->rc);
+
+    freePath(sh->path);
+    free(sh);
+}
+	/*
+	*	ALGORITHM SOR(Sucessive Over Relaxation)
+	* 	FUNCTIONS TO RESOLUTION OF THE METHOD SOR FOR MATRIX SPARSE
+	*
+	* 	LAST-UPDATE 03-10-2015
+	*  	@Authors - @ANDRÉ BARRETO, @IGOR VENTORIM, @VINICIUS ARRUDA
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include "sor.h"
+#include <time.h>
+#include "csr.h"
+#include <math.h>
+
+
+/**
+ * [sor2 - RESOLVENDO MATRIZ ESPARSA POR METODO ITERATIVO SOR]
+ * @param  matrix  [Estrutura matriz no padrão CSR para matriz esparsas]
+ * @param  omega   [Constante de relaxamento]
+ * @param  toler   [Tolerancia de erro]
+ * @param  iterMax [Numero maximo de iteraçoes]
+ * @return         [Vetor soluçao]
+ */
+double *sor(CSR* matrix,double omega,double toler, size_t iterMax)
+{
+	struct timespec Start,End;
+	clock_gettime(CLOCK_MONOTONIC,&Start);
+	// SOR ITERATIVO
+	double *x;	/* VETOR SOLUÇÃO */
+	double soma,normax,aux,Elapsed_Time,erro;
+	size_t i,k,iter,inicio,fim;
+
+	x = calloc(matrix->n,sizeof(double));	/* ALOCANDO TAMANHO DO VETOR SOLUÇÃO */
+
+	/* PREENCHENDO VETOR INDEPENDENTE INICIAL */
+	//for(i = 0; i < matrix->n; i++)
+	//	x[i] = matrix->b[i]/matrix->d[i];
+
+	iter = 0;
+	/* LOOP DE ITERAÇOES */
+	do{
+		erro = 0;
+		normax = 0;
+		iter++;
+
+		/* LOOP PARA ENCONTRAR O VALOR DE CADA VARIÁVEL X */
+		for(i = 0; i < matrix->n; i++)
+		{
+			/* LIMITES SUPERIOR E INFERIOR DA LINHA */
+			inicio = matrix->row_ptr[i];
+			fim = matrix->row_ptr[i+1]-1;
+
+			/* INICIANDO CONTA COM O INDICE DO VETOR INDEPENDENTE */
+			soma = matrix->b[i];
+			if( inicio <= fim)
+			{
+
+				/* PERCORRENDO AS COLUNAS NAO NULAS DA LINHA */
+				for(k = inicio; k <= fim; k++)
+				{
+					/*ALGEBRA PARA ENCONTRAR A EQUAÇÃO DE X[I]*/
+					soma -= matrix->A[k]* x[matrix->column_index[k]];
+				}
+
+			}
+			/* DIVIDINDO EQUAÇÃO PELA DIAGONAL */
+			soma = soma / matrix->d[i];
+
+			/* CALCULANDO O NOVO VALOR DE X[I] APARTI DO FATOR DE RELAXAÇÃO */
+			aux = omega * soma + (1 - omega) * x[i];
+
+			/* GUARDANDO A NORMA DE X */
+			if(fabs(aux) > normax)
+				normax = fabs(aux);
+
+			/* GUARDANDO A NORMA DE X[I] -X[I-1] */
+			if(fabs(aux - x[i]) > erro)
+				erro = fabs(aux - x[i]);
+
+			/* ATUALIZANDO O VALOR DE X[I] */
+			x[i] = aux;
+
+		}
+		aux = 1;
+		if(normax > 1)
+			aux = normax;
+		//CALCULANDO O ERRO
+		erro = erro/aux;
+
+		//printf("ERRO - %f\n",erro);
+
+	}while(erro > toler && iter < iterMax);
+	// FIM LOOP DE ITERAÇOES
+	printf("Iter: %lu - IterMax: %lu\n",iter,iterMax);
+
+	clock_gettime(CLOCK_MONOTONIC, &End);
+	// CALCULANDO TEMPO GASTO DE EXECUÇÃO
+	Elapsed_Time = End.tv_sec - Start.tv_sec + 1e-9*(End.tv_nsec - Start.tv_nsec);
+
+	printf("O tempo de execucao gasto foi %g segundos\n",Elapsed_Time);
+
+	// RETORNANDO VETOR SOLUÇAO
+	return x;
+
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include "sparse.h"
+
+
+#define get_memory(ptr, size) ((ptr) = malloc(size));if((ptr) == NULL){fprintf(stderr, "Out of memory.\n");exit(EXIT_FAILURE);}
+
+
+static void freeList(List** l);
+static List* createNode(double value, size_t row);
+static void insert(List** l, double value, size_t row);
+
+
+Sparse* getSparse(const char* fileName)
+{
+	FILE* stream;
+	Sparse* sparse;
+	size_t n;
+	size_t nnz;
+	size_t i;
+	size_t j;
+	double temp_A;
+
+	stream = fopen(fileName, "r");
+
+	if(stream == NULL)
+	{
+		fprintf(stderr, "Error while opening file %s.\n", fileName);
+		exit(EXIT_FAILURE);
+	}
+
+	fscanf(stream, "%lu %lu %lu", &n, &n, &nnz);
+
+	get_memory(sparse, sizeof(Sparse));
+
+	sparse->n = n;
+
+	get_memory(sparse->diagonal, n * sizeof(double));
+	get_memory(sparse->b, n * sizeof(double));
+	get_memory(sparse->matrix, n * sizeof(List *));
+
+
+	for(i = 0; i < n; i++)
+	{
+		sparse->matrix[i] = NULL;  /* warning: change this to memset zeros can produce errors. NULL is not always zero. */
+	}
+
+
+	while(nnz > 0)
+	{
+		fscanf(stream, "%lu %lu %lf", &i, &j, &temp_A);
+
+		i--; /* Corrige o indice. */
+		j--; /* Corrige o indice. */
+
+		if(i == j)
+			sparse->diagonal[j] = temp_A;
+		else
+			insert(&sparse->matrix[j], temp_A, i);
+
+		nnz--;
+	}
+
+	for(i = 0; i < n; i++)
+	{
+		fscanf(stream, "%lf", &sparse->b[i]);
+	}
+
+
+	fclose(stream);
+
+	return sparse;
+}
+
+
+void freeSparse(Sparse* sparse)
+{
+	size_t i;
+
+	free(sparse->diagonal);
+	free(sparse->b);
+
+	for(i = 0; i < sparse->n; i++)
+	{
+		freeList(&sparse->matrix[i]);
+	}
+
+	free(sparse->matrix);
+	free(sparse);
+}
+
+
+static void freeList(List** l)
+{
+	List* temp;
+
+	while(*l != NULL)
+	{
+		temp = (*l)->next;
+		free(*l);
+		*l = temp;
+	}
+}
+
+
+static List* createNode(double value, size_t row)
+{
+	List* new;
+
+	get_memory(new, sizeof(List));
+
+	new->value = value;
+	new->row = row;
+	new->next = NULL;
+
+	return new;
+}
+
+
+static void insert(List** l, double value, size_t row)
+{
+	List* new = createNode(value, row);
+
+	new->next = *l;                                          /* O nó recentemente, tem como próximo o primeiro elemento da lista *l, */
+	*l = new;                                                /* Se a lista *l for vazia (NULL), então aponta para NULL. */
+}                                                            /* Atualiza o ponteiro *l para o primeiro elemento da lista. */
+
+
+void set(Sparse* sparse, size_t i, size_t j, double value)
+{
+	List* column;
+
+	if(i == j)
+	{
+		sparse->diagonal[j] = value;
+		return;
+	}
+	else
+	{
+		column = sparse->matrix[j];
+		while(column != NULL)
+		{
+			if(column->row == i)
+			{
+				column->value = value;  /* da pra melhorar, fazendo a operação de adiçãoe subtração direto aqui com += */
+				return;
+			}
+
+			column = column->next;
+		}
+
+		if(column == NULL)
+		{
+			insert(&sparse->matrix[j], value, i);
+		}
+	}
+}
+
+
+double get(Sparse* sparse, size_t i, size_t j)
+{
+	List* column;
+
+	if(i == j)
+	{
+		return sparse->diagonal[j];
+	}
+	else
+	{
+		column = sparse->matrix[j];
+		while(column != NULL)
+		{
+			if(column->row == i)
+			{
+				return column->value;
+			}
+			column = column->next;
+		}
+	}
+
+	return 0.0;
+}
+
+void printSparse(Sparse *sparse)
+{
+    size_t i, j;
+
+    for(i = 0; i < sparse->n; i++) {
+        for(j = 0; j< sparse->n; j++)
+            printf("%.2f ", get(sparse, i, j));
+        printf("\n");
+    }
+}
+
+void printb(Sparse *sparse)
+{
+    size_t i;
+
+    for(i = 0; i < sparse->n; i++)
+        printf("%f\n", sparse->b[i]);
+
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "lista.h"
+
+/** DEFINICOES DOS STRUCTS **/
+
+// Listas
+struct TipoListaCasas {
+        tcasa *Primeiro, *Ultimo;
+};
+
+struct TipoListaRuas {
+        trua *Primeiro, *Ultimo;
+};
+
+struct TipoListaBairros {
+        tbairro *Primeiro, *Ultimo;
+};
+
+// Itens
+struct TipoCasa {
+        int id;
+        int numero;
+        int idcons;
+        float consumo;
+        char *nome_consumidor;
+        tcasa* prox;
+};
+
+struct TipoRua {
+        int id;
+        char *nome;
+        trua* prox;
+        tlcasas* ListaCasas;
+};
+
+struct TipoBairro {
+        int id;
+        char *nome;
+        tbairro* prox;
+        tlruas* ListaRuas;
+};
+
+struct TipoCidade {
+        tlbairros* ListaBairros;
+};
+
+/** FUNCOES PRINCIPAIS **/
+
+// ADMINISTRATIVAS
+int IncluirBairro(tcidade *Cidade, int id, char *nome) {
+        tbairro* NovoBairro = NULL;
+        tbairro* p = NULL;
+        p = EncontraBairro(Cidade, id);
+        if(p != NULL)
+                // Bairro ja existe
+                return 1;
+        else {
+                // Incluindo bairro...
+		NovoBairro = CriaBairro(id, nome);
+                InsereBairro(NovoBairro, Cidade->ListaBairros);
+                return 0;
+        }
+}
+int IncluirRua(tcidade* Cidade, int idb, int id, char *nome) {
+        trua* NovaRua = NULL;
+        tbairro* pcbairro = NULL;
+        trua* pcrua = NULL;
+
+        pcbairro = EncontraBairro(Cidade, idb);
+        if(pcbairro == NULL)
+                // Bairro nao encontrado
+                return 1;
+
+        else {
+                pcrua = EncontraRua(pcbairro, id);
+                if(pcrua != NULL)
+                        // Rua ja existe
+                        return 1;
+
+                else {
+                        // Incluindo rua...
+                        NovaRua = CriaRua(id, nome);
+                        InsereRua(NovaRua, pcbairro->ListaRuas);
+                        return 0;
+                }
+        }
+}
+int IncluirCasa(tcidade* Cidade, int idb, int idr, int idc, int idcons, int numero, char* nome_consumidor) {
+        tcasa* NovaCasa = NULL;
+        tbairro* pcbairro = NULL;
+        trua* pcrua = NULL;
+        tcasa* pccasa = NULL;
+
+        pcbairro = EncontraBairro(Cidade, idb);
+        if(pcbairro == NULL)
+                // Bairro nao encontrado
+                return 1;
+
+        else {
+                pcrua = EncontraRua(pcbairro, idr);
+                if(pcrua == NULL)
+                        // Rua nao encontrada
+                        return 1;
+
+                else {
+                        pccasa = EncontraCasa(pcrua, idc);
+                        if(pccasa != NULL)
+                                // Casa ja existe
+                                return 1;
+
+                        else {
+                                // Incluindo casa...
+                                NovaCasa = CriaCasa(idc, numero, idcons, nome_consumidor);
+                                InsereCasa(NovaCasa, pcrua->ListaCasas);
+                                return 0;
+                        }
+                }
+        }
+}
+int EliminarRua(tcidade* Cidade, int idb, int id) {
+        tbairro* pb = NULL;
+        pb = EncontraBairro(Cidade, idb);
+        if(pb == NULL)
+                // Bairro nao encontrado
+                return 1;
+        else {
+                trua* pr = pb->ListaRuas->Primeiro;
+                trua* ant = NULL;
+                while(pr != NULL && pr->id != id) {
+                        ant = pr;
+                        pr = pr->prox;
+                }
+                if(pr == NULL) {
+                        // Lista vazia ou Rua nao encontrada
+                        return 1;
+                }
+                else {
+                        if(ant == NULL)
+                                // Rua procurada esta na primeira posicao
+                                pb->ListaRuas->Primeiro = pr->prox;
+                        else
+                                // Remover Rua entre outras ruas
+                                ant->prox = pr->prox;
+
+                        if(pr->prox == NULL)
+                                // Rua procurada esta na ultima posicao
+                                pb->ListaRuas->Ultimo = ant;
+
+                        LiberarRua(pr);
+                        return 0;
+                }
+        }
+}
+int EliminarCasa(tcidade* Cidade, int idb, int idr, int id) {
+        tbairro* pb = NULL;
+        trua* pr = NULL;
+
+        pb = EncontraBairro(Cidade, idb);
+        if(pb == NULL)
+                // Bairro nao encontrado
+                return 1;
+        else {
+                pr = EncontraRua(pb, idr);
+                if(pr == NULL)
+                        // Rua nao encontrada
+                        return 1;
+                else {
+                        tcasa* pc = pr->ListaCasas->Primeiro;
+                        tcasa* ant = NULL;
+                        while(pc != NULL && pc->id != id) {
+                                ant = pc;
+                                pc = pc->prox;
+                        }
+                        if(pc == NULL)
+                                // Casa nao encontrada ou Lista vazia
+                                return 1;
+                        else {
+                                if(ant == NULL)
+                                        // Casa procurada esta na primeira posicao
+                                        pr->ListaCasas->Primeiro = pc->prox;
+                                else
+                                        // Remover Casa entre outras casas
+                                        ant->prox = pc->prox;
+
+                                if(pc->prox == NULL)
+                                        // Casa procurada esta na ultima posicao
+                                        pr->ListaCasas->Ultimo = ant;
+
+                                LiberarCasa(pc);
+                                return 0;
+                        }
+                }
+        }
+}
+
+// OPERACIONAIS
+int Consumir(tcidade* Cidade, int idb, int idr, int id, int consumo) {
+        tbairro* p1 = NULL;
+        trua* p2 = NULL;
+        tcasa* p3 = NULL;
+
+        p1 = EncontraBairro(Cidade, idb);
+        if(p1 == NULL)
+                return 1;
+        else {
+                p2 = EncontraRua(p1, idr);
+                if(p2 == NULL)
+                        return 1;
+                else {
+                        p3 = EncontraCasa(p2, id);
+                        if(p3 == NULL)
+                                return 1;
+                        else {
+                                p3->consumo = consumo;
+                                return 0;
+                        }
+                }
+        }
+}
+float MedirCasa(tcidade* Cidade, int idb, int idr, int id) {
+        tbairro* p1 = NULL;
+        trua* p2 = NULL;
+        tcasa* p3 = NULL;
+
+        p1 = EncontraBairro(Cidade, idb);
+        if(p1 == NULL)
+                return -1;
+        else {
+                p2 = EncontraRua(p1, idr);
+                if(p2 == NULL)
+                        return -1;
+                else {
+                        p3 = EncontraCasa(p2, id);
+                        if(p3 == NULL)
+                                return -1;
+                        else
+                                return p3->consumo;
+                }
+        }
+}
+float MedirRua(tcidade* Cidade, int idb, int idr) {
+        float soma=0;
+        tbairro* p1 = NULL;
+        trua* p2 = NULL;
+        tcasa* p3 = NULL;
+
+        p1 = EncontraBairro(Cidade, idb);
+        if(p1 == NULL)
+                return -1;
+
+        p2 = EncontraRua(p1, idr);
+        if(p2 == NULL)
+                return -1;
+
+        p3 = p2->ListaCasas->Primeiro;
+        while(p3 != NULL) {
+                soma += p3->consumo;
+                p3 = p3->prox;
+        }
+        return soma;
+}
+float MedirBairro(tcidade* Cidade, int id) {
+        float soma=0;
+        tbairro* p1 = NULL;
+        trua* p2 = NULL;
+        tcasa* p3 = NULL;
+
+        p1 = EncontraBairro(Cidade, id);
+        if(p1 == NULL)
+                return -1;
+
+        p2 = p1->ListaRuas->Primeiro;
+        while(p2 != NULL) {
+                p3 = p2->ListaCasas->Primeiro;
+                while(p3 != NULL) {
+                        soma += p3->consumo;
+                        p3 = p3->prox;
+                }
+                p2 = p2->prox;
+        }
+        return soma;
+}
+float MedirCidade(tcidade* Cidade) {
+        float soma=0;
+        tbairro* p1 = NULL;
+        trua* p2 = NULL;
+        tcasa* p3 = NULL;
+
+        p1 = Cidade->ListaBairros->Primeiro;
+        while(p1 != NULL) {
+                p2 = p1->ListaRuas->Primeiro;
+                while(p2 != NULL) {
+                        p3 = p2->ListaCasas->Primeiro;
+                        while(p3 != NULL) {
+                                soma += p3->consumo;
+                                p3 = p3->prox;
+                        }
+                        p2 = p2->prox;
+                }
+                p1 = p1->prox;
+        }
+        return soma;
+}
+
+/** FUNCOES AUXILIARES **/
+
+// Criar os Tipos
+tcidade* CriaCidade() {
+        tcidade* Cidade = (tcidade*)malloc(sizeof(tcidade));
+        Cidade->ListaBairros = (tlbairros*)malloc(sizeof(tlbairros));
+        Cidade->ListaBairros->Primeiro = NULL;
+        Cidade->ListaBairros->Ultimo= NULL;
+        return Cidade;
+}
+tbairro *CriaBairro(int id, char* nome) {
+	tbairro* Bairro = (tbairro*)malloc(sizeof(tbairro));
+        Bairro->nome = (char*)malloc((strlen(nome)+1)*sizeof(char));
+        Bairro->ListaRuas = (tlruas*)malloc(sizeof(tlruas));
+        Bairro->ListaRuas->Primeiro = NULL;
+        Bairro->ListaRuas->Ultimo = NULL;
+        Bairro->id = id;
+        strcpy(Bairro->nome, nome);
+	return Bairro;
+}
+trua *CriaRua(int id, char* nome) {
+	trua* Rua = (trua*)malloc(sizeof(trua));
+	Rua->nome = (char*)malloc((strlen(nome)+1)*sizeof(char));
+        Rua->ListaCasas = (tlcasas*)malloc(sizeof(tlcasas));
+        Rua->ListaCasas->Primeiro = NULL;
+        Rua->ListaCasas->Ultimo = NULL;
+	Rua->id = id;
+	strcpy(Rua->nome, nome);
+	return Rua;
+}
+tcasa *CriaCasa(int idc, int num_casa, int idcons, char* nome_consumidor) {
+	tcasa* Casa = (tcasa*)malloc(sizeof(tcasa));
+        Casa->nome_consumidor = (char*)malloc((strlen(nome_consumidor)+1)*sizeof(char));
+        Casa->id = idc;
+        Casa->numero = num_casa;
+        Casa->idcons = idcons;
+        Casa->consumo = 0;
+        strcpy(Casa->nome_consumidor, nome_consumidor);
+	return Casa;
+}
+
+// Retorna o Tipo que possui o id procurado. Retorna NULL se nao encontrar
+tbairro* EncontraBairro(tcidade* Cidade, int id) {
+        tbairro* p = Cidade->ListaBairros->Primeiro;
+        while(p != NULL && p->id != id) {
+                p = p->prox;
+        }
+        return p;
+}
+trua* EncontraRua(tbairro* Bairro, int id) {
+        trua* p = Bairro->ListaRuas->Primeiro;
+        while(p != NULL && p->id != id)
+                p = p->prox;
+
+        return p;
+}
+tcasa* EncontraCasa(trua* Rua, int id) {
+        tcasa* p = Rua->ListaCasas->Primeiro;
+        while(p != NULL && p->id != id)
+                p = p->prox;
+
+        return p;
+}
+
+// Inserir os Itens nas Listas
+void InsereBairro(tbairro* NovoBairro, tlbairros* ListaBairros) {
+        if(ListaBairros->Ultimo == NULL) {
+                ListaBairros->Primeiro = NovoBairro;
+        }
+        else {
+                ListaBairros->Ultimo->prox = NovoBairro;
+        }
+        ListaBairros->Ultimo = NovoBairro;
+        ListaBairros->Ultimo->prox = NULL;
+}
+void InsereRua(trua* NovaRua, tlruas *ListaRuas) {
+        if(ListaRuas->Ultimo == NULL) {
+                ListaRuas->Primeiro = NovaRua;
+        }
+        else {
+                ListaRuas->Ultimo->prox = NovaRua;
+        }
+        ListaRuas->Ultimo = NovaRua;
+        ListaRuas->Ultimo->prox = NULL;
+}
+void InsereCasa(tcasa* Casa, tlcasas *ListaCasas) {
+        tcasa* ant = NULL;
+        tcasa* p = ListaCasas->Primeiro;
+
+        // Insercao ordenada
+        while(p != NULL && p->numero < Casa->numero) {
+                ant = p;
+                p = p->prox;
+        }
+        if(p == NULL) {
+                // Inserir em uma lista vazia
+                if(ant == NULL) {
+                        ListaCasas->Primeiro = ListaCasas->Ultimo = Casa;
+                }
+                // Inserir na ultima posicao
+                else {
+                        ListaCasas->Ultimo->prox = Casa;
+                        ListaCasas->Ultimo = Casa;
+                }
+                ListaCasas->Ultimo = Casa;
+                ListaCasas->Ultimo->prox = NULL;
+                free(p);
+        }
+        else {
+                // Inserir na primeira posicao
+                if(ant == NULL) {
+                        ListaCasas->Primeiro = Casa;
+                        ListaCasas->Primeiro->prox = p;
+                        ListaCasas->Primeiro = Casa;
+                }
+                // Inserir em qualquer posicao entre duas s ja existentes
+                else {
+                        ant->prox = Casa;
+                        ant->prox = Casa;
+                        Casa->prox = p;
+                }
+        }
+}
+
+// Liberar espaco de memoria dos Tipos
+void LiberarCidade(tcidade* Cidade) {
+        LiberarListaBairros(Cidade->ListaBairros);
+        free(Cidade);
+}
+void LiberarBairro(tbairro* Bairro) {
+        LiberarListaRuas(Bairro->ListaRuas);
+        free(Bairro->nome);
+        free(Bairro);
+}
+void LiberarRua(trua* Rua) {
+        LiberarListaCasas(Rua->ListaCasas);
+        free(Rua->nome);
+        free(Rua);
+}
+void LiberarCasa(tcasa* Casa) {
+        free(Casa->nome_consumidor);
+        free(Casa);
+}
+
+// Liberar espaco de memoria de uma Lista
+void LiberarListaBairros(tlbairros* ListaBairros) {
+        tbairro* p = ListaBairros->Primeiro;
+        tbairro* aux = NULL;
+
+        while(p != NULL) {
+                aux = p->prox;
+                LiberarBairro(p);
+                p = aux;
+        }
+        free(ListaBairros);
+}
+void LiberarListaRuas(tlruas* ListaRuas) {
+        trua* p = ListaRuas->Primeiro;
+        trua* aux = NULL;
+
+        while(p != NULL) {
+                aux = p->prox;
+                LiberarRua(p);
+                p = aux;
+        }
+        free(ListaRuas);
+}
+void LiberarListaCasas(tlcasas* ListaCasas) {
+        tcasa* p = ListaCasas->Primeiro;
+        tcasa* aux = NULL;
+
+        while(p != NULL) {
+                aux = p->prox;
+                LiberarCasa(p);
+                p = aux;
+        }
+        free(ListaCasas);
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "nn.h"
+#include "opt.h"
+#include "hull.h"
+#include "outros.h"
+
+int main(int argc, char *argv[]) {
+    int *vetorCaminho, n;
+    float **matrizCusto, custo;
+    char *algoritmo;
+
+    if(argc < 3) {
+        printf("Inserir dois argumentos: [OrdemDaMatriz] \"Algoritmo\"\n");
+        return 1;
+    }
+
+    n = atoi(argv[1]);
+    algoritmo = argv[2];
+
+    if(strcmp(algoritmo, "exato") == 0) {
+    }
+
+    else if(strcmp(algoritmo, "nn") == 0 || strcmp(algoritmo, "opt") == 0) {
+        matrizCusto = alocaMatriz(n, n);
+        if(matrizCusto == NULL) {
+            printf("Erro ao alocar a matrizCusto.\nPrograma abortado.");
+            return 1;
+        }
+        vetorCaminho = alocaVetor(n);
+        if(vetorCaminho == NULL) {
+            printf("Erro ao alocar a vetor.\nPrograma abortado.");
+            liberaMatriz(matrizCusto, n);
+            return 1;
+        }
+        lerMatriz(matrizCusto, n, n);
+        custo = geraVetorCaminho(matrizCusto, vetorCaminho, 0, n);
+
+        if(strcmp(algoritmo, "opt") == 0 && n > 3)
+            vetorCaminho = novoCaminho(matrizCusto, vetorCaminho, n);
+
+        saidaFormatada(vetorCaminho, custo, n);
+        liberaMatriz(matrizCusto, n);
+        free(vetorCaminho);
+    }
+
+    else if(strcmp(algoritmo, "hull") == 0) {
+        if(n < 4) {
+            printf("*\n");
+            return 0;
+        }
+
+        Cidade *cidades = malloc(n*sizeof(Cidade));
+        Pilha *p=NULL, *inter=NULL;
+
+        lerCidades(cidades, n);
+        quicksort(cidades, 0, n-1);
+
+        p = envoltorioConvexo(cidades, n);
+        inter = cidadesInteriores(p, cidades, n);
+        p = caminhoHull(p, inter);
+        custo = custoCaminhoHull(p);
+        saidaFormatadaHull(p, custo);
+
+        freePilha(p);
+        free(cidades);
+        freePilha(inter);
+    }
+
+    else {
+        printf("Algoritmo \"%s\" invalido.\nPrograma abortado.\n", algoritmo);
+        return 1;
+    }
+
+    return 0;
+}
+/**
+ * CLASSE PRINCIPAL
+ * @LAST-UPDATE 11-10-2015
+ */
+
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <locale.h>
+ #include "word.h"
+ #include "hash.h"
+ #include "preProcess.h"
+ #include "arvoreB.h"
+
+ #define BUFFER 100
+
+int main(int argc, char **argv) {
+    FILE *fin, *fin2, *fout;
+    wordList **hashTable = NULL;
+    wordList *list = NULL;
+    ArvoreB *arvB = NULL;
+    int t;
+
+    if(argc != 5) {
+        printf("Sintaxe:\n./trab2 -i [tipoModelo] [entradaDocs] [indiceGerado]\n./trab2 -b [tipoModelo] [indice] [arquivoBuscas]\n");
+        exit(1);
+    }
+
+    setlocale(LC_ALL, "");
+
+    /** MODULO INDEX **/
+    if(strcmp(argv[1], "-i") == 0) {
+
+        // Abrindo arquivos de entrada
+        fin = fopen(argv[3], "r");
+        if(fin == NULL) {
+            printf("Erro ao abrir arquivo \"%s\". Programa abortado.\n", argv[3]);
+            exit(1);
+        }
+        char *docName = malloc(BUFFER*sizeof(char));
+        while(fscanf(fin, "%s", docName) != EOF) {
+            // Abrindo arquivos a serem processados
+            fin2 = fopen(docName, "r");
+            if(fin2 == NULL) {
+                printf("Erro ao abrir arquivo \"%s\". Programa abortado.\n", docName);
+                fclose(fin);
+                free(docName);
+                freeWList(&list);
+                exit(1);
+            }
+            processDoc(fin2, docName, &list);
+            fclose(fin2);
+        }
+        fclose(fin);
+        free(docName);
+
+        // Abrindo arquivo de saída
+        fout = fopen(argv[4], "w");
+        if(fin == NULL) {
+            printf("Erro ao criar arquivo \"%s\". Programa abortado.\n", argv[4]);
+            exit(1);
+        }
+
+        if(strcmp(argv[2], "B") == 0) {
+            // Arvore B
+            fillArvB(&arvB, list);
+            geraIndex(arvB, fout);
+        }
+        else {
+            t = gerarSizeHash(list);
+            createHashTb(&hashTable,t);
+
+            if(strcmp(argv[2], "E") == 0) {
+                // Hash com encadeamento
+                fillHash(hashTable,list,t,'E');
+                hashExportE(hashTable,t,argv[4]);
+            }
+            else if(strcmp(argv[2], "L") == 0) {
+                // Hash linear
+                fillHash(hashTable,list,t,'L');
+                hashExportLR(hashTable,t,'L',argv[4]);
+            }
+            else if(strcmp(argv[2], "R") == 0) {
+                // Hash por rehashing
+                fillHash(hashTable,list,t,'R');
+                hashExportLR(hashTable,t,'R',argv[4]);
+            }
+            else
+                printf("Modelo \"%s\" inexistente.\n", argv[2]);
+
+            freeHash(hashTable,t);
+        }
+
+        fclose(fout);
+        freeArvB(arvB);
+        freeWList(&list);
+    }
+
+    /** MODULO BUSCA **/
+    else if(strcmp(argv[1], "-b") == 0) {
+
+        fin = fopen(argv[3], "r");
+        if(fin == NULL) {
+            printf("Erro ao abrir arquivo \"%s\". Programa abortado.\n", argv[3]);
+            exit(1);
+        }
+
+        // Ler arquivo e recriar a estrutura
+        if(strcmp(argv[2], "E") == 0) {
+            // Hash com encadeamento
+            buscaHash('E',argv[3],argv[4]);
+        }
+        else if(strcmp(argv[2], "L") == 0) {
+            // Hash linear
+            buscaHash('L',argv[3],argv[4]);
+        }
+        else if(strcmp(argv[2], "R") == 0) {
+            // Hash por rehashing
+			buscaHash('R',argv[3],argv[4]);
+        }
+        else if(strcmp(argv[2], "B") == 0) {
+            // Arvore B
+            importArvB(&arvB, fin);
+            fclose(fin);
+            fin = fopen(argv[4], "r");
+            if(fin == NULL) {
+                printf("Erro ao abrir arquivo \"%s\". Programa abortado.\n", argv[4]);
+                exit(1);
+            }
+            buscaArvB(arvB, fin);
+            freeArvB(arvB);
+        }
+        else
+            printf("Modelo \"%s\" inexistente.\n", argv[2]);
+
+        fclose(fin);
+    }
+
+    /** MODULO INEXISTENTE **/
+    else {
+        printf("Modulo \"%s\" incorreto. Opcoes: '-i' ou '-b'\n", argv[1]);
+    }
+
+    return 0;
+}
+/**
+ * TRABALHO 3 - ED2 - ESCALONAMENTO DE JOBS
+ * André Barreto e Igor Ventorim
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "bs.h"
+#include "bb.h"
+
+#define W 30
+
+int main(int argc, char **argv)
+{
+    int n;
+    Job **jobs;
+    Path *menorCaminhoBS;
+    Path *menorCaminhoBB;
+
+    /* Verifica o número de parâmetros */
+    if(argc != 3)
+    {
+        printf("Sintaxe:\n./trab3 [númeroJobs] [algoritmo]\n");
+        exit(1);
+    }
+
+    n = atoi(argv[1]);
+    jobs = malloc(n*sizeof(Job*));
+    lerJobs(jobs, n);
+
+    /* Algoritmo Beam Search */
+    if(strcmp(argv[2], "bs") == 0)
+    {
+        menorCaminhoBS = beamSearch(jobs, n, W);
+        printPath(menorCaminhoBS);
+        freePath(menorCaminhoBS);
+    }
+
+    /* Algoritmo Branch and Bound */
+    else if(strcmp(argv[2], "bb") == 0)
+    {
+        menorCaminhoBB = branchBound(jobs, n, W);
+        printPath(menorCaminhoBB);
+        freePath(menorCaminhoBB);
+    }
+
+    /* ERRO: Algoritmo incorreto */
+    else
+    {
+        printf("Algoritmo \"%s\" incorreto. Opcoes: \"bs\" e \"bb\"\n", argv[2]);
+    }
+
+    freeJobs(jobs, n);
+
+    return 0;
+}
+/**
+ * TRABALHO 4 - ED2 - ALGORITMOS DE ORDENAÇÃO
+ * André Barreto Silveira
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "vetor.h"
+#include "simpleSorting.h"
+#include "efficientSorting.h"
+
+int main(int argc, char **argv)
+{
+    /* Verifica o número de parâmetros */
+    if(argc != 3)
+    {
+        printf("Sintaxe: ./trab4 [Algoritmo] [Quantidade de numeros]\n");
+        exit(1);
+    }
+
+    int n = atoi(argv[2]);
+    int *v = lerVetor(n);
+
+    /* Algoritmo Bubble Sort */
+    if(!strcmp(argv[1], "bubble"))
+    {
+        bubbleSort(v, n);
+    }
+
+    /* Algoritmo Insertion Sort */
+    else if(!strcmp(argv[1], "insertion"))
+    {
+        insertionSort(v, n);
+    }
+
+    /* Algoritmo Selection Sort */
+    else if(!strcmp(argv[1], "selection"))
+    {
+        selectionSort(v, n);
+    }
+
+    /* Algoritmo Shake Sort */
+    else if(!strcmp(argv[1], "shake"))
+    {
+        shakeSort(v, n);
+    }
+
+    /* Algoritmo Quick Sort - Pivô primeiro */
+    else if(!strcmp(argv[1], "quickprimeiro"))
+    {
+        quickSortPrimeiro(v, 0, n-1);
+    }
+
+    /* Algoritmo Quick Sort - Pivô central */
+    else if(!strcmp(argv[1], "quickcentral"))
+    {
+        quickSortCentral(v, n);
+    }
+
+    /* Algoritmo Quick Sort - Pivô mediana de 3 */
+    else if(!strcmp(argv[1], "quickmediana3"))
+    {
+        quickSortMediana3(v, 0, n-1);
+    }
+
+    /* Algoritmo Quick Sort - Pivô aleatório */
+    else if(!strcmp(argv[1], "quickrandom"))
+    {
+        srand( (unsigned)time(NULL) );
+        quickSortRandom(v, 0, n-1);
+    }
+
+    /* Algoritmo Merge Sort */
+    else if(!strcmp(argv[1], "merge"))
+    {
+        mergeSort(v, n);
+    }
+
+    /* Algoritmo Heap Sort */
+    else if(!strcmp(argv[1], "heap"))
+    {
+        heapSort(v, n);
+    }
+
+    /* Algoritmo Shell Sort */
+    else if(!strcmp(argv[1], "shell"))
+    {
+        shellSort(v, n);
+    }
+
+    /* Algoritmo Rank Sort */
+    else if(!strcmp(argv[1], "rank"))
+    {
+        rankSort(v, n);
+    }
+
+    /* Algoritmo Radix Sort */
+    else if(!strcmp(argv[1], "radix"))
+    {
+        radixSort(v, n);
+    }
+
+    /* Algoritmo Radix Sort binário */
+    else if(!strcmp(argv[1], "radixbin"))
+    {
+        radixSortBinario(v, n);
+    }
+
+    /* ERRO: Algoritmo inexistente */
+    else
+    {
+        printf("Algoritmo \"%s\" inexistente\n", argv[1]);
+        freeVetor(v);
+        exit(1);
+    }
+
+    printVetor(v, n);
+    freeVetor(v);
+
+    return 0;
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include "trab.h"
+#define FREE(p) if(p!=NULL){free(p);p=NULL;}
+
+ArvProd *inicializaAxioma (char *axioma) {
+	size_t tam = strlen(axioma);
+	short i;
+	
+	ArvProd *tmp = arvvCria(0);
+	ArvProd *tmp2 = tmp;
+	tmp2->prim = arvvCria(axioma[0]);	
+    tmp2 = tmp2->prim;
+	for(i = 1; i < tam; i++) {
+        tmp2->prox = arvvCria(axioma[i]);
+        tmp2 = tmp2->prox;
+	}
+	return tmp;
+}
+
+Comandos *inicializaComandos() {
+    Comandos *c = malloc(sizeof(Comandos));
+    c->angle = 0;
+    c->order = 0;
+    c->rotate = 0;
+    c->axiom = NULL;
+    c->regras = NULL;
+    return c; 
+}
+
+RegrasProd* inicializaRegra() {
+    RegrasProd* r = malloc(sizeof(RegrasProd));
+    r->prox = NULL;
+    return r;
+}
+
+ArvProd* arvvCria (char c) {
+	ArvProd *a; 
+	a = (ArvProd*)malloc(sizeof(ArvProd));
+	a->info = c;
+	a->prim = NULL;
+	a->prox = NULL;
+	return a;
+}
+ 
+int incluiRegras(FILE *fp, Comandos *c, char *word) {
+	RegrasProd *r;
+    RegrasProd *nova = inicializaRegra();
+
+    nova->parametro = word[0];
+
+	fscanf(fp, "%s", word);
+	if(strcmp(word, "=") != 0) {
+        printf("Erro de sintaxe. Programa abortado.\n");
+        liberaRegras(nova);
+        liberaComandos(c);
+        fclose(fp);
+        exit(1);
+	}
+
+    fscanf(fp, "%s", word);
+    nova->regra = malloc(strlen(word)+1);
+    strcpy(nova->regra, word);
+
+    if(c->regras == NULL)
+        c->regras = nova;
+
+    else {
+        for(r = c->regras; r->prox != NULL; r = r->prox);
+
+        r->prox = nova;
+    }
+}
+
+void geraArv (ArvProd *a, RegrasProd *regras) {
+    RegrasProd *aux;
+
+	if(a == NULL) return;
+	
+	if(a->prim != NULL)
+		geraArv(a->prim, regras);
+	
+	else {
+        for(aux = regras; aux != NULL; aux = aux->prox) {
+            if(aux->parametro == a->info) {
+                ArvProd *tmp;
+                size_t tam = strlen(aux->regra);
+                short i;
+                if(tam > 1) {
+                    // Gerar novas folhas
+                    a->prim = arvvCria(aux->regra[0]);
+                    tmp = a->prim;
+                    for(i = 1; i < tam; i++) {
+                        tmp->prox = arvvCria(aux->regra[i]);
+                        tmp = tmp->prox;
+                    }
+                }
+                else
+                    a->prim = arvvCria(aux->regra[0]);
+            }
+        }
+	}
+	
+	geraArv(a->prox, regras);
+}
+
+void returnFolhas (ArvProd *a, char *sfinal) {
+	int i;
+	if(a == NULL) return;
+	
+	if(a->prim == NULL) {
+		i = 0;
+		while(sfinal[i] != '\0')
+			i++;
+
+		sfinal[i] = a->info;
+		sfinal[i+1] = '\0';
+	}
+	returnFolhas(a->prim,sfinal);
+	returnFolhas(a->prox,sfinal);
+}
+
+void arvvLibera (ArvProd *a) {
+	ArvProd* p = a->prim;
+	while(p != NULL) {
+        ArvProd *t = p->prox;
+        arvvLibera (p);
+        p = t;
+	}
+	FREE(a);
+}
+
+void liberaComandos(Comandos* c) {
+    FREE(c->axiom);
+	liberaRegras(c->regras);
+	FREE(c);
+}
+
+void liberaRegras(RegrasProd* r) {
+	RegrasProd* aux;
+    while(r != NULL) {
+        aux = r->prox;
+        FREE(r->regra);
+        FREE(r);
+        r = aux;
+    }
+}
+/**
+ * IMPLEMENTAÇÕES VETOR
+ * Funções para manipular vetores inteiros
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int* criaVetor(const int N)
+{
+    int* v = malloc(N*sizeof(int));
+    return v;
+}
+
+int* lerVetor(const int N)
+{
+    int i, valor;
+    int* v = criaVetor(N);
+
+    for(i = 0; i < N; i++) {
+        scanf("%d", &valor);
+        v[i] = valor;
+    }
+
+    return v;
+}
+
+void printVetor(int* v, const int N)
+{
+    int i;
+    for(i = 0; i < N; i++) {
+        printf("%d\n", v[i]);
+    }
+    printf("\n");
+}
+
+void freeVetor(int* v)
+{
+    free(v);
+}
+/**
+ * FUNÇÕES PARA A MANIPULAÇÃO DA ESTRUTURA PALAVRAS
+ * @LAST-UPDATE 11-10-2015
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "word.h"
+#include <ctype.h>
+
+
+/**
+ * [insert_tpWord - FUNÇAO QUE INSERE tpWords EM UMA LISTA DE PALAVRAS]
+ * @param list     [Endereço da lista de palavras na qual deseja inserir]
+ * @param word     [Palavra que deseja inserir]
+ */
+void insert_tpWord(wordList **list, tpWord *word)
+{
+	wordList *atual = *list;
+	wordList* ant = NULL;
+
+	/* LOOP DE VERIFICAÇAO DE PALAVRAS IGUAIS */
+	while( atual != NULL && strcmp(atual->word->string, word->string) < 0) {
+		ant = atual;
+		atual = atual->prox;
+	}
+
+    /* PALAVRA JÁ EXISTE */
+	if(atual != NULL && strcmp(atual->word->string, word->string) == 0)
+        return;
+
+    if(ant == NULL)
+	{
+		/* ADICIONANDO PALAVRA NA LISTA DE PALAVRAS */
+		wordList* new = malloc(sizeof(wordList));
+        new->word = word;
+		new->prox = *list;
+		*list = new;
+	}
+    else {
+        /* ADICIONANDO PALAVRA NA LISTA DE PALAVRAS */
+        wordList* new = malloc(sizeof(wordList));
+        new->word = word;
+        new->prox = ant->prox;
+        ant->prox = new;
+    }
+}
+
+/**
+ * [criaWord - FUNÇAO RESPONSAVEL POR CRIAR UMA PALAVRA]
+ * @param word     [Palavra que deseja inserir]
+ * @param document [Nome do documento que a palavra se encontra]
+ * @param pos      [Posiçao da palavra no documento]
+ */
+tpWord *inicializaWord(char *word)
+{
+    tpWord *new;
+    new = malloc(sizeof(tpWord));
+    new->string = malloc((strlen(word) + 1) * sizeof(char));
+    new->qtdWord = 1;
+    new->documents = NULL;
+    strcpy(new->string,word);
+
+    return new;
+}
+
+/**
+ * [criaWord - FUNÇAO RESPONSAVEL POR CRIAR UMA PALAVRA]
+ * @param word     [Palavra que deseja inserir]
+ * @param document [Nome do documento que a palavra se encontra]
+ * @param pos      [Posiçao da palavra no documento]
+ */
+tpWord *criaWord(char *word, char *document, int pos)
+{
+
+    tpWord *new;
+    new = malloc(sizeof(tpWord));
+    new->string = malloc((strlen(word) + 1) * sizeof(char));
+    new->qtdWord = 1;
+    new->documents = NULL;
+    strcpy(new->string,word);
+    insertDocument(&new->documents,document,pos);
+
+    return new;
+}
+
+/**
+ * [insertWord - FUNÇAO RESPONSAVEL POR INSERIR PALAVRAS EM UMA LISTA DE PALAVRAS]
+ * @param word     [Palavra que deseja inserir]
+ * @param list     [Endereço da lista de palavras na qual deseja inserir]
+ * @param document [Nome do documento que a palavra se encontra]
+ * @param pos      [Posiçao da palavra no documento]
+ */
+void insertWord(char *word, wordList **list,char *document, int pos)
+{
+	wordList *atual = *list;
+	wordList* ant = NULL;
+
+	while( atual != NULL && strcmp(atual->word->string,word) < 0)
+	{
+		ant = atual;
+		atual = atual->prox;
+	}
+
+
+	/** ------------------------- INSERÇÃO ORDENADA ------------------------------------------*/
+
+	if(atual != NULL && strcmp(atual->word->string,word) == 0 )/* ADICIONANDO PALAVRA IGUAL NA LISTA DE DOCUMENTOS	*/
+	{
+		atual->word->qtdWord++;
+		insertDocument(&atual->word->documents,document,pos);
+    }else if(ant == NULL)
+	{
+
+		/* ADICIONANDO PALAVRA NA LISTA DE PALAVRAS */
+		wordList* new = malloc(sizeof(wordList));
+        new->word = criaWord(word, document, pos);
+		new->prox = *list;
+		*list = new;
+	}else
+		{
+
+			/* ADICIONANDO PALAVRA NA LISTA DE PALAVRAS */
+			wordList* new = malloc(sizeof(wordList));
+	        new->word = criaWord(word, document, pos);
+			new->prox = ant->prox;
+			ant->prox = new;
+		}
+
+	//}
+}
+
+/**
+ * [insertDocumentSearch - INSERÇÃO DE DOCUMENTOS PARA BUSCA]
+ * @param listDoc  [Lista de documentos]
+ * @param document [Documento que deseja inserir]
+ */
+void insertDocumentSearch(documentList **listDoc,char *document)
+{
+		documentList *atual = *listDoc;
+
+		while( atual != NULL && strcmp(atual->document,document))
+			atual = atual->prox;
+
+		if(atual)
+			return;
+		else
+		{
+			documentList *new = malloc(sizeof(documentList));
+			new->document = malloc((strlen(document)+1) * sizeof(char));
+			new->pos = NULL;
+			strcpy(new->document,document);
+			new->prox = *listDoc;
+			*listDoc = new;
+		}
+}
+
+
+/**
+ * [removeDocument - REMOVE UM DOCUMENTO DA LISTA DE DOCUMENTOS]
+ * @param listDoc  [Lista de documentos]
+ * @param document [Documento que deseja remover]
+ */
+void removeDocument(documentList **listDoc, char *document)
+{
+	documentList *ant = NULL;
+	documentList *atual = *listDoc;
+
+	while( atual != NULL && strcmp(atual->document,document))
+	{
+		ant = atual;
+		atual = atual->prox;
+	}
+
+	if(atual == NULL)
+	{
+		return;
+	}
+
+	if(ant == NULL)
+	{
+		*listDoc = (*listDoc)->prox;
+	}else
+	{
+		ant->prox = atual->prox;
+	}
+
+	free(atual->document);
+	free(atual);
+
+}
+
+/**
+ * [searchDocument - PESQUISA DOCUMENTO]
+ * @param  listDoc  [Lista de documentos a ser pesquisada]
+ * @param  document [Documento a ser procurado]
+ * @return          [Documento encontrado]
+ */
+documentList *searchDocument(documentList *listDoc, char *document)
+{
+	documentList *atual = listDoc;
+
+	while( atual != NULL && strcmp(atual->document,document))
+	{
+		atual = atual->prox;
+	}
+
+	return atual;
+}
+/**
+ * [insertDocument - FUNÇAO QUE INSERE O DOCUMENTO E A POSICAO NA LISTA DE DOCUMENTOS]
+ * @param listDoc  [Endereço da lista de documentos na qual deseja inserir]
+ * @param document [Nome do documento que deseja inserir]
+ * @param pos      [Posicao que se encontra a palavra no documento]
+ */
+void insertDocument(documentList **listDoc,char *document, int pos)
+{
+
+	documentList *atual = *listDoc;
+	documentList *ant = NULL;
+
+
+	while(atual != NULL && strcmp(atual->document,document) < 0)
+	{
+		ant = atual;
+		atual = atual->prox;
+	}
+
+	/** ------------------------- INSERÇÃO ORDENADA ------------------------------------------*/
+
+	if(atual != NULL && strcmp(atual->document,document) == 0)
+	{
+		insertPos(&atual->pos,pos);
+	}else if(ant == NULL)
+	{
+		documentList *new = malloc(sizeof(documentList));
+		new->document = malloc((strlen(document)+1) * sizeof(char));
+		new->pos = NULL;
+		strcpy(new->document,document);
+		insertPos(&new->pos,pos);
+		new->prox = *listDoc;
+		*listDoc = new;
+	}else
+	{
+		documentList *new = malloc(sizeof(documentList));
+		new->document = malloc((strlen(document)+1) * sizeof(char));
+		new->pos = NULL;
+		strcpy(new->document,document);
+		insertPos(&new->pos,pos);
+		new->prox = ant->prox;
+		ant->prox = new;
+
+	}
+	/* new->pos = pos; */
+}
+
+/**
+ * [insertPos - INSERINDO POSIÇÃO NA LISTA DE POSIÇÕES]
+ * @param listPos [Lista que contém as posições de determinada palavra em um documento]
+ * @param pos     [Posiçao da palavra]
+ */
+void insertPos(posList **listPos,int pos)
+{
+	posList *new = malloc(sizeof(posList));
+	new->pos = pos;
+	new->prox = *listPos;
+	*listPos = new;
+}
+
+
+/**
+ * [printWordList - IMPRIMI LISTA DE PALAVRAS ARMAZENADAS NA LISTA DE PALAVRAS]
+ * @param list [Lista de palavras que deseja imprimir na tela]
+ */
+void printWordList(wordList *list)
+{
+	while(list != NULL)
+	{
+		printf("%s ",list->word->string);
+		printDocumentList(list->word->documents);
+		list = list->prox;
+	}
+}
+
+
+/**
+ * [printDocumentList - IMPRIMI LISTA DE DOCUMENTOS ARMAZENADAS NA PALAVRA]
+ * @param list [Lista de documentos que deseja imprimir na tela]
+ */
+void printDocumentList(documentList *list)
+{
+	while(list != NULL)
+	{
+		printf("%s\n",list->document);
+		list = list->prox;
+	}
+}
+
+/**
+ * [printPosList - IMPRIMI LISTA DE POSIÇÕES ARMAZENADA EM UM DOCUMENTO]
+ * @param list [description]
+ */
+void printPosList(posList *list)
+{
+	while(list != NULL)
+	{
+		printf("%d ",list->pos);
+		list = list->prox;
+	}
+}
+
+/**
+ * [sizeList - VERIFICAR QUANTIDADE DE PALAVRAS DISTINTAS]
+ * @param  list [Lista de palavras que deseja saber o tamanho]
+ * @return      [Quantidade de palavras distintas que foram armazenadas]
+ */
+int sizeList(wordList *list)
+{
+	int count = 0;
+
+	while(list != NULL)
+	{
+		count++;
+		list = list->prox;
+	}
+
+	return count;
+}
+
+/**
+ * [sizeList - VERIFICAR QUANTIDADE DE DOCUMENTOS]
+ * @param  list [Lista de documentos que deseja saber o tamanho]
+ * @return      [Quantidade de documentos que foram armazenados]
+ */
+int sizeDocList(documentList *list)
+{
+	int count = 0;
+
+	while(list != NULL)
+	{
+		count++;
+		list = list->prox;
+	}
+
+	return count;
+}
+
+/**
+ * [sizePosList - VERIFICAR QUANTIDADE DE POSIÇÕES]
+ * @param  list [Lista de posições que deseja saber o tamanho]
+ * @return      [Quantidade de posições que foram armazenados]
+ */
+int sizePosList(posList *list)
+{
+	int count = 0;
+
+	while(list != NULL)
+	{
+		count++;
+		list = list->prox;
+	}
+
+	return count;
+}
+
+/**
+ * [freePosList - LIBERAR DA MEMORIA LISTA DE POSIÇÕES]
+ * @param l [Endereço da lista de posições que deseja liberar]
+ */
+void freePosList(posList **l)
+{
+	posList *aux;
+	while(*l != NULL)
+	{
+		aux = *l;
+		*l = (*l)->prox;
+		free(aux);
+	}
+}
+/**
+ * [freeDocList - LIBERAR DA MEMORIA LISTA DE DOCUMENTOS]
+ * @param l [Endereço da lista de documentos que deseja liberar]
+ */
+void freeDocList(documentList **l)
+{
+	documentList *aux;
+	while(*l != NULL)
+	{
+		aux = *l;
+		free(aux->document);
+		freePosList(&aux->pos);
+		*l = (*l)->prox;
+		free(aux);
+	}
+
+
+}
+
+/**
+ * [freeWList - LIBERAR DA MEMORIA LISTA DE PALAVRAS]
+ * @param l [Endereço da lista de palavras que deseja liberar]
+ */
+void freeWList(wordList **l)
+{
+	wordList *aux;
+	while(*l != NULL)
+	{
+		aux = *l;
+		*l = (*l)->prox;
+		free(aux);
+
+	}
+	free(*l);
+
+}
+
+/**
+ * [freeWord - LIBERAR DA MEMORIA UMA PALAVRA]
+ * @param word [Endereço da palavra que deseja liberar]
+ */
+void freeWord(tpWord *word) {
+    free(word->string);
+    freeDocList(&word->documents);
+    free(word);
+}
+
+/**
+ * [geraPrimo -  ENCONTRAR O MENOR NUMERO PRIMO MAIOR OU IGUAL A N ]
+ * @param  n [Numero a qual deseja encontrar o maior ou igual numero primo mais proximo]
+ * @return   [Menor numero primo maior ou igual a N]
+ */
+int geraPrimo (int n)
+{
+
+	int m;
+	if(n==2)
+		return n;
+
+	for( m=2; m<n; m++)
+	{
+		if (n%m!=0)
+			continue;
+		else
+			return geraPrimo(n+1);
+	}
+
+	return n;
+}
