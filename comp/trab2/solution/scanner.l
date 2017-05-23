@@ -11,18 +11,19 @@
 void scan_error(char const *);
 %}
 
-%s comments
+%x comments
 
 blank        [ \t\n]+
 line_comment "//".*$
-id           [a-zA-Z]+
+id           [a-zA-Z][a-zA-Z0-9]*
 string       \".*\"
 number       [0-9]+
 
 %%
-"/*"                 BEGIN(comments);
-<comments>"*/"       BEGIN(INITIAL);
-<comments>[^*]*"*/"  /* consumindo comentarios */
+"/*"                 { BEGIN(comments); }
+<comments>"*/"       { BEGIN(INITIAL); }
+<comments>"\n"       { yylineno++; }
+<comments>.          { /* consumindo comentarios */ }
 
 {blank}
 {line_comment}
@@ -43,18 +44,18 @@ number       [0-9]+
 "/"         { return OVER; }
 
 "<"         { return LT; }
-"<="        { return LEQ; }
+"<="        { return LE; }
 ">"         { return GT; }
-">="        { return GEQ; }
+">="        { return GE; }
 "=="        { return EQ; }
 "!="        { return NEQ; }
 
-"("         { return LPAR; }
-")"         { return RPAR; }
-"["         { return LBRAC; }
-"]"         { return RBRAC; }
-"{"         { return LCUR; }
-"}"         { return RCUR; }
+"("         { return LPAREN; }
+")"         { return RPAREN; }
+"["         { return LBRACK; }
+"]"         { return RBRACK; }
+"{"         { return LBRACE; }
+"}"         { return RBRACE; }
 ";"         { return SEMI; }
 ","         { return COMMA; }
 "="         { return ASSIGN; }
@@ -70,4 +71,5 @@ number       [0-9]+
 // Error handling
 void scan_error(char const *s) {
     printf("SCANNING ERROR (%d) : Unknown symbol %s\n", yylineno, s);
+    exit(1);
 }

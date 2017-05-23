@@ -16,10 +16,10 @@ void yyerror(char const *s);
 extern int yylineno;
 %}
 
-%token NUM ID IF ELSE WHILE WRITE RETURN ASSIGN SEMI INPUT OUTPUT COMMA EPS
-%token LPAR RPAR LBRAC RBRAC LCUR RCUR
+%token NUM ID IF ELSE WHILE WRITE RETURN ASSIGN SEMI INPUT OUTPUT COMMA
+%token LPAREN RPAREN LBRACK RBRACK LBRACE RBRACE
 %token STRING INT VOID
-%left LT LEQ GT GEQ EQ NEQ
+%left LT LE GT GE EQ NEQ
 %left PLUS MINUS
 %left TIMES OVER
 
@@ -34,13 +34,17 @@ func_dcl_list:
 
 func_dcl: func_header func_body ;
 
-func_header: ret_type ID LPAR params RPAR ;
+func_header: ret_type ID LPAREN params RPAREN ;
 
-func_body: LCUR opt_var_decl opt_stmt_list RCUR ;
+func_body: LBRACE opt_var_decl opt_stmt_list RBRACE ;
 
-opt_var_decl: | var_decl_list ;
+opt_var_decl:
+  /* epsilon */
+| var_decl_list ;
 
-opt_stmt_list: | stmt_list ;
+opt_stmt_list:
+  /* epsilon */
+| stmt_list ;
 
 ret_type:
   INT
@@ -53,8 +57,13 @@ params:
 ;
 
 param_list:
+  param_list COMMA param
+| param
+;
+
+param:
   INT ID
-| INT ID LBRAC RBRAC
+| INT ID LBRACK RBRACK
 ;
 
 var_decl_list:
@@ -64,7 +73,7 @@ var_decl_list:
 
 var_decl:
   INT ID SEMI
-| INT ID LBRAC NUM RBRAC SEMI
+| INT ID LBRACK NUM RBRACK SEMI
 ;
 
 stmt_list:
@@ -83,18 +92,18 @@ assign_stmt: lval ASSIGN arith_expr SEMI ;
 
 lval:
   ID
-| ID LBRAC NUM RBRAC
-| ID LBRAC ID RBRAC
+| ID LBRACK NUM RBRACK
+| ID LBRACK ID RBRACK
 ;
 
 if_stmt:
-  IF LPAR bool_expr RPAR block
-| IF LPAR bool_expr RPAR block ELSE block
+  IF LPAREN bool_expr RPAREN block
+| IF LPAREN bool_expr RPAREN block ELSE block
 ;
 
-block: LCUR opt_stmt_list RCUR ;
+block: LBRACE opt_stmt_list RBRACE ;
 
-while_stmt: WHILE LPAR bool_expr RPAR block ;
+while_stmt: WHILE LPAREN bool_expr RPAREN block ;
 
 return_stmt: 
   RETURN SEMI
@@ -107,15 +116,17 @@ func_call:
 | user_func_call
 ;
 
-input_call: INPUT LPAR RPAR ;
+input_call: INPUT LPAREN RPAREN ;
 
-output_call: OUTPUT LPAR arith_expr RPAR ;
+output_call: OUTPUT LPAREN arith_expr RPAREN ;
 
-write_call: WRITE LPAR STRING RPAR ;
+write_call: WRITE LPAREN STRING RPAREN ;
 
-user_func_call: ID LPAR opt_arg_list RPAR ;
+user_func_call: ID LPAREN opt_arg_list RPAREN ;
 
-opt_arg_list: EPS | arg_list ;
+opt_arg_list:
+  /*epsilon*/
+| arg_list ;
 
 arg_list:
   arg_list COMMA arith_expr
@@ -129,7 +140,7 @@ arith_expr:
 | arith_expr MINUS arith_expr
 | arith_expr TIMES arith_expr
 | arith_expr OVER arith_expr
-| LPAR arith_expr RPAR
+| LPAREN arith_expr RPAREN
 | lval
 | input_call
 | user_func_call
@@ -138,9 +149,9 @@ arith_expr:
 
 bool_op:
   LT
-| LEQ
+| LE
 | GT
-| GEQ
+| GE
 | EQ
 | NEQ
 ;
@@ -149,8 +160,9 @@ bool_op:
 %%
 
 int main() {
-  yyparse();
-  //printf("PARSE SUCCESSFUL!\n");
+  if(!yyparse()) {
+    printf("PARSE SUCCESSFUL!\n");
+  }
   return 0;
 }
 
