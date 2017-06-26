@@ -1,0 +1,11 @@
+PARSE SUCCESSFUL!
+
+Literals table:
+Entry 0 -- "Hello, World!\n"
+
+
+Variables table:
+
+
+Functions table:
+Entry 0 -- name: main, line: 3, arity: 0

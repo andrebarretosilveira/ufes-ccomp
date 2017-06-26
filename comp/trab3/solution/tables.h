@@ -1,0 +1,54 @@
+
+#ifndef TABLES_H
+#define TABLES_H
+
+// Literals Table
+// ----------------------------------------------------------------------------
+
+// Opaque structure.
+// For simplicity, the table is implemented as a sequential list.
+struct lit_table;
+typedef struct lit_table LitTable;
+
+// Creates an empty literal table.
+LitTable* create_lit_table();
+
+// Adds the given string to the table without repetitions.
+// String 's' is copied internally.
+// Returns the index of the string in the table.
+int add_literal(LitTable* lt, char* s);
+
+// Returns a pointer to the string stored at index 'i'.
+char* get_literal(LitTable* lt, int i);
+
+// Prints the given table to stdout.
+void print_lit_table(LitTable* lt);
+
+// Clears the allocated structure.
+void free_lit_table(LitTable* lt);
+
+
+// Symbols Table
+// ----------------------------------------------------------------------------
+
+// Opaque structure.
+// For simplicity, the table is implemented as a sequential list.
+// This table only stores the variable name and the declaration line.
+struct sym_table;
+typedef struct sym_table SymTable;
+
+
+SymTable* create_sym_table();
+int get_size(SymTable*);
+int add_var(SymTable*, char*, int);
+int lookup_var(SymTable*, char*);
+int add_or_look(SymTable*, char*, int);
+char* get_name(SymTable*, int);
+int get_line(SymTable*, int);
+int get_value(SymTable*, int);
+void set_value(SymTable*, int, int);
+void print_sym_table(SymTable*);
+void free_sym_table(SymTable*);
+
+#endif // TABLES_H
+

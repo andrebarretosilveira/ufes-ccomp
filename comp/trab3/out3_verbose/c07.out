@@ -1,0 +1,14 @@
+PARSE SUCCESSFUL!
+
+Literals table:
+Entry 0 -- "OK! 1\n"
+Entry 1 -- "Huh? 1\n"
+Entry 2 -- "OK! 2\n"
+Entry 3 -- "Huh? 2\n"
+
+
+Variables table:
+
+
+Functions table:
+Entry 0 -- name: main, line: 3, arity: 0

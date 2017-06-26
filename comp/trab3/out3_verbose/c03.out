@@ -1,0 +1,11 @@
+PARSE SUCCESSFUL!
+
+Literals table:
+
+
+Variables table:
+Entry 0 -- name: x, line: 4, scope: 0
+
+
+Functions table:
+Entry 0 -- name: main, line: 3, arity: 0

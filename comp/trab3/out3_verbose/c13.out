@@ -1,0 +1,29 @@
+PARSE SUCCESSFUL!
+
+Literals table:
+Entry 0 -- "Sorted array: "
+Entry 1 -- " "
+Entry 2 -- "\n"
+
+
+Variables table:
+Entry 0 -- name: a, line: 5, scope: 0
+Entry 1 -- name: low, line: 5, scope: 0
+Entry 2 -- name: high, line: 5, scope: 0
+Entry 3 -- name: i, line: 6, scope: 0
+Entry 4 -- name: x, line: 7, scope: 0
+Entry 5 -- name: k, line: 8, scope: 0
+Entry 6 -- name: a, line: 23, scope: 1
+Entry 7 -- name: low, line: 23, scope: 1
+Entry 8 -- name: high, line: 23, scope: 1
+Entry 9 -- name: i, line: 24, scope: 1
+Entry 10 -- name: k, line: 25, scope: 1
+Entry 11 -- name: t, line: 26, scope: 1
+Entry 12 -- name: x, line: 39, scope: 2
+Entry 13 -- name: i, line: 40, scope: 2
+
+
+Functions table:
+Entry 0 -- name: minloc, line: 5, arity: 3
+Entry 1 -- name: sort, line: 23, arity: 3
+Entry 2 -- name: main, line: 38, arity: 0

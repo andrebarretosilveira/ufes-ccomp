@@ -1,0 +1,15 @@
+PARSE SUCCESSFUL!
+
+Literals table:
+Entry 0 -- "4 + 2 = "
+Entry 1 -- "\n"
+Entry 2 -- "5 - 2 = "
+Entry 3 -- "4 * 2 = "
+Entry 4 -- "4 / 2 = "
+
+
+Variables table:
+
+
+Functions table:
+Entry 0 -- name: main, line: 5, arity: 0
