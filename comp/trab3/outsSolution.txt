@@ -1,0 +1,34 @@
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!
+SCANNING ERROR (5): Unknown symbol _
+SCANNING ERROR (5): Unknown symbol .
+SCANNING ERROR (5): Unknown symbol #
+PARSE ERROR (6): syntax error, unexpected RBRACE
+PARSE ERROR (10): syntax error, unexpected $end
+PARSE ERROR (4): syntax error, unexpected NUM, expecting LPAREN
+SEMANTIC ERROR (6): variable 'x' already declared at line 4.
+PARSE SUCCESSFUL!
+SEMANTIC ERROR (4): variable 'x' already declared at line 3.
+SEMANTIC ERROR (7): function 'f' already declared at line 3.
+PARSE ERROR (3): syntax error, unexpected INPUT, expecting ID
+SEMANTIC ERROR (4): variable 'x' was not declared.
+SEMANTIC ERROR (5): variable 'y' was not declared.
+SEMANTIC ERROR (7): function 'factorial' was not declared.
+SEMANTIC ERROR (9): function 'sum' was called with 1 arguments but declared with 2 parameters.
+PARSE SUCCESSFUL!
+PARSE ERROR (6): syntax error, unexpected RPAREN
+PARSE ERROR (6): syntax error, unexpected ID, expecting STRING
+PARSE ERROR (4): syntax error, unexpected STRING, expecting NUM or ID or INPUT or LPAREN
+PARSE SUCCESSFUL!
+PARSE SUCCESSFUL!

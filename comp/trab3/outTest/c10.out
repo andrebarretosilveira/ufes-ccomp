@@ -1,15 +1,1 @@
 PARSE SUCCESSFUL!
-
-
-Literals table:
-
-
-Variables table:
-Entry 0 -- name: x, scope: 0, line: 6
-Entry 1 -- name: fact, scope: 0, line: 7
-
-
-Functions table:
-Entry 0 -- name: main, arity: 0, line: 5
-
-

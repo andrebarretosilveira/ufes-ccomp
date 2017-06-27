@@ -62,7 +62,7 @@ func_dcl:
 ;
 
 func_header:
-    ret_type ID { functext = strdup(idtext); } LPAREN params RPAREN { $2 = new_node(ID_NODE, new_func()); $$ = new_subtree(FUNC_HEADER_NODE, 3, $1, $2, $5); }
+    ret_type ID { functext = strdup(idtext); } LPAREN params RPAREN { $2 = new_node(ID_NODE, new_func()); free(functext); $$ = new_subtree(FUNC_HEADER_NODE, 3, $1, $2, $5); }
 ;
 
 func_body:
@@ -95,8 +95,8 @@ param_list:
 ;
 
 param:
-  INT ID { $$ = new_node(SVAR_NODE, new_var()); }
-| INT ID { $2 = new_node(CVAR_NODE, new_var()); } LBRACK RBRACK  { $$ = $2; }
+  INT ID { $$ = new_node(SVAR_NODE, new_var()); free(idtext); }
+| INT ID { $2 = new_node(CVAR_NODE, new_var()); free(idtext); } LBRACK RBRACK  { $$ = $2; }
 ;
 
 var_decl_list:
@@ -105,8 +105,8 @@ var_decl_list:
 ;
 
 var_decl:
-  INT ID { $2 = new_node(SVAR_NODE, new_var()); } SEMI  { $$ = $2; }
-| INT ID { $2 = new_node(CVAR_NODE, new_var()); } LBRACK NUM RBRACK SEMI { add_child($2, $5); $$ = $2; }
+  INT ID { $2 = new_node(SVAR_NODE, new_var()); free(idtext); } SEMI  { $$ = $2; }
+| INT ID { $2 = new_node(CVAR_NODE, new_var()); free(idtext); } LBRACK NUM RBRACK SEMI { add_child($2, $5); $$ = $2; }
 ;
 
 stmt_list:
@@ -131,9 +131,9 @@ assign_stmt:
 ;
 
 lval:
-  ID  { check_var(); $$ = new_node(SVAR_NODE, lookup_var(vt, idtext, curr_scope)); }
-| ID LBRACK NUM RBRACK     { check_var(); $1 = new_node(CVAR_NODE, lookup_var(vt, idtext, curr_scope)); add_child($1, $3); $$ = $1; }
-| ID LBRACK   { check_var(); $1 = new_node(CVAR_NODE, lookup_var(vt, idtext, curr_scope)); } ID { check_var(); $4 = new_node(SVAR_NODE, lookup_var(vt, idtext, curr_scope)); } RBRACK      { add_child($1, $4); $$ = $1; }
+  ID  { check_var(); $$ = new_node(SVAR_NODE, lookup_var(vt, idtext, curr_scope)); free(idtext); }
+| ID LBRACK NUM RBRACK     { check_var(); $1 = new_node(CVAR_NODE, lookup_var(vt, idtext, curr_scope)); free(idtext); add_child($1, $3); $$ = $1; }
+| ID LBRACK   { check_var(); $1 = new_node(CVAR_NODE, lookup_var(vt, idtext, curr_scope)); } ID { check_var(); $4 = new_node(SVAR_NODE, lookup_var(vt, idtext, curr_scope)); free(idtext); } RBRACK      { add_child($1, $4); $$ = $1; }
 ;
 
 if_stmt:
@@ -169,7 +169,7 @@ write_call:
 ;
 
 user_func_call:
-  ID { functext = strdup(idtext); } LPAREN opt_arg_list RPAREN    { check_func(); $$ = new_subtree(FUNC_CALL_NODE, 1, $4); }
+  ID { functext = strdup(idtext); free(idtext); } LPAREN opt_arg_list RPAREN    { check_func(); free(functext); $$ = new_subtree(FUNC_CALL_NODE, 1, $4); }
 ;
 
 opt_arg_list:
@@ -220,10 +220,10 @@ int main() {
         printf("PARSE SUCCESSFUL!\n");
     }
 
-    printf("\n\n");
-    print_lit_table(lt); printf("\n\n");
-    print_var_table(vt); printf("\n\n");
-    print_func_table(ft); printf("\n\n");
+    // printf("\n\n");
+    // print_lit_table(lt); printf("\n\n");
+    // print_var_table(vt); printf("\n\n");
+    // print_func_table(ft); printf("\n\n");
 
     // print_dot(ast);
 
@@ -250,8 +250,8 @@ void check_func() {
         exit(1);
     }
     if(func_arity != get_arity(ft, idx)) {
-        printf("SEMANTIC ERROR (XX): function ’%s’ was called with %d arguments but declared with %d parameters.\n",
-                functext, func_arity, get_arity(ft, idx));
+        printf("SEMANTIC ERROR (%d): function '%s' was called with %d arguments but declared with %d parameters.\n",
+                yylineno, functext, func_arity, get_arity(ft, idx));
         exit(1);
     }
 }
@@ -270,7 +270,7 @@ int new_func() {
     int idx = lookup_func(ft, functext);
     if (idx != -1) {
         printf("SEMANTIC ERROR (%d): function '%s' already declared at line %d.\n",
-                yylineno, idtext, get_line(ft, idx));
+                yylineno, functext, get_line(ft, idx));
         exit(1);
     }
     return add_func(ft, functext, func_arity, yylineno);

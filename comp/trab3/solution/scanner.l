@@ -78,6 +78,6 @@ number       [0-9]+
 
 // Error handling
 void scan_error(char const *s) {
-    printf("SCANNING ERROR (%d) : Unknown symbol %s\n", yylineno, s);
+    printf("SCANNING ERROR (%d): Unknown symbol %s\n", yylineno, s);
     exit(1);
 }
