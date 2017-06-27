@@ -37,17 +37,27 @@ void free_lit_table(LitTable* lt);
 struct sym_table;
 typedef struct sym_table SymTable;
 
+typedef enum id_type {
+    SVAR,
+    CVAR,
+    FUNC
+} IdType;
+
 
 SymTable* create_sym_table();
 int get_size(SymTable*);
-int add_var(SymTable*, char*, int);
-int lookup_var(SymTable*, char*);
-int add_or_look(SymTable*, char*, int);
+int add_var(SymTable*, char*, int, int);
+int add_func(SymTable*, char*, int, int);
+int lookup_var(SymTable*, char*, int);
+int lookup_func(SymTable*, char*);
 char* get_name(SymTable*, int);
 int get_line(SymTable*, int);
 int get_value(SymTable*, int);
-void set_value(SymTable*, int, int);
-void print_sym_table(SymTable*);
+int get_arity(SymTable*, int);
+void set_arity(SymTable*, int, int);
+char* type2str(IdType);
+void print_var_table(SymTable*);
+void print_func_table(SymTable*);
 void free_sym_table(SymTable*);
 
 #endif // TABLES_H

@@ -56,8 +56,9 @@ void free_lit_table(LitTable* lt) {
 
 typedef struct {
   char name[SYMBOL_MAX_SIZE];
+  int scope;
+  int arity;
   int line;
-  float value;
 } Entry;
 
 struct sym_table {
@@ -75,53 +76,84 @@ int get_size(SymTable* st) {
     return st->size;
 }
 
-int add_var(SymTable* st, char* s, int line) {
-    strcpy(st->t[st->size].name, s);
-    st->t[st->size].line = line;
-    st->t[st->size].value = 0;
-    int idx_added = st->size;
-    st->size++;
+int add_var(SymTable* vt, char* s, int scope, int line) {
+    strcpy(vt->t[vt->size].name, s);
+    vt->t[vt->size].scope = scope;
+    vt->t[vt->size].line = line;
+    int idx_added = vt->size;
+    vt->size++;
     return idx_added;
 }
 
-int lookup_var(SymTable* st, char* s) {
+int add_func(SymTable* ft, char* s, int arity, int line) {
+    strcpy(ft->t[ft->size].name, s);
+    ft->t[ft->size].arity = arity;
+    ft->t[ft->size].line = line;
+    int idx_added = ft->size;
+    ft->size++;
+    return idx_added;
+}
+
+int lookup_var(SymTable* st, char* s, int scope) {
     for (int i = 0; i < st->size; i++) {
-        if (strcmp(st->t[i].name, s) == 0)  {
+        if (strcmp(st->t[i].name, s) == 0 && st->t[i].scope == scope) {
             return i;
         }
     }
     return -1;
 }
 
-int add_or_look(SymTable* st, char* s, int line) {
-    int idx = lookup_var(st, s);
-    if(idx == -1)
-        return add_var(st, s, line);
-    else
-        return idx;
+int lookup_func(SymTable* st, char* s) {
+    for (int i = 0; i < st->size; i++) {
+        if (strcmp(st->t[i].name, s) == 0) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 char* get_name(SymTable* st, int i) {
     return st->t[i].name;
 }
 
+int get_scope(SymTable* st, int i) {
+    return st->t[i].scope;
+}
+
+int get_arity(SymTable* st, int i) {
+    return st->t[i].arity;
+}
+
 int get_line(SymTable* st, int i) {
     return st->t[i].line;
 }
 
-int get_value(SymTable* st, int i) {
-    return st->t[i].value;
+void set_arity(SymTable* st, int i, int arity) {
+    st->t[i].arity = arity;
 }
 
-void set_value(SymTable* st, int i, int value) {
-    st->t[i].value = value;
-}
-
-void print_sym_table(SymTable* st) {
-    fprintf(stderr, "Variables table:\n");
+void print_var_table(SymTable* st) {
+    printf("Variables table:\n");
     for (int i = 0; i < st->size; i++) {
-         fprintf(stderr, "Entry %d -- name: %s, value: %d, line: %d\n",
-                 i, get_name(st, i), get_value(st, i), get_line(st, i));
+         printf("Entry %d -- name: %s, scope: %d, line: %d\n",
+                 i, get_name(st, i), get_scope(st, i), get_line(st, i));
+    }
+}
+
+void print_func_table(SymTable* st) {
+    printf("Functions table:\n");
+    for (int i = 0; i < st->size; i++) {
+         printf("Entry %d -- name: %s, arity: %d, line: %d\n",
+                 i, get_name(st, i), get_arity(st, i), get_line(st, i));
+    }
+}
+
+char* type2str(IdType type) {
+    switch(type) {
+        case SVAR: return "SVAR";
+        case CVAR: return "CVAR";
+        case FUNC: return "FUNC";
+        default: return "wtf";
     }
 }
 

@@ -13,19 +13,28 @@
 #include "ast.h"
 #include "parser.h"
 #include "tables.h"
+#include "string.h"
 
 int yylex(void);
 void yyerror(char const *s);
 void check_var();
-void new_var();
+void check_func();
+int new_var();
+int new_func();
 
 extern char *yytext;
 extern int yylineno;
 
-LitTable *lt;
-SymTable *st;
+char *idtext;
+char *functext;
+int func_arity;
+int curr_scope;
 
+LitTable *lt;
+SymTable *vt;
+SymTable *ft;
 AST *ast;
+
 %}
 
 %define api.value.type {AST*} // Type of variable yylval;
@@ -49,11 +58,11 @@ func_dcl_list:
 ;
 
 func_dcl:
-  func_header func_body   { $$ = new_subtree(FUNC_DCL_NODE, 2, $1, $2); }
+  func_header func_body   { $$ = new_subtree(FUNC_DCL_NODE, 2, $1, $2); curr_scope++; }
 ;
 
 func_header:
-  ret_type ID LPAREN params RPAREN  { $$ = new_subtree(FUNC_HEADER_NODE, 3, $1, $2, $4); }
+    ret_type ID { functext = strdup(idtext); } LPAREN params RPAREN { $2 = new_node(ID_NODE, new_func()); $$ = new_subtree(FUNC_HEADER_NODE, 3, $1, $2, $5); }
 ;
 
 func_body:
@@ -66,8 +75,8 @@ opt_var_decl:
 ;
 
 opt_stmt_list:
-  /* epsilon */
-| stmt_list     { $$ = $1; }
+  /* epsilon */     { $$ = new_node(BLOCK_NODE, 0); }
+| stmt_list         { $$ = $1; }
 ;
 
 ret_type:
@@ -76,18 +85,18 @@ ret_type:
 ;
 
 params:
-  VOID          { $$ = new_node(PARAM_LIST_NODE, 0); }
+  VOID          { func_arity = 0; $$ = new_node(PARAM_LIST_NODE, 0); }
 | param_list    { $$ = $1; }
 ;
 
 param_list:
-  param_list COMMA param    { add_child($1, $3); $$ = $1; }
-| param                     { $$ = new_subtree(PARAM_LIST_NODE, 1, $1); }
+  param_list COMMA param    { func_arity++; add_child($1, $3); $$ = $1; }
+| param                     { func_arity = 1; $$ = new_subtree(PARAM_LIST_NODE, 1, $1); }
 ;
 
 param:
-  INT ID                { $$ = $2; }
-| INT ID LBRACK RBRACK  { $$ = $2; }
+  INT ID { $$ = new_node(SVAR_NODE, new_var()); }
+| INT ID { $2 = new_node(CVAR_NODE, new_var()); } LBRACK RBRACK  { $$ = $2; }
 ;
 
 var_decl_list:
@@ -96,8 +105,8 @@ var_decl_list:
 ;
 
 var_decl:
-  INT ID SEMI                       { $$ = $2; }
-| INT ID LBRACK NUM RBRACK SEMI     { add_child($2, $4); $$ = $1; }
+  INT ID { $2 = new_node(SVAR_NODE, new_var()); } SEMI  { $$ = $2; }
+| INT ID { $2 = new_node(CVAR_NODE, new_var()); } LBRACK NUM RBRACK SEMI { add_child($2, $5); $$ = $2; }
 ;
 
 stmt_list:
@@ -106,7 +115,7 @@ stmt_list:
 ;
 
 block:
-  LBRACE opt_stmt_list RBRACE   { $$ = new_subtree(BLOCK_NODE, 1, $2); }
+  LBRACE opt_stmt_list RBRACE   { $$ = $2; }
 ;
 
 stmt:
@@ -122,9 +131,9 @@ assign_stmt:
 ;
 
 lval:
-  ID                       { $$ = $1; }
-| ID LBRACK NUM RBRACK     { add_child($1, $3); $$ = $1; }
-| ID LBRACK ID RBRACK      { add_child($1, $3); $$ = $1; }
+  ID  { check_var(); $$ = new_node(SVAR_NODE, lookup_var(vt, idtext, curr_scope)); }
+| ID LBRACK NUM RBRACK     { check_var(); $1 = new_node(CVAR_NODE, lookup_var(vt, idtext, curr_scope)); add_child($1, $3); $$ = $1; }
+| ID LBRACK   { check_var(); $1 = new_node(CVAR_NODE, lookup_var(vt, idtext, curr_scope)); } ID { check_var(); $4 = new_node(SVAR_NODE, lookup_var(vt, idtext, curr_scope)); } RBRACK      { add_child($1, $4); $$ = $1; }
 ;
 
 if_stmt:
@@ -160,17 +169,17 @@ write_call:
 ;
 
 user_func_call:
-  ID { check_var(); } LPAREN opt_arg_list RPAREN    { $$ = new_subtree(FUNC_CALL_NODE, 2, $1, $4); }
+  ID { functext = strdup(idtext); } LPAREN opt_arg_list RPAREN    { check_func(); $$ = new_subtree(FUNC_CALL_NODE, 1, $4); }
 ;
 
 opt_arg_list:
-  /*epsilon*/
+  /*epsilon*/   { func_arity = 0; $$ = new_node(ARG_LIST_NODE, 0); }
 | arg_list      { $$ = $1; }
 ;
 
 arg_list:
-  arg_list COMMA arith_expr { add_child($1, $3); $$ = $1; }
-| arith_expr                { $$ = new_subtree(ARG_LIST_NODE, 1, $1); }
+  arg_list COMMA arith_expr { func_arity++; add_child($1, $3); $$ = $1; }
+| arith_expr                { func_arity = 1; $$ = new_subtree(ARG_LIST_NODE, 1, $1); }
 ;
 
 bool_expr:
@@ -201,45 +210,74 @@ int main() {
     yydebug = 0; // Toggle this variable to enter debug mode.
 
     // Initialization of tables before parsing.
-    lt = create_lit_table();
-    st = create_sym_table();
+    lt = create_lit_table();  // Literals table
+    vt = create_sym_table();  // Variables table
+    ft = create_sym_table();  // Functions table
+
+    curr_scope = 0;
 
     if(!yyparse()) {
-        //printf("PARSE SUCCESSFUL!\n");
+        printf("PARSE SUCCESSFUL!\n");
     }
 
-    //printf("\n\n");
-    //print_lit_table(lt); printf("\n\n");
-    //print_sym_table(st); printf("\n\n");
+    printf("\n\n");
+    print_lit_table(lt); printf("\n\n");
+    print_var_table(vt); printf("\n\n");
+    print_func_table(ft); printf("\n\n");
 
-    print_dot(ast);
+    // print_dot(ast);
 
     free_lit_table(lt);
-    free_sym_table(st);
+    free_sym_table(vt);
 
     return 0;
 }
 
-void check_var(int i) {
-    int idx = lookup_var(st, yytext);
+void check_var() {
+    int idx = lookup_var(vt, idtext, curr_scope);
     if (idx == -1) {
         printf("SEMANTIC ERROR (%d): variable '%s' was not declared.\n",
-                yylineno, yytext);
+                yylineno, idtext);
         exit(1);
     }
 }
 
-void new_var() {
-    int idx = lookup_var(st, yytext);
-    if (idx != -1) {
-        printf("SEMANTIC ERROR (%d): variable '%s' already declared at line %d.\n",
-                yylineno, yytext, get_line(st, idx));
+void check_func() {
+    int idx = lookup_func(ft, functext);
+    if (idx == -1) {
+        printf("SEMANTIC ERROR (%d): function '%s' was not declared.\n",
+                yylineno, functext);
         exit(1);
     }
-    add_var(st, yytext, yylineno);
+    if(func_arity != get_arity(ft, idx)) {
+        printf("SEMANTIC ERROR (XX): function ’%s’ was called with %d arguments but declared with %d parameters.\n",
+                functext, func_arity, get_arity(ft, idx));
+        exit(1);
+    }
+}
+
+int new_var() {
+    int idx = lookup_var(vt, idtext, curr_scope);
+    if (idx != -1) {
+        printf("SEMANTIC ERROR (%d): variable '%s' already declared at line %d.\n",
+                yylineno, idtext, get_line(vt, idx));
+        exit(1);
+    }
+    return add_var(vt, idtext, curr_scope, yylineno);
+}
+
+int new_func() {
+    int idx = lookup_func(ft, functext);
+    if (idx != -1) {
+        printf("SEMANTIC ERROR (%d): function '%s' already declared at line %d.\n",
+                yylineno, idtext, get_line(ft, idx));
+        exit(1);
+    }
+    return add_func(ft, functext, func_arity, yylineno);
 }
 
 // Error handling.
 void yyerror (char const *s) {
     printf("PARSE ERROR (%d): %s\n", yylineno, s);
+    exit(1);
 }

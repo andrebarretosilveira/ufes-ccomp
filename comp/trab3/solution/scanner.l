@@ -9,11 +9,14 @@
 #include "ast.h"
 #include "parser.h"
 #include "tables.h"
+#include "string.h"
 
 void scan_error(char const *);
 
 extern SymTable *st;
 extern LitTable *lt;
+
+extern char *idtext;
 %}
 
 %x MLC
@@ -65,8 +68,8 @@ number       [0-9]+
 ","         { return COMMA; }
 "="         { return ASSIGN; }
 
+{id}        { idtext = strdup(yytext); return ID;  }
 {string}    { yylval = new_node(STRING_NODE, add_literal(lt, yytext)); return STRING; }
-{id}        { yylval = new_node(ID_NODE, add_or_look(st, yytext, yylineno)); return ID; }
 {number}    { yylval = new_node(NUM_NODE, atoi(yytext)); return NUM; }
 
 .           { scan_error(yytext); }

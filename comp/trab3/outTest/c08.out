@@ -1,0 +1,17 @@
+PARSE SUCCESSFUL!
+
+
+Literals table:
+Entry 0 -- "Adult\n"
+Entry 1 -- "Elder\n"
+Entry 2 -- "Minor\n"
+
+
+Variables table:
+Entry 0 -- name: age, scope: 0, line: 8
+
+
+Functions table:
+Entry 0 -- name: main, arity: 0, line: 7
+
+

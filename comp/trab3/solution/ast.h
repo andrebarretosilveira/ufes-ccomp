@@ -33,8 +33,10 @@ typedef enum {
     NEQ_NODE,
 
     NUM_NODE,
-    ID_NODE,
     STRING_NODE,
+    ID_NODE,
+    SVAR_NODE,
+    CVAR_NODE,
 
     INT_NODE,
     VOID_NODE

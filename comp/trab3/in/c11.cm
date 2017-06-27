@@ -7,5 +7,6 @@ int sum(int x, int y) {
 }
 
 void main(void) {
+    int x;
     output(sum(3, 2));
 }
