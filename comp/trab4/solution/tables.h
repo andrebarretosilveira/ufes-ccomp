@@ -48,7 +48,7 @@ typedef enum id_type {
 
 SymTable* create_sym_table();
 int get_size(SymTable*);
-int add_var(SymTable*, char*, int, int);
+int add_var(SymTable*, char*, int, int, int);
 int add_func(SymTable*, char*, int, int);
 int lookup_var(SymTable*, char*, int);
 int lookup_func(SymTable*, char*);
@@ -56,6 +56,7 @@ char* get_name(SymTable*, int);
 int get_line(SymTable*, int);
 int get_value(SymTable*, int);
 int get_arity(SymTable*, int);
+int get_iscvar(SymTable* st, int i);
 AST* get_func_ptr(SymTable*, int);
 void set_arity(SymTable*, int, int);
 void set_func_ptr(SymTable*, int, AST*);

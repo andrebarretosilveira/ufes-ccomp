@@ -20,7 +20,7 @@ int yylex(void);
 void yyerror(char const *s);
 void check_var();
 void check_func();
-int new_var();
+int new_var(int is_cvar);
 int new_func();
 
 extern char *yytext;
@@ -96,8 +96,8 @@ param_list:
 ;
 
 param:
-  INT ID { $$ = new_node(SVAR_NODE, new_var()); free(idtext); }
-| INT ID { $2 = new_node(CVAR_NODE, new_var()); free(idtext); } LBRACK RBRACK  { $$ = $2; }
+  INT ID { $$ = new_node(SVAR_NODE, new_var(0)); free(idtext); }
+| INT ID { $2 = new_node(CVAR_NODE, new_var(1)); free(idtext); } LBRACK RBRACK  { $$ = $2; }
 ;
 
 var_decl_list:
@@ -106,8 +106,8 @@ var_decl_list:
 ;
 
 var_decl:
-  INT ID { $2 = new_node(SVAR_NODE, new_var()); free(idtext); } SEMI  { $$ = $2; }
-| INT ID { $2 = new_node(CVAR_NODE, new_var()); free(idtext); } LBRACK NUM RBRACK SEMI { add_child($2, $5); $$ = $2; }
+  INT ID { $2 = new_node(SVAR_NODE, new_var(0)); free(idtext); } SEMI  { $$ = $2; }
+| INT ID { $2 = new_node(CVAR_NODE, new_var(1)); free(idtext); } LBRACK NUM RBRACK SEMI { add_child($2, $5); $$ = $2; }
 ;
 
 stmt_list:
@@ -170,7 +170,7 @@ write_call:
 ;
 
 user_func_call:
-  ID { functext = strdup(idtext); free(idtext); } LPAREN opt_arg_list RPAREN    { check_func(); free(functext); $$ = new_subtree(FUNC_CALL_NODE, 1, $4); }
+  ID { functext = strdup(idtext); free(idtext); } LPAREN opt_arg_list RPAREN    { check_func(); $$ = new_subtree(FUNC_CALL_NODE, 1, $4); set_data($$, lookup_func(ft, functext)); free(functext); }
 ;
 
 opt_arg_list:
@@ -260,14 +260,14 @@ void check_func() {
     }
 }
 
-int new_var() {
+int new_var(int is_cvar) {
     int idx = lookup_var(vt, idtext, curr_scope);
     if (idx != -1) {
         printf("SEMANTIC ERROR (%d): variable '%s' already declared at line %d.\n",
                 yylineno, idtext, get_line(vt, idx));
         exit(1);
     }
-    return add_var(vt, idtext, curr_scope, yylineno);
+    return add_var(vt, idtext, curr_scope, yylineno, is_cvar);
 }
 
 int new_func() {

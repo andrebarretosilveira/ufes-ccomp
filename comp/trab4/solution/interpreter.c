@@ -42,21 +42,34 @@ void print_stack() {
 
 // Variables memory -----------------------------------------------------------
 
-#define MEM_SIZE 100
+#define MEM_SIZE  20
+#define CVAR_SIZE 20
 
-int mem[MEM_SIZE];
+int mem[MEM_SIZE][CVAR_SIZE];
 
-void store(int addr, int val) {
-    mem[addr] = val;
+void print_mem() {
+    for (int addr = 0; addr < MEM_SIZE; addr++) {
+        for (int offset = 0; offset < CVAR_SIZE; offset++) {
+            printf("%d, ", mem[addr][offset]);
+        }
+        printf("\n");
+    }
 }
 
-int load(int addr) {
-    return mem[addr];
+void store(int addr, int offset, int val) {
+    mem[addr][offset] = val;
+    //print_mem();
+}
+
+int load(int addr, int offset) {
+    return mem[addr][offset];
 }
 
 void init_mem() {
     for (int addr = 0; addr < MEM_SIZE; addr++) {
-        mem[addr] = 0;
+        for (int offset = 0; offset < CVAR_SIZE; offset++) {
+            mem[addr][offset] = 0;
+        }
     }
 }
 
@@ -91,8 +104,7 @@ void run_func_list(AST *ast) {
     for (int i = 0; i < size-1; i++) {
         // setting funcion AST ptrs in function table
         AST* func_ptr = get_child(ast, i);
-        int func_idx = get_data(func_ptr);
-        set_func_ptr(ft, func_idx, func_ptr);
+        set_func_ptr(ft, i, func_ptr);
     }
 
     rec_run_ast(get_child(ast, size-1)); // run main func
@@ -121,8 +133,12 @@ void run_param_list(AST *ast) {
     int size = get_child_count(ast);
     for (int i = 0; i < size; i++) {
         AST* child = get_child(ast, i);
+        if(child == NULL) exit(1);
         int var_idx = get_data(child);
-        store(var_idx, pop());
+        if(get_kind(child) == CVAR_NODE) {
+            store(var_idx, CVAR_SIZE-1, 1);
+        }
+        store(var_idx, 0, pop());
     }
 }
 
@@ -188,9 +204,26 @@ void run_while(AST *ast) {
 void run_assign(AST *ast) {
     trace("assign");
     rec_run_ast(get_child(ast, 1)); // run right child
-    AST *child = get_child(ast, 0);
-    int var_idx = get_data(child);
-    store(var_idx, pop());
+    AST *left = get_child(ast, 0);
+    int var_idx = get_data(left);
+    int var_type = get_kind(left);
+
+    if(var_type == SVAR_NODE) {
+        store(var_idx, 0, pop());
+    } else if(var_type == CVAR_NODE) {
+        int offset = get_data(get_child(left, 0));
+
+        //rec_run_ast(get_child(left, 0)); // get offset
+        //int offset = pop();
+
+        if(load(var_idx, CVAR_SIZE-1) == 1) {    // reference
+            int addr = load(var_idx, 0);
+            store(addr, offset, pop());
+        }
+        else { // not reference
+            store(var_idx, offset, pop());
+        }
+    }
 }
 
 void run_input(AST *ast) {
@@ -291,19 +324,38 @@ void run_num(AST *ast) {
 void run_id(AST *ast) {
     trace("id");
     int var_idx = get_data(ast);
-    push(load(var_idx));
+    push(load(var_idx, 0));
 }
 
 void run_svar(AST *ast) {
-    trace("id");
+    trace("svar");
     int var_idx = get_data(ast);
-    push(load(var_idx));
+
+    if(load(var_idx, CVAR_SIZE-1) == 1) {    // reference
+        int addr = load(var_idx, 0);
+        push(load(addr, 0));
+    } else { // not reference
+        if(get_iscvar(vt, var_idx) == 1) { // is actually cvar
+            push(var_idx);
+        }
+        else { // is really svar
+            push(load(var_idx, 0));
+        }
+    }
+
 }
 
 void run_cvar(AST *ast) {
-    trace("id");
+    trace("cvar");
     int var_idx = get_data(ast);
-    push(load(var_idx));
+    int offset = get_data(get_child(ast, 0));
+    if(load(var_idx, CVAR_SIZE-1) == 1) {    // reference
+        int addr = load(var_idx, 0);
+        //printf("addr = %d\n", addr);
+        push(load(addr, offset));
+    } else { // not reference
+        push(load(var_idx, offset));
+    }
 }
 
 void rec_run_ast(AST *ast) {

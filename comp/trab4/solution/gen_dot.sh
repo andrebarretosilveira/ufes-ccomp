@@ -4,7 +4,7 @@ DATA=/home/dellief/ufes-ccomp/comp/trab4
 IN=$DATA/in
 OUT=$DATA/outSolution
 
-EXE=./trab3
+EXE=./trab4
 
 for infile in `ls $IN/*.cm`; do
     base=$(basename $infile)

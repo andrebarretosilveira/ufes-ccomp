@@ -169,7 +169,8 @@ write_call:
 ;
 
 user_func_call:
-  ID { functext = strdup(idtext); free(idtext); } LPAREN opt_arg_list RPAREN    { check_func(); free(functext); $$ = new_subtree(FUNC_CALL_NODE, 1, $4); }
+  //ID { functext = strdup(idtext); free(idtext); } LPAREN opt_arg_list RPAREN    { check_func(); free(functext); $$ = new_subtree(FUNC_CALL_NODE, 1, $4); }
+  ID { functext = strdup(idtext); free(idtext); } LPAREN opt_arg_list RPAREN    { check_func(); $$ = new_subtree(FUNC_CALL_NODE, 1, $4); set_data($$, lookup_func(ft, functext)); free(functext); }
 ;
 
 opt_arg_list:
@@ -217,7 +218,7 @@ int main() {
     curr_scope = 0;
 
     if(!yyparse()) {
-        printf("PARSE SUCCESSFUL!\n");
+        //printf("PARSE SUCCESSFUL!\n");
     }
 
     // printf("\n\n");
@@ -225,7 +226,7 @@ int main() {
     // print_var_table(vt); printf("\n\n");
     // print_func_table(ft); printf("\n\n");
 
-    // print_dot(ast);
+    print_dot(ast);
 
     free_lit_table(lt);
     free_sym_table(vt);

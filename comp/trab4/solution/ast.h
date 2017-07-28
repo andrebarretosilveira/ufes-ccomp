@@ -56,6 +56,7 @@ AST* new_subtree(NodeKind kind, int child_count, ...);
 NodeKind get_kind(AST *node);
 char* kind2str(NodeKind kind);
 int get_data(AST *node);
+void set_data(AST *node, int data);
 int get_child_count(AST *node);
 
 void print_tree(AST *ast);

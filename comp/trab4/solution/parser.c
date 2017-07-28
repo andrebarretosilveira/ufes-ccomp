@@ -76,7 +76,7 @@ int yylex(void);
 void yyerror(char const *s);
 void check_var();
 void check_func();
-int new_var();
+int new_var(int is_cvar);
 int new_func();
 
 extern char *yytext;
@@ -1684,13 +1684,13 @@ yyreduce:
 
   case 19:
 #line 99 "parser.y" /* yacc.c:1646  */
-    { (yyval) = new_node(SVAR_NODE, new_var()); free(idtext); }
+    { (yyval) = new_node(SVAR_NODE, new_var(0)); free(idtext); }
 #line 1689 "parser.c" /* yacc.c:1646  */
     break;
 
   case 20:
 #line 100 "parser.y" /* yacc.c:1646  */
-    { (yyvsp[0]) = new_node(CVAR_NODE, new_var()); free(idtext); }
+    { (yyvsp[0]) = new_node(CVAR_NODE, new_var(1)); free(idtext); }
 #line 1695 "parser.c" /* yacc.c:1646  */
     break;
 
@@ -1714,7 +1714,7 @@ yyreduce:
 
   case 24:
 #line 109 "parser.y" /* yacc.c:1646  */
-    { (yyvsp[0]) = new_node(SVAR_NODE, new_var()); free(idtext); }
+    { (yyvsp[0]) = new_node(SVAR_NODE, new_var(0)); free(idtext); }
 #line 1719 "parser.c" /* yacc.c:1646  */
     break;
 
@@ -1726,7 +1726,7 @@ yyreduce:
 
   case 26:
 #line 110 "parser.y" /* yacc.c:1646  */
-    { (yyvsp[0]) = new_node(CVAR_NODE, new_var()); free(idtext); }
+    { (yyvsp[0]) = new_node(CVAR_NODE, new_var(1)); free(idtext); }
 #line 1731 "parser.c" /* yacc.c:1646  */
     break;
 
@@ -1894,7 +1894,7 @@ yyreduce:
 
   case 54:
 #line 173 "parser.y" /* yacc.c:1646  */
-    { check_func(); free(functext); (yyval) = new_subtree(FUNC_CALL_NODE, 1, (yyvsp[-1])); }
+    { check_func(); (yyval) = new_subtree(FUNC_CALL_NODE, 1, (yyvsp[-1])); set_data((yyval), lookup_func(ft, functext)); free(functext); }
 #line 1899 "parser.c" /* yacc.c:1646  */
     break;
 
@@ -2309,14 +2309,14 @@ void check_func() {
     }
 }
 
-int new_var() {
+int new_var(int is_cvar) {
     int idx = lookup_var(vt, idtext, curr_scope);
     if (idx != -1) {
         printf("SEMANTIC ERROR (%d): variable '%s' already declared at line %d.\n",
                 yylineno, idtext, get_line(vt, idx));
         exit(1);
     }
-    return add_var(vt, idtext, curr_scope, yylineno);
+    return add_var(vt, idtext, curr_scope, yylineno, is_cvar);
 }
 
 int new_func() {

@@ -36,19 +36,19 @@ void sort(int a[], int low, int high) {
 }
 
 void main(void) {
-    int x[10];
+    int x[2];
     int i;
 
     i = 0;
-    while (i < 10) {
+    while (i < 2) {
         x[i] = input();
         i = i + 1;
     }
 
-    sort(x, 0, 10);
+    sort(x, 0, 2);
     i = 0;
     write("Sorted array: ");
-    while (i < 10) {
+    while (i < 2) {
         output(x[i]);
         write(" ");
         i = i + 1;

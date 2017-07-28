@@ -62,6 +62,10 @@ int get_data(AST *node) {
     return node->data;
 }
 
+void set_data(AST *node, int data) {
+    node->data = data;
+}
+
 int get_child_count(AST *node) {
     return node->count;
 }

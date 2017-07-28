@@ -59,6 +59,7 @@ typedef struct {
   int scope;
   int arity;
   int line;
+  int is_cvar;
   AST* ptr;
 } Entry;
 
@@ -77,11 +78,12 @@ int get_size(SymTable* st) {
     return st->size;
 }
 
-int add_var(SymTable* vt, char* s, int scope, int line) {
+int add_var(SymTable* vt, char* s, int scope, int line, int is_cvar) {
     strcpy(vt->t[vt->size].name, s);
     vt->t[vt->size].scope = scope;
     vt->t[vt->size].line = line;
     vt->t[vt->size].ptr = NULL;
+    vt->t[vt->size].is_cvar = is_cvar;
     int idx_added = vt->size;
     vt->size++;
     return idx_added;
@@ -129,6 +131,10 @@ int get_arity(SymTable* st, int i) {
 
 int get_line(SymTable* st, int i) {
     return st->t[i].line;
+}
+
+int get_iscvar(SymTable* st, int i) {
+    return st->t[i].is_cvar;
 }
 
 AST* get_func_ptr(SymTable* st, int i) {

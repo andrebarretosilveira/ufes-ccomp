@@ -1,0 +1,31 @@
+/* Sample program in C-Minus language.
+ * Sorting of an array using selection sort.
+**/
+
+void sort(int a[]) {
+    int tmp;
+
+    output(a[0]);
+    output(a[1]);
+
+    tmp = a[0];
+    a[0] = a[1];
+    a[1] = tmp;
+
+    output(a[0]);
+    output(a[1]);
+}
+
+void main(void) {
+    int x[2];
+
+    x[0] = 999;
+    x[1] = 444;
+
+    sort(x);
+    
+    output(x[0]);
+    output(x[1]);
+
+    write("\n");
+}
