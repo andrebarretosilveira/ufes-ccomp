@@ -1,7 +1,5 @@
 
-#include <stdlib.h>
 #include "input.h"
-#include "tinyxml2.h"
 
 using namespace tinyxml2;
 
@@ -32,7 +30,7 @@ Config* read_config_file(char* path) {
 
     // Storing configuration info in the config structure
     // Window
-    config->window->title = window_title;
+    config->window->title = strdup(window_title);
     config->window->width = strtol(window_width, NULL, 10);
     config->window->height = strtol(window_height, NULL, 10);
     config->window->color_R = window_color_R;
@@ -59,16 +57,18 @@ Config* init_config() {
 
 void print_config(Config* config) {
     printf("\nWindow configuration:\n");
-    printf("  Title: %s\n", config->window->title );
-    printf("  Width: %d\n", config->window->width );
-    printf("  Height: %d\n", config->window->height );
-    printf("  Color_R: %d\n", config->window->color_R );
-    printf("  Color_G: %d\n", config->window->color_G );
-	printf("  Color_B: %d\n", config->window->color_B );
+    printf(" Title: %s\n", config->window->title );
+    printf(" Width: %d\n", config->window->width );
+    printf(" Height: %d\n", config->window->height );
+    printf(" Color_R: %d\n", config->window->color_R );
+    printf(" Color_G: %d\n", config->window->color_G );
+	printf(" Color_B: %d\n", config->window->color_B );
 
     printf("\nCircle configuration:\n");
-    printf("  Radius: %d\n", config->circle->radius );
-    printf("  Color_R: %d\n", config->circle->color_R );
-    printf("  Color_G: %d\n", config->circle->color_G );
-	printf("  Color_B: %d\n", config->circle->color_B );
+    printf(" Radius: %d\n", config->circle->radius );
+    printf(" Color_R: %d\n", config->circle->color_R );
+    printf(" Color_G: %d\n", config->circle->color_G );
+	printf(" Color_B: %d\n", config->circle->color_B );
+
+    printf("\n");
 }
