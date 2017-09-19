@@ -7,24 +7,17 @@
 #include <stdlib.h>
 #include "tinyxml2.h"
 
-typedef struct windowconfig {
-    char* title;
-    int width, height;
-    int color_R, color_G, color_B;
-} WindowConfig;
-
-typedef struct circleconfig {
-    int radius;
-    int x, y;
-    int color_R, color_G, color_B;
-} CircleConfig;
-
 typedef struct config {
-    WindowConfig* window;
-    CircleConfig* circle;
+    char* window_title;
+    int window_width, window_height;
+    int window_R, window_G, window_B;
+
+    int circle_radius;
+    int circle_x, circle_y;
+    int circle_R, circle_G, circle_B;
 } Config;
 
-Config* read_config_file(char* path);
+Config* read_config_file(char* filepath);
 
 Config* init_config();
 

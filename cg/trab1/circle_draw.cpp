@@ -1,113 +1,123 @@
 
 #include "circle_draw.h"
 
-WindowConfig* window;
-CircleConfig* circle;
+#define distance_2pts(x1,y1,x2,y2) (sqrt(pow(x2-x1, 2) + (pow(y2-y1, 2))))
+
+Config* config;
+Circle* circle;
 
 int key_flags[256];
-int can_draw;
-int resize;
+int resize_state;
+int move_state;
+int offsetX, offsetY;
 float previous_distance;
 
-#define distance_2pts(x1,y1,x2,y2) (sqrt(pow(x2-x1, 2) + (pow(y2-y1, 2))))
+int limit_between(int value, int li, int ls) {
+    if(value < li) return li;
+    else if(value > ls) return ls;
+    else return value;
+}
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if(can_draw) {
-        draw_circle(circle->x, circle->y, circle->radius);
+    if(circle != NULL) {
+        circle->draw();
     }
 
     glutSwapBuffers();
 }
 
-void draw_circle(GLfloat x, GLfloat y, GLfloat radius)
-{
-    int i;
-    int triangleAmount = 100;
-    GLfloat twicePi = 2.0f * M_PI;
+// void draw_circle(GLfloat x, GLfloat y, GLfloat radius)
+// {
+//     int i;
+//     int triangleAmount = 1000;
+//     GLfloat twicePi = 2.0f * M_PI;
 
-    glEnable(GL_LINE_SMOOTH);
-    glLineWidth(5.0);
+//     glEnable(GL_LINE_SMOOTH);
+//     glLineWidth(5.0);
 
-    glBegin(GL_LINES);
-        glColor3f(circle->color_R, circle->color_G, circle->color_B);
-        for(i = 0; i <= triangleAmount; i++)
-        {
-            glVertex2f(x, y);
-            glVertex2f(x + (radius * cos(i * twicePi / triangleAmount)), y + (radius * sin(i * twicePi / triangleAmount)));
-        }
-    glEnd();
-}
+//     glBegin(GL_LINES);
+//         glColor3f(circle->color_R, circle->color_G, circle->color_B);
+//         for(i = 0; i <= triangleAmount; i++)
+//         {
+//             glVertex2f(x, y);
+//             glVertex2f(x + (radius * cos(i * twicePi / triangleAmount)), y + (radius * sin(i * twicePi / triangleAmount)));
+//         }
+//     glEnd();
+// }
 
 void init(void) {
-    glClearColor(window->color_R, window->color_G, window->color_B, 0.0);
+    glClearColor(config->window_R, config->window_G, config->window_B, 0.0);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, window->width, 0, window->height, -1.0, 1.0);
+    glOrtho(0, config->window_width, 0, config->window_height, -1.0, 1.0);
 }
 
-void keyPress(unsigned char key, int x, int y) {
-    key_flags[key] = 1;
+// void keyPress(unsigned char key, int x, int y) {
+//     key_flags[key] = 1;
+// }
 
-    //glutPostRedisplay();
-}
-
-void keyRelease(unsigned char key, int x, int y) {
-    key_flags[key] = 0;
-
-    //glutPostRedisplay();
-}
+// void keyRelease(unsigned char key, int x, int y) {
+//     key_flags[key] = 0;
+// }
 
 void mouse(int button, int state, int x, int y) {
     int newX = x;
-    int newY =  window->height - y;
+    int newY = config->window_height - y;
 
-    // Check if left mouse button clicked
-    if(button == GLUT_LEFT_BUTTON && state) {
-        // Check if circle is already drawn
-        if(!can_draw) {
-            circle->x = newX;
-            circle->y = newY;
-            can_draw = true;
+    // Check if left mouse button was clicked
+    if(button == GLUT_LEFT_BUTTON) {
+        if(state == false) { // Mouse Button Down
+            // Check if circle is not already drawn
+            if(circle == NULL) {
+                circle = new Circle(config->circle_radius, newX, newY,
+                    config->circle_R, config->circle_G, config->circle_B);
+            }
+            else if(circle->isInside(newX, newY)) {
+                offsetX = newX - circle->getX();
+                offsetY = newY - circle->getY();
+                move_state = true;
+            }
+        }
+        else { // Mouse Button Up
+            move_state = false;
         }
     }
+    // Check if right mouse button was clicked
     else if(button == GLUT_RIGHT_BUTTON) {
-        resize = !state;
-        previous_distance = distance_2pts(newX, newY, circle->x, circle->y);
-        printf("Resize: %d, radius: %d\n", resize, circle->radius);
+        if(circle && circle->isInside(newX, newY)) {
+            resize_state = !state;
+            previous_distance = distance_2pts(newX, newY, circle->getX(), circle->getY());
+        }
+        else {
+            resize_state = false;
+        }
     }
 }
 
 void motion(int x, int y) {
     int newX = x;
-    int newY =  window->height - y;
+    int newY = config->window_height - y;
 
-    //printf("Motion: %d %d %d %d %f %d\n", newX, newY, circle->x, circle->y, distance_2pts(newX, newY, circle->x, circle->y), circle->radius);
+    // RESIZE state
+    if(resize_state) {
+        float current_distance = distance_2pts(newX, newY, circle->getX(), circle->getY());
 
-    // Check if mouse is inside circle
-    if(distance_2pts(newX, newY, circle->x, circle->y) < circle->radius) {
-        // RESIZE condition
-        if(resize) {
-            float current_distance = distance_2pts(newX, newY, circle->x, circle->y);
+        //circle->radius += current_distance - previous_distance;
+        circle->setRadius(circle->getRadius() + current_distance - previous_distance);
 
-            circle->radius += current_distance - previous_distance;
-
-            if(circle->radius < 50) {
-                circle->radius = 50;
-            }
-
-            previous_distance = current_distance;
-        }
-        // MOVE condition
-        else {
-            //int offsetX = newX + circle->x;
-            //int offsetY = newY + circle->y;
-            circle->x = newX;
-            circle->y = newY;
+        if(circle->getRadius() < 30) {
+            circle->setRadius(30);
         }
 
+        previous_distance = current_distance;
+    }
+    // MOVE state
+    else if(move_state) {        
+        circle->setX(limit_between(newX - offsetX, 0, config->window_width));
+        circle->setY(limit_between(newY - offsetY, 0, config->window_height));
     }
 }
 
@@ -128,21 +138,21 @@ void idle() {
     glutPostRedisplay();
 }
 
-void draw_output(int argc, char** argv, Config* config) {
-    window = config->window;
-    circle = config->circle;
-    can_draw = false;
-    resize = false;
+void draw_output(int argc, char** argv, Config* config_input) {
+    config = config_input;
+    circle = NULL;
+    resize_state = false;
+    move_state = false;
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize(window->width, window->height);
+    glutInitWindowSize(config->window_width, config->window_height);
     glutInitWindowPosition(200, 200);
-    glutCreateWindow(window->title);
+    glutCreateWindow(config->window_title);
     init();
     glutDisplayFunc(display);
-    glutKeyboardFunc(keyPress);
-    glutKeyboardUpFunc(keyRelease);
+    // glutKeyboardFunc(keyPress);
+    // glutKeyboardUpFunc(keyRelease);
     glutMouseFunc(mouse);
     glutMotionFunc(motion);
     glutIdleFunc(idle);
