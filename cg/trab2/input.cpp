@@ -3,15 +3,12 @@
 
 using namespace tinyxml2;
 
-Config* read_config_file(char* filepath) {
+Config* read_config_file(char* path) {
     XMLDocument doc;
     Config* config;
 
     // Read the xml config file
-    if(doc.LoadFile(filepath)) return NULL;
-
-    // Initializing new configuration structure
-    config = init_config();
+    doc.LoadFile(path);
 
     // Initializing new configuration structure
     config = init_config();

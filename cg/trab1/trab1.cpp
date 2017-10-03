@@ -21,7 +21,6 @@ int main(int argc, char** argv) {
         printf("Abortando.\n\n");
         return 1;
     }
-
     //print_config(config);
 
     draw_output(argc, argv, config);
