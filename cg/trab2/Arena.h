@@ -8,6 +8,8 @@
 #include <iostream>
 #include <GL/glut.h>
 #include <cmath>
+#include <list>
+#include "Circle.h"
 
 using namespace std;
 
@@ -23,9 +25,9 @@ private:
 
 public:
     // Constructor
-    Arena(Circle* outerLimit, Circle* innerLimit);
+    Arena(Circle* outerLimit, Circle* innerLimit, list<Circle*> obstacles);
 
-    void Draw();
+    void draw();
 
     bool isInside();
 

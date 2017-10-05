@@ -8,35 +8,38 @@
 #include <iostream>
 #include <GL/glut.h>
 #include <cmath>
+#include "Color.h"
+#include "Point.h"
 
 using namespace std;
 
 // Foward declarations
-//class OtherClassUsedHere;
+class Color;
+class Point;
 
 class Circle {
 
 private:
-    int radius;
-    int x, y;
-    int color_R, color_G, color_B;
+    GLint radius;
+    Point& point;
+    Color& color;
 
 public:
     // Constructor
-    Circle(const int radius, const int x, const int y, const int color_R, const int color_G, const int color_B);
+    Circle(GLint radius, Point& point, Color& color);
 
     void draw(); // Draw circle using glut
     int isInside(int x, int y);
 
     // Getters
-    int getRadius();
-    int getX();
-    int getY();
+    GLint getRadius();
+    Point& getPoint();
+    Color& getColor();
 
     // Setters
-    void setRadius(const int radius);
-    void setX(const int x);
-    void setY(const int y);
+    void setRadius(GLint radius);
+    void setPoint(const Point& point);
+    void setColor(const Color& color);
 
     // Destructor
     virtual ~Circle();

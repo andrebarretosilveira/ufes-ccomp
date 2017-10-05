@@ -1,8 +1,15 @@
-all: gcc
-	@echo "Done."
+CXXFLAGS =	-O2 -g -Wall -fmessage-length=0
 
-gcc: trab1.cpp tinyxml2.cpp Circle.cpp circle_draw.cpp input.cpp
-	g++ -Wall -Wextra -g -o trabalhocg trab1.cpp tinyxml2.cpp Circle.cpp circle_draw.cpp input.cpp -lGL -lGLU -lglut
+OBJS = Arena.o Circle.o Settings.o input.o tinyxml2.o main.o
+
+LIBS = -lGL -lGLU -lglut
+
+TARGET = trabalhocg
+
+$(TARGET): $(OBJS)
+	$(CXX) -o $(TARGET) $(OBJS) $(LIBS)
+
+all: $(TARGET)
 
 clean:
-	@rm -f *.o trabalhocg
+	rm -f $(OBJS) $(TARGET)

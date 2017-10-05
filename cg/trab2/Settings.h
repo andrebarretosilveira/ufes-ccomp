@@ -17,10 +17,15 @@ using namespace std;
 class Settings {
 
 private:
+    Circle* outerLimit;
+    Circle* innerLimit;
+    list<Circle*> obstacles;
 
 public:
     // Constructor
     Settings();
+
+    bool read_xml(char* filepath);
 
     // Destructor
     virtual ~Settings() = 0;
