@@ -19,13 +19,14 @@ class Circle;
 class Arena {
 
 private:
+	char* name;
     Circle* outerLimit;
     Circle* innerLimit;
     list<Circle*> obstacles;
 
 public:
     // Constructor
-    Arena(Circle* outerLimit, Circle* innerLimit, list<Circle*> obstacles);
+    Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Circle*> obstacles);
 
     void draw();
 

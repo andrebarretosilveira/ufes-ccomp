@@ -1,13 +1,15 @@
 //============================================================================
 // Name        : main.cpp
-// Author      : André Barreto
+// Author      : André Barreto Silveira
 // Description : Main file - TC2 - CG
 //============================================================================
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <GL/glut.h>
-#include "Robo.h"
+#include "Arena.h"
+#include "Player.h"
+#include "Settings.h"
 
 #define WINDOW_HEIGHT 500
 #define WINDOW_WIDTH 500
@@ -58,24 +60,6 @@ void idle() {
     if(keyFlags['a'] == 1 || keyFlags['A'] == 1) {
 		player->moveOnXAxis(-1);
     }
-	if(keyFlags['r'] == 1 || keyFlags['R'] == 1) {
-		player->rotatePaddle1(+1);
-    }
-	if(keyFlags['f'] == 1 || keyFlags['F'] == 1) {
-		player->rotatePaddle1(-1);
-    }
-	if(keyFlags['t'] == 1 || keyFlags['T'] == 1) {
-		player->rotatePaddle2(+1);
-    }
-	if(keyFlags['g'] == 1 || keyFlags['G'] == 1) {
-		player->rotatePaddle2(-1);
-    }
-	if(keyFlags['y'] == 1 || keyFlags['Y'] == 1) {
-		player->rotatePaddle3(+1);
-    }
-	if(keyFlags['h'] == 1 || keyFlags['H'] == 1) {
-		player->rotatePaddle3(-1);
-    }
 
     glutPostRedisplay();
 }
@@ -86,22 +70,22 @@ int main(int argc,char** argv) {
     const char* config_filename = "config.xml";
 
     if(argc < 2) {
-        printf("Modo de uso: ./trabalhocg <diretorio_do_arquivo_config>\n");
+        printf("\nModo de uso: ./trabalhocg <diretorio_do_arquivo_config>\n\n");
         return 1;
     }
 
     char* config_filepath = strcat(argv[1], config_filename);
 
+    printf("%s\n", config_filepath);
+
     if(!settings->read_xml(config_filepath)) {
-        printf("Erro na leitura dos arquivos.\n");
+        printf("\nErro na leitura dos arquivos.\n");
         printf("Certifique que os arquivos 'config.xml' e 'arena.svg' estao nos diretorios indicados.\n");
         printf("Abortando.\n\n");
         return 1;
     }
 
-    char* config_filepath = strcat(argv[1], config_filename);
-
-    arena = new Arena(settings->outerLimit, settings->innerLimit, settings->obstacles);
+    arena = new Arena(settings->arenaName, settings->outerLimit, settings->innerLimit, settings->obstacles);
 	player = new Player(settings->player);
 
 	glutInit(&argc,argv);

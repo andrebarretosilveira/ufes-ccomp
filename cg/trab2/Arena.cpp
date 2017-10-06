@@ -5,8 +5,9 @@
 #include "Arena.h"
 
 // Constructor
-Arena::Arena(Circle* outerLimit, Circle* innerLimit, list<Circle*> obstacles)
+Arena::Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Circle*> obstacles)
 {
+	this->name = name;
     this->outerLimit = outerLimit;
     this->innerLimit = innerLimit;
     this->obstacles = obstacles;

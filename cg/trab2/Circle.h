@@ -21,25 +21,28 @@ class Circle {
 
 private:
     GLint radius;
-    Point& point;
-    Color& color;
+    Point* point;
+    Color* color;
 
 public:
     // Constructor
-    Circle(GLint radius, Point& point, Color& color);
+    Circle(GLint radius, Point* point, Color* color);
 
     void draw(); // Draw circle using glut
     int isInside(int x, int y);
 
+    void moveOnXAxis(GLfloat dx);
+    void moveOnYAxis(GLfloat dx);
+
     // Getters
     GLint getRadius();
-    Point& getPoint();
-    Color& getColor();
+    Point* getPoint();
+    Color* getColor();
 
     // Setters
     void setRadius(GLint radius);
-    void setPoint(const Point& point);
-    void setColor(const Color& color);
+    void setPoint(Point* point);
+    void setColor(Color* color);
 
     // Destructor
     virtual ~Circle();

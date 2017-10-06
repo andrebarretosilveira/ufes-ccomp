@@ -18,12 +18,16 @@ class Player {
 
 private:
     Circle* body;
+    GLfloat moveSpeed;
 
 public:
     // Constructor
     Player(Circle* body);
 
     void draw();
+
+    void moveOnXAxis(GLfloat dx);
+    void moveOnYAxis(GLfloat dy);
 
     // Destructor
     virtual ~Player();

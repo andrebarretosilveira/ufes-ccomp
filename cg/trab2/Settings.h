@@ -7,28 +7,40 @@
 
 #include <iostream>
 #include <GL/glut.h>
-#include <cmath>
+#include <list>
+#include <string>
+#include "tinyxml2.h"
+#include "Circle.h"
+#include "Point.h"
+#include "Color.h"
 
 using namespace std;
+using namespace tinyxml2;
 
 // Foward declarations
-//class OtherClassUsedHere;
+class Circle;
+class Point;
+class Color;
 
 class Settings {
 
 private:
-    Circle* outerLimit;
-    Circle* innerLimit;
-    list<Circle*> obstacles;
+    
 
 public:
+	char* arenaName;
+	Circle* outerLimit;
+    Circle* innerLimit;
+    Circle* player;
+    list<Circle*> obstacles;
+
     // Constructor
     Settings();
 
     bool read_xml(char* filepath);
 
     // Destructor
-    virtual ~Settings() = 0;
+    virtual ~Settings();
 };
 
 #endif
