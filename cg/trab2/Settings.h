@@ -31,7 +31,7 @@ public:
 	char* arenaName;
 	Circle* outerLimit;
     Circle* innerLimit;
-    Circle* player;
+    Circle* player_circle;
     list<Circle*> obstacles;
 
     // Constructor

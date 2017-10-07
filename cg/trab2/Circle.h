@@ -21,12 +21,12 @@ class Circle {
 
 private:
     GLint radius;
-    Point* point;
+    Point* location;
     Color* color;
 
 public:
     // Constructor
-    Circle(GLint radius, Point* point, Color* color);
+    Circle(GLint radius, Point* location, Color* color);
 
     void draw(); // Draw circle using glut
     int isInside(int x, int y);
@@ -36,12 +36,12 @@ public:
 
     // Getters
     GLint getRadius();
-    Point* getPoint();
+    Point* getLocation();
     Color* getColor();
 
     // Setters
     void setRadius(GLint radius);
-    void setPoint(Point* point);
+    void setLocation(Point* location);
     void setColor(Color* color);
 
     // Destructor

@@ -11,8 +11,8 @@
 #include "Player.h"
 #include "Settings.h"
 
-#define WINDOW_HEIGHT 500
-#define WINDOW_WIDTH 500
+#define WINDOW_HEIGHT 600
+#define WINDOW_WIDTH 600
 
 int keyFlags[256];
 Settings* settings;
@@ -33,7 +33,13 @@ void init(void) {
 
   glMatrixMode(GL_PROJECTION);
 
-  glOrtho(-(WINDOW_WIDTH/2),(WINDOW_WIDTH/2),-(WINDOW_HEIGHT/2),(WINDOW_HEIGHT/2),100,-100);
+  float window_size = arena->outerLimit->getRadius() * 2;
+  float window_pos_x = arena->outerLimit->getLocation()->x;
+  float window_pos_y = arena->outerLimit->getLocation()->y;
+
+  glOrtho(window_pos_x - window_size/2, window_pos_x + window_size/2,
+    window_pos_y - window_size/2, window_pos_y + window_size/2,
+    100,-100);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -48,16 +54,16 @@ void keyRelease(unsigned char key, int x, int y) {
 }
 
 void idle() {
-    if(keyFlags['w'] == 1 || keyFlags['W'] == 1) {
+    if(keyFlags['w'] == 1) {
 		player->moveOnYAxis(+1);
     }
-    if(keyFlags['s'] == 1 || keyFlags['S'] == 1) {
+    if(keyFlags['s'] == 1) {
 		player->moveOnYAxis(-1);
     }
-    if(keyFlags['d'] == 1 || keyFlags['D'] == 1) {
+    if(keyFlags['d'] == 1) {
 		player->moveOnXAxis(+1);
     }
-    if(keyFlags['a'] == 1 || keyFlags['A'] == 1) {
+    if(keyFlags['a'] == 1) {
 		player->moveOnXAxis(-1);
     }
 
@@ -86,14 +92,14 @@ int main(int argc,char** argv) {
     }
 
     arena = new Arena(settings->arenaName, settings->outerLimit, settings->innerLimit, settings->obstacles);
-	player = new Player(settings->player);
+	player = new Player(settings->player_circle);
 
 	glutInit(&argc,argv);
 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(WINDOW_WIDTH,WINDOW_HEIGHT);
 	glutInitWindowPosition(100,100);
-	glutCreateWindow("hello");
+	glutCreateWindow(arena->name);
 	init();
 
 	glutDisplayFunc(display);

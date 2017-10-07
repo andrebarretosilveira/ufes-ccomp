@@ -8,7 +8,7 @@
 Player::Player(Circle* body)
 {
     this->body = body;
-    this->moveSpeed = 2;
+    this->moveSpeed = 1;
 }
 
 // Draw Player

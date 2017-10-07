@@ -7,8 +7,8 @@
 #define distance_2pts(x1,y1,x2,y2) (sqrt(pow(x2-x1, 2) + (pow(y2-y1, 2))))
 
 // Constructor
-Circle::Circle(GLint radius, Point* point, Color* color)
-    : radius(radius), point(point), color(color)
+Circle::Circle(GLint radius, Point* location, Color* color)
+    : radius(radius), location(location), color(color)
     {}
 
 // Draw circle using glut
@@ -25,33 +25,33 @@ void Circle::draw()
         glColor3f(color->r, color->g, color->b);
         for(i = 0; i <= triangleAmount; i++)
         {
-            glVertex2f(point->x, point->y);
-            glVertex2f(point->x + (radius * cos(i * twicePi / triangleAmount)), point->y + (radius * sin(i * twicePi / triangleAmount)));
+            glVertex2f(location->x, location->y);
+            glVertex2f(location->x + (radius * cos(i * twicePi / triangleAmount)), location->y + (radius * sin(i * twicePi / triangleAmount)));
         }
     glEnd();
 }
 
 int Circle::isInside(int x, int y)
 {
-    return distance_2pts(x, y, point->x, point->y) < this->radius;
+    return distance_2pts(x, y, location->x, location->y) < this->radius;
 }
 
 void Circle::moveOnYAxis(GLfloat dy) {
-    this->point->y += dy;
+    this->location->y += dy;
 }
 
 void Circle::moveOnXAxis(GLfloat dx) {
-    this->point->x += dx;
+    this->location->x += dx;
 }
 
 // Getters
 GLint Circle::getRadius() { return this->radius; }
-Point* Circle::getPoint() { return this->point; }
+Point* Circle::getLocation() { return this->location; }
 Color* Circle::getColor() { return this->color; }
 
 // Setters
 void Circle::setRadius(GLint radius) { this->radius = radius; }
-void Circle::setPoint(Point* point) { this->point = point; }
+void Circle::setLocation(Point* location) { this->location = location; }
 void Circle::setColor(Color* color) { this->color = color; }
 
 // Destructor

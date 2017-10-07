@@ -7,7 +7,7 @@
 // Constructor
 Settings::Settings()
 {
-    this->player = NULL;
+    this->player_circle = NULL;
     this->outerLimit = NULL;
     this->innerLimit = NULL;
     //this->obstacles();
@@ -47,20 +47,21 @@ bool Settings::read_xml(char* config_filepath)
         const char* fill = circleNode->Attribute("fill");
         int id = circleNode->IntAttribute("id");
 
-        printf("%d, %d, %d, %s, [%d]\n", x, y, r, fill, id);
-
-
-        if(fill == "blue") {
+        if(strcmp(fill, "blue") == 0) {
             outerLimit = new Circle(r, new Point(x,y,0), new Color(0,0,1));
         }
-        else if(fill == "white") {
+        else if(strcmp(fill, "white") == 0) {
             innerLimit = new Circle(r, new Point(x,y,0), new Color(1,1,1));
         }
-        else if(fill == "green") {
-            player = new Circle(r, new Point(x,y,0), new Color(0,1,0));
+        else if(strcmp(fill, "green") == 0) {
+            player_circle = new Circle(r, new Point(x,y,0), new Color(0,1,0));
         }
-        else if(fill == "red" || fill == "black") {
+        else if(strcmp(fill, "red") == 0) {
             Circle* circle = new Circle(r, new Point(x,y,0), new Color(1,0,0));
+            obstacles.push_back(circle);
+        }
+        else if(strcmp(fill, "black") == 0) {
+            Circle* circle = new Circle(r, new Point(x,y,0), new Color(0,0,0));
             obstacles.push_back(circle);
         }
     }

@@ -16,8 +16,18 @@ Arena::Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Circle*> o
 // Draw Arena
 void Arena::draw()
 {
-    innerLimit->draw();
+	if(!innerLimit || !outerLimit) {
+		cout << "Arena stuff empty. Aborting.\n";
+		exit(1);
+	}
+
     outerLimit->draw();
+    innerLimit->draw();
+
+    list<Circle*>::iterator it;
+	for (it = obstacles.begin(); it != obstacles.end(); ++it){
+	    (*it)->draw();
+	}
 }
 
 // Destructor

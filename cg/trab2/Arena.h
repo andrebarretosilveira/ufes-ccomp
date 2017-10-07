@@ -9,6 +9,7 @@
 #include <GL/glut.h>
 #include <cmath>
 #include <list>
+#include <iterator>
 #include "Circle.h"
 
 using namespace std;
@@ -19,12 +20,14 @@ class Circle;
 class Arena {
 
 private:
-	char* name;
+	
+
+public:
+    char* name;
     Circle* outerLimit;
     Circle* innerLimit;
     list<Circle*> obstacles;
 
-public:
     // Constructor
     Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Circle*> obstacles);
 
