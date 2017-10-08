@@ -10,6 +10,7 @@
 #include <list>
 #include <string>
 #include "tinyxml2.h"
+#include "Obstacle.h"
 #include "Circle.h"
 #include "Point.h"
 #include "Color.h"
@@ -18,6 +19,7 @@ using namespace std;
 using namespace tinyxml2;
 
 // Foward declarations
+class Obstacle;
 class Circle;
 class Point;
 class Color;
@@ -32,7 +34,7 @@ public:
 	Circle* outerLimit;
     Circle* innerLimit;
     Circle* player_circle;
-    list<Circle*> obstacles;
+    list<Obstacle*> obstacles;
 
     // Constructor
     Settings();

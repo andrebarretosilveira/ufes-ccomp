@@ -10,12 +10,16 @@
 #include <cmath>
 #include <list>
 #include <iterator>
+#include "Obstacle.h"
 #include "Circle.h"
+#include "Player.h"
 
 using namespace std;
 
 // Foward declarations
+class Obstacle;
 class Circle;
+class Player;
 
 class Arena {
 
@@ -26,14 +30,15 @@ public:
     char* name;
     Circle* outerLimit;
     Circle* innerLimit;
-    list<Circle*> obstacles;
+    list<Obstacle*> obstacles;
 
     // Constructor
-    Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Circle*> obstacles);
+    Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Obstacle*> obstacles);
 
     void draw();
 
-    bool isInside();
+    bool isOnLegalLocation(Player* player);
+    Obstacle* isOnObstacle(Player* player);
 
     // Destructor
     virtual ~Arena();

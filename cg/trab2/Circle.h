@@ -13,6 +13,9 @@
 
 using namespace std;
 
+#define distance_2pts(x1,y1,x2,y2) (sqrt(pow(x2-x1, 2) + (pow(y2-y1, 2))))
+
+
 // Foward declarations
 class Color;
 class Point;
@@ -20,28 +23,33 @@ class Point;
 class Circle {
 
 private:
-    GLint radius;
-    Point* location;
+    int id;
+    GLfloat radius;
+    Point* position;
     Color* color;
 
 public:
     // Constructor
-    Circle(GLint radius, Point* location, Color* color);
+    Circle(int id, GLfloat radius, Point* position, Color* color);
 
     void draw(); // Draw circle using glut
-    int isInside(int x, int y);
+
+    bool isInside(Point* position);
+
+    bool isTouchingCircle(Circle* circle);
+    bool isLeavingCircle(Circle* circle);
 
     void moveOnXAxis(GLfloat dx);
     void moveOnYAxis(GLfloat dx);
 
     // Getters
-    GLint getRadius();
-    Point* getLocation();
+    GLfloat getRadius();
+    Point* getPosition();
     Color* getColor();
 
     // Setters
-    void setRadius(GLint radius);
-    void setLocation(Point* location);
+    void setRadius(GLfloat radius);
+    void setPosition(Point* position);
     void setColor(Color* color);
 
     // Destructor
