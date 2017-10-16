@@ -10,9 +10,6 @@
 #include "Player.h"
 #include "Settings.h"
 
-#define WINDOW_HEIGHT 600
-#define WINDOW_WIDTH 600
-
 int keyFlags[256];
 Settings* settings;
 Arena* arena;

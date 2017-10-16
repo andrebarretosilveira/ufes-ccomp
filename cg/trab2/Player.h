@@ -15,7 +15,6 @@ using namespace std;
 
 #define JUMP_RADIUS_MULT 1.5
 #define ON_OBSTACLE_RADIUS_MULT 1.3
-#define JUMP_TIME 2
 
 // Foward declarations
 class Circle;
@@ -27,10 +26,11 @@ private:
 	Arena* arena;
     Circle* body;
     GLfloat moveSpeed;
+    GLfloat jumpTime;
     GLfloat orgRadius;
     bool jumping;
     bool onObstacle;
-    std::chrono::time_point<std::chrono::high_resolution_clock> jumpPreviousTime;
+    std::chrono::time_point<std::chrono::high_resolution_clock> jumpStartTime;
     std::chrono::duration<double> jumpElapsed;
 
 

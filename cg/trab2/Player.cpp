@@ -10,6 +10,7 @@ Player::Player(Circle* body, Arena* arena)
 	this->arena = arena;
     this->body = body;
     this->moveSpeed = 1;
+    this->jumpTime = 2;
     this->orgRadius = body->getRadius();
     this->jumping = false;
     this->onObstacle = false;
@@ -40,7 +41,7 @@ void Player::moveOnYAxis(GLfloat dy) {
 void Player::jump() {
 	if(!jumping) {
 		jumping = true;
-		jumpPreviousTime = std::chrono::high_resolution_clock::now();
+		jumpStartTime = std::chrono::high_resolution_clock::now();
 		jumpElapsed = std::chrono::duration<double> (0);
 	}
 }
@@ -49,19 +50,21 @@ void Player::changeSize() {
 	// Record start time
 	auto jumpCurrentTime = std::chrono::high_resolution_clock::now();
 
-	this->jumpElapsed = jumpCurrentTime - jumpPreviousTime;
+	this->jumpElapsed = jumpCurrentTime - jumpStartTime;
 
-	if(jumpElapsed.count() <= JUMP_TIME/2) {
-		body->setRadius(orgRadius * (jumpElapsed.count()/(JUMP_TIME/2) * (JUMP_RADIUS_MULT - 1.0) + 1.0));
+	// Aumentando (subindo)
+	if(jumpElapsed.count() <= jumpTime/2.0) {
+		body->setRadius(orgRadius * (jumpElapsed.count()/(jumpTime/2.0) * (JUMP_RADIUS_MULT - 1.0) + 1.0));
 	}
+	// Diminuindo (caindo)
 	else {
 		body->setRadius(orgRadius*JUMP_RADIUS_MULT -
-			(jumpElapsed.count() - (JUMP_TIME/2)/(JUMP_TIME/2)) *
+			(jumpElapsed.count() - (jumpTime/2.0)/(jumpTime/2.0)) *
 			(orgRadius*(JUMP_RADIUS_MULT - 1)));
 	}
 
 	// End of jump
-	if(jumpElapsed.count() > JUMP_TIME) {
+	if(jumpElapsed.count() > jumpTime) {
 		jumping = false;
 		body->setRadius(orgRadius);
 

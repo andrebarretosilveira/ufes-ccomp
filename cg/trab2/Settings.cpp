@@ -46,6 +46,9 @@ bool Settings::read_xml(char* config_filepath)
         const char* fill = circleNode->Attribute("fill");
         int id = circleNode->IntAttribute("id");
 
+        // Convert y to world coordinates
+        y = WINDOW_HEIGHT - y;
+
         if(strcmp(fill, "blue") == 0) {
             outerLimit = new Circle(id, r, new Point(x,y,0), new Color(0,0,1));
         }

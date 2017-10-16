@@ -15,6 +15,9 @@
 #include "Point.h"
 #include "Color.h"
 
+#define WINDOW_HEIGHT 600
+#define WINDOW_WIDTH 600
+
 using namespace std;
 using namespace tinyxml2;
 
