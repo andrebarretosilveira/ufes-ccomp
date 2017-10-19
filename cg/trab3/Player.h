@@ -9,14 +9,17 @@
 #include <GL/glut.h>
 #include <chrono>
 #include "Circle.h"
+#include "Rectangle.h"
 #include "Arena.h"
 
 using namespace std;
 
 #define JUMP_RADIUS_MULT 1.5
 #define ON_OBSTACLE_RADIUS_MULT 1.3
+#define ARM_POS_X 5
 
 // Foward declarations
+class Rectangle;
 class Circle;
 class Arena;
 
@@ -24,7 +27,10 @@ class Player {
 
 private:
 	Arena* arena;
-    Circle* body;
+	Point* position;
+    Circle* head;
+	//Ellipse* sholders;
+	Rectangle* arm, *lLeg, *rLeg;
     GLfloat moveSpeed;
     GLfloat jumpTime;
     GLfloat orgRadius;
@@ -36,21 +42,17 @@ private:
 
 public:
     // Constructor
-    Player(Circle* body, Arena* arena);
+    Player(Circle* head, Point* position, Arena* arena);
 
+	void defineBody();
     void draw();
-
-    bool canMove();
-
     void moveOnXAxis(GLfloat dx);
     void moveOnYAxis(GLfloat dy);
-
     void jump();
     void changeSize();
-
+	bool canMove();
     bool isJumping();
-
-    Circle* getBody();
+    Circle* getHead();
     GLfloat getOrgRadius();
 
     // Destructor

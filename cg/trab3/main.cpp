@@ -1,7 +1,7 @@
 //============================================================================
 // Name        : main.cpp
 // Author      : André Barreto Silveira
-// Description : Main file - TC2 - CG
+// Description : Main file - TC3 - CG
 //============================================================================
 
 #include <iostream>
@@ -98,7 +98,9 @@ int main(int argc,char** argv) {
     }
 
     arena = new Arena(settings->arenaName, settings->outerLimit, settings->innerLimit, settings->obstacles);
-	player = new Player(settings->player_circle, arena);
+
+	Point* playerPos = settings->player_circle->getPosition();
+	player = new Player(settings->player_circle, new Point(playerPos->x, playerPos->y, playerPos->z), arena);
 
 	glutInit(&argc,argv);
 

@@ -5,42 +5,50 @@
 #include "Player.h"
 
 // Constructor
-Player::Player(Circle* body, Arena* arena)
+Player::Player(Circle* head, Point* position, Arena* arena)
 {
 	this->arena = arena;
-    this->body = body;
+    this->head = head;
+	this->position = position;
     this->moveSpeed = 2;
     this->jumpTime = 2;
-    this->orgRadius = body->getRadius();
+    this->orgRadius = head->getRadius();
     this->jumping = false;
     this->onObstacle = false;
+
+	defineBody();
+}
+
+void Player::defineBody()
+{
+	GLfloat headRadius = head->getRadius();
+
+	head->setPosition(new Point(0,0,0));
+
+	arm = new Rectangle(headRadius/3, headRadius/2, new Point(ARM_POS_X, 0, 0), head->getColor());
 }
 
 // Draw Player
 void Player::draw()
 {
 	glPushMatrix();
-	glTranslatef(body->getPosition()->x,body->getPosition()->y,body->getPosition()->z);
+	glTranslatef(position->x,position->y,position->z);
 
-    body->draw();
+    head->draw();
 
 	glPopMatrix();
 }
 
-bool Player::canMove() {
-	return arena->isOnLegalLocation(this);
-}
-
 void Player::moveOnXAxis(GLfloat dx) {
-	body->moveOnXAxis(dx * moveSpeed);
+	head->moveOnXAxis(dx * moveSpeed);
 
-	if(!canMove()) body->moveOnXAxis(-dx * moveSpeed);
+	if(!canMove()) head->moveOnXAxis(-dx * moveSpeed);
 }
 
 void Player::moveOnYAxis(GLfloat dy) {
-	body->moveOnYAxis(dy * moveSpeed);
+	head->moveOnYAxis(dy * moveSpeed);
 
-	if(!canMove()) body->moveOnYAxis(-dy * moveSpeed);
+	if(!canMove()) head->moveOnYAxis(-dy * moveSpeed);
 }
 
 void Player::jump() {
@@ -59,11 +67,11 @@ void Player::changeSize() {
 
 	// Aumentando (subindo)
 	if(jumpElapsed.count() <= jumpTime/2.0) {
-		body->setRadius(orgRadius * (jumpElapsed.count()/(jumpTime/2.0) * (JUMP_RADIUS_MULT - 1.0) + 1.0));
+		head->setRadius(orgRadius * (jumpElapsed.count()/(jumpTime/2.0) * (JUMP_RADIUS_MULT - 1.0) + 1.0));
 	}
 	// Diminuindo (caindo)
 	else {
-		body->setRadius(orgRadius*JUMP_RADIUS_MULT -
+		head->setRadius(orgRadius*JUMP_RADIUS_MULT -
 			(jumpElapsed.count() - (jumpTime/2.0)/(jumpTime/2.0)) *
 			(orgRadius*(JUMP_RADIUS_MULT - 1)));
 	}
@@ -71,7 +79,7 @@ void Player::changeSize() {
 	// End of jump
 	if(jumpElapsed.count() > jumpTime) {
 		jumping = false;
-		body->setRadius(orgRadius);
+		head->setRadius(orgRadius);
 
 		Obstacle* obstacle = arena->isOnObstacle(this);
 		if(obstacle) {
@@ -80,9 +88,10 @@ void Player::changeSize() {
 	}
 }
 
+bool Player::canMove() { return arena->isOnLegalLocation(this); }
 bool Player::isJumping() { return this->jumping; }
 
-Circle* Player::getBody() { return this->body; }
+Circle* Player::getHead() { return this->head; }
 GLfloat Player::getOrgRadius() { return this->orgRadius; }
 
 // Destructor

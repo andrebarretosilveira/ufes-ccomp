@@ -22,12 +22,12 @@ void Arena::draw()
 	}
 
 	glPushMatrix();
-	glTranslatef(outerLimit->getPosition()->x,outerLimit->getPosition()->y,outerLimit->getPosition()->z);
+	//glTranslatef(outerLimit->getPosition()->x,outerLimit->getPosition()->y,outerLimit->getPosition()->z);
     outerLimit->draw();
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(innerLimit->getPosition()->x,innerLimit->getPosition()->y,innerLimit->getPosition()->z);
+	//glTranslatef(innerLimit->getPosition()->x,innerLimit->getPosition()->y,innerLimit->getPosition()->z);
     innerLimit->draw();
 	glPopMatrix();
 
@@ -50,8 +50,8 @@ bool Arena::isOnLegalLocation(Player* player) {
 	}
 
 	return
-		! this->outerLimit->isLeavingCircle(player->getBody()) &&
-		! this->innerLimit->isTouchingCircle(player->getBody());
+		! this->outerLimit->isLeavingCircle(player->getHead()) &&
+		! this->innerLimit->isTouchingCircle(player->getHead());
 }
 
 Obstacle* Arena::isOnObstacle(Player* player) {

@@ -12,6 +12,9 @@ Circle::Circle(int id, GLfloat radius, Point* position, Color* color)
 // Draw circle using glut
 void Circle::draw()
 {
+    glPushMatrix();
+	glTranslatef(position->x,position->y,position->z);
+
     int i;
     int triangleAmount = 700;
     GLfloat twicePi = 2.0f * M_PI;
@@ -27,19 +30,8 @@ void Circle::draw()
             glVertex2f((radius * cos(i * twicePi / triangleAmount)), (radius * sin(i * twicePi / triangleAmount)));
         }
     glEnd();
-    //
-    // int i;
-	// GLfloat x, y;
-    //
-	// glColor3f(color->r,color->g,color->b);
-	// //glPointSize(3);
-	// glBegin(GL_POINTS);
-	// 	for (i = 0; i < 360; i+=1) {
-	// 		x = radius * cos(M_PI*i/180);
-	// 		y = radius * sin(M_PI*i/180);
-	// 		glVertex3f(x, y, 0);
-	// 	}
-	// glEnd();
+
+    glPopMatrix();
 }
 
 bool Circle::isInside(Point* position)

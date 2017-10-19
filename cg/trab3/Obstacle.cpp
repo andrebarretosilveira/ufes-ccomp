@@ -15,15 +15,15 @@ Obstacle::Obstacle(Circle* shape, bool jumpOver)
 void Obstacle::draw()
 {
 	glPushMatrix();
-	glTranslatef(shape->getPosition()->x,shape->getPosition()->y,shape->getPosition()->z);
+	//glTranslatef(shape->getPosition()->x,shape->getPosition()->y,shape->getPosition()->z);
     shape->draw();
 	glPopMatrix();
 }
 
 bool Obstacle::isTouching(Player* player) {
-	player->getBody()->setRadius(player->getOrgRadius());
+	player->getHead()->setRadius(player->getOrgRadius());
 
-	return this->shape->isTouchingCircle(player->getBody());
+	return this->shape->isTouchingCircle(player->getHead());
 }
 
 bool Obstacle::canJumpOver() { return this->jumpOver; }
