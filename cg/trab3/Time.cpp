@@ -4,13 +4,16 @@
 
 #include "Time.h"
 
-void Time::updateFrameTime() {
+std::chrono::time_point<std::chrono::high_resolution_clock> Time::lastFrameTime;
+float Time::deltaTime;
+
+void Time::initTime() {
+	lastFrameTime = std::chrono::high_resolution_clock::now();
 }
 
-float Time::deltaTime()
-{
-	auto lastFrameTime = std::chrono::high_resolution_clock::now();
+void Time::updateTime() {
 	auto currentFrameTime = std::chrono::high_resolution_clock::now();
-
-	return (currentFrameTime - lastFrameTime).count();
+	deltaTime = (currentFrameTime - lastFrameTime).count();
+	cout << "deltaTime = " << deltaTime << "\n";
+	lastFrameTime = currentFrameTime;
 }

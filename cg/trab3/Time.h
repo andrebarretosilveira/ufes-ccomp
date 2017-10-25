@@ -12,14 +12,16 @@ using namespace std;
 
 class Time {
 
-private:  
+private:
     // Disallow creating an instance of this object
     Time() {}
 
 public:
-    static void updateFrameTime();
-    static float deltaTime();
+    static std::chrono::time_point<std::chrono::high_resolution_clock> lastFrameTime;
+    static float deltaTime;
 
+    static void initTime();
+    static void updateTime();
 };
 
 #endif

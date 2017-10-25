@@ -46,15 +46,12 @@ void Player::draw()
 	glRotatef(transform.rotation.x,1,0,0);
 	glRotatef(transform.rotation.y,0,1,0);
 	glRotatef(transform.rotation.z,0,0,1);
+	glScalef(transform.scale.x, transform.scale.y, transform.scale.z);
 
 	drawLegs(true);
-
 	arm->draw();
-
 	sholders->draw();
-
     head->draw();
-
 
 	glPopMatrix();
 }
@@ -81,7 +78,8 @@ void Player::move(GLfloat direction) {
 
 	transform.print();
 
-	GLfloat movement = direction * moveSpeed;
+	GLfloat movement = direction * moveSpeed; //* Time::deltaTime;
+	// cout << "deltaTime: " << Time::deltaTime << "\n";
 	GLfloat dx = movement * sin(-transform.rotation.z * DEG2RAD);
 	GLfloat dy = movement * cos(-transform.rotation.z * DEG2RAD);
 
@@ -90,14 +88,11 @@ void Player::move(GLfloat direction) {
 	if(!canMove()) {
 		// Return to previous position if went into ilegal position
 		transform.position = previousPos;
-	} 
-
-	// transform.print();
+	}
 }
 
 void Player::rotate(GLfloat direction) {
 	transform.Rotate(0,0,direction * rotationSpeed);
-	// transform.print();
 }
 
 
@@ -117,16 +112,16 @@ void Player::changeSize() {
 
 	// Aumentando (subindo)
 	if(jumpElapsed.count() <= jumpTime/2.0) {
-		GLfloat scaleFactor = 1 + JUMP_RADIUS_MULT/60*jumpTime;
+		GLfloat scaleFactor = jumpElapsed.count() * (JUMP_RADIUS_MULT - 1) + 1;
 
-		transform.Scale(scaleFactor, scaleFactor, 0);
+		transform.scale = Vector3(scaleFactor, scaleFactor, 0);
 		// head->setRadius(orgRadius * (jumpElapsed.count()/(jumpTime/2.0) * (JUMP_RADIUS_MULT - 1.0) + 1.0));
 	}
 	// Diminuindo (caindo)
 	else {
-		GLfloat scaleFactor = 1/(JUMP_RADIUS_MULT/60*jumpTime);
+		GLfloat scaleFactor = (jumpTime - jumpElapsed.count()) * (JUMP_RADIUS_MULT - 1) + 1;
 
-		transform.Scale(scaleFactor, scaleFactor, 0);
+		transform.scale = Vector3(scaleFactor, scaleFactor, 0);
 		// head->setRadius(orgRadius*JUMP_RADIUS_MULT -
 		// 	(jumpElapsed.count() - (jumpTime/2.0)/(jumpTime/2.0)) *
 		// 	(orgRadius*(JUMP_RADIUS_MULT - 1)));

@@ -50,6 +50,8 @@ void keyRelease(unsigned char key, int x, int y) {
 }
 
 void idle() {
+	Time::updateTime();
+
     if(keyFlags['w'] == 1) {
 		player->move(+1);
     }
@@ -113,6 +115,8 @@ int main(int argc,char** argv) {
     glutKeyboardUpFunc(keyRelease);
     glutIdleFunc(idle);
 
+	Time::initTime();
+	
 	glutMainLoop();
 
 }
