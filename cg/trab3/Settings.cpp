@@ -50,20 +50,25 @@ bool Settings::read_xml(char* config_filepath)
         y = WINDOW_HEIGHT - y;
 
         if(strcmp(fill, "blue") == 0) {
-            outerLimit = new Circle(id, r, new Point(x,y,0), new Color(0,0,1));
+            Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
+            outerLimit = new Circle(id, r, transform, Color(0,0,1));
         }
         else if(strcmp(fill, "white") == 0) {
-            innerLimit = new Circle(id, r, new Point(x,y,0), new Color(1,1,1));
+            Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
+            innerLimit = new Circle(id, r, transform, Color(1,1,1));
         }
         else if(strcmp(fill, "green") == 0) {
-            player_circle = new Circle(id, r, new Point(x,y,0), new Color(0,1,0));
+            Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
+            player_circle = new Circle(id, r, transform, Color(0,1,0));
         }
         else if(strcmp(fill, "red") == 0) {
-            Circle* circle = new Circle(id, r, new Point(x,y,0), new Color(1,0,0));
+            Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
+            Circle* circle = new Circle(id, r, transform, Color(1,0,0));
             obstacles.push_back(new Obstacle(circle, false));
         }
         else if(strcmp(fill, "black") == 0) {
-            Circle* circle = new Circle(id, r, new Point(x,y,0), new Color(0,0,0));
+            Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
+            Circle* circle = new Circle(id, r, transform, Color(0,0,0));
             obstacles.push_back(new Obstacle(circle, true));
         }
     }

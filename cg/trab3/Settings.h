@@ -12,7 +12,8 @@
 #include "tinyxml2.h"
 #include "Obstacle.h"
 #include "Circle.h"
-#include "Point.h"
+#include "Transform.h"
+#include "Vector3.h"
 #include "Color.h"
 
 #define WINDOW_HEIGHT 600
@@ -24,7 +25,8 @@ using namespace tinyxml2;
 // Foward declarations
 class Obstacle;
 class Circle;
-class Point;
+class Vector3;
+class Transform;
 class Color;
 
 class Settings {

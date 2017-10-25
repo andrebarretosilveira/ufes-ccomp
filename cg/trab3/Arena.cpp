@@ -41,8 +41,9 @@ bool Arena::isOnLegalLocation(Player* player) {
 	list<Obstacle*>::iterator it;
 	for (it = obstacles.begin(); it != obstacles.end(); ++it){
 	    if((*it)->isTouching(player)) {
-	    	if((!player->isJumping() && !(*it)->isPlayerOn()) || !(*it)->canJumpOver())
+	    	if((!player->isJumping() && !(*it)->isPlayerOn()) || !(*it)->canJumpOver()) {
 	    		return false;
+	    	}
 	    }
 	    else {
 	    	(*it)->setPlayerOn(false);
@@ -50,8 +51,8 @@ bool Arena::isOnLegalLocation(Player* player) {
 	}
 
 	return
-		! this->outerLimit->isLeavingCircle(player->getHead()) &&
-		! this->innerLimit->isTouchingCircle(player->getHead());
+		! this->outerLimit->isLeavingCircle(player->transform.position, player->getOrgRadius()) &&
+		! this->innerLimit->isTouchingCircle(player->transform.position, player->getOrgRadius());
 }
 
 Obstacle* Arena::isOnObstacle(Player* player) {

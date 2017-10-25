@@ -30,8 +30,8 @@ void init(void) {
   glMatrixMode(GL_PROJECTION);
 
   float window_size = arena->outerLimit->getRadius() * 2;
-  float window_pos_x = arena->outerLimit->getPosition()->x;
-  float window_pos_y = arena->outerLimit->getPosition()->y;
+  float window_pos_x = arena->outerLimit->transform.position.x;
+  float window_pos_y = arena->outerLimit->transform.position.y;
 
   glOrtho(window_pos_x - window_size/2, window_pos_x + window_size/2,
     window_pos_y - window_size/2, window_pos_y + window_size/2,
@@ -51,16 +51,16 @@ void keyRelease(unsigned char key, int x, int y) {
 
 void idle() {
     if(keyFlags['w'] == 1) {
-		player->moveOnYAxis(+1);
+		player->move(+1);
     }
     if(keyFlags['s'] == 1) {
-		player->moveOnYAxis(-1);
+		player->move(-1);
     }
     if(keyFlags['d'] == 1) {
-		player->moveOnXAxis(+1);
+		player->rotate(-1);
     }
     if(keyFlags['a'] == 1) {
-		player->moveOnXAxis(-1);
+		player->rotate(+1);
     }
     if(keyFlags['p'] == 1) {
         player->jump();
@@ -98,9 +98,7 @@ int main(int argc,char** argv) {
     }
 
     arena = new Arena(settings->arenaName, settings->outerLimit, settings->innerLimit, settings->obstacles);
-
-	Point* playerPos = settings->player_circle->getPosition();
-	player = new Player(settings->player_circle, new Point(playerPos->x, playerPos->y, playerPos->z), arena);
+	player = new Player(settings->player_circle, settings->player_circle->transform, arena);
 
 	glutInit(&argc,argv);
 

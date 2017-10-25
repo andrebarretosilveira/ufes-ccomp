@@ -9,7 +9,8 @@
 #include <GL/glut.h>
 #include <cmath>
 #include "Color.h"
-#include "Point.h"
+#include "Vector3.h"
+#include "Transform.h"
 
 using namespace std;
 
@@ -18,39 +19,33 @@ using namespace std;
 
 // Foward declarations
 class Color;
-class Point;
+class Vector3;
+class Transform;
 
 class Circle {
 
 private:
     int id;
     GLfloat radius;
-    Point* position;
-    Color* color;
 
 public:
+    Transform transform;
+    Color color;
+    
     // Constructor
-    Circle(int id, GLfloat radius, Point* position, Color* color);
+    Circle(int id, GLfloat radius, Transform transform, Color color);
 
     void draw(); // Draw circle using glut
 
-    bool isInside(Point* position);
-
-    bool isTouchingCircle(Circle* circle);
-    bool isLeavingCircle(Circle* circle);
-
-    void moveOnXAxis(GLfloat dx);
-    void moveOnYAxis(GLfloat dx);
+    bool isInside(Vector3 position);
+    bool isTouchingCircle(Vector3 pos, GLfloat radius);
+    bool isLeavingCircle(Vector3 pos, GLfloat radius);
 
     // Getters
     GLfloat getRadius();
-    Point* getPosition();
-    Color* getColor();
 
     // Setters
     void setRadius(GLfloat radius);
-    void setPosition(Point* position);
-    void setColor(Color* color);
 
     // Destructor
     virtual ~Circle();

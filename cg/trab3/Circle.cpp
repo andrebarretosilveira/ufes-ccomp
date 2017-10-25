@@ -5,15 +5,15 @@
 #include "Circle.h"
 
 // Constructor
-Circle::Circle(int id, GLfloat radius, Point* position, Color* color)
-    : id(id), radius(radius), position(position), color(color)
+Circle::Circle(int id, GLfloat radius, Transform transform, Color color)
+    : id(id), radius(radius), transform(transform), color(color)
     {}
 
 // Draw circle using glut
 void Circle::draw()
 {
     glPushMatrix();
-	glTranslatef(position->x,position->y,position->z);
+	glTranslatef(transform.position.x,transform.position.y,transform.position.z);
 
     int i;
     int triangleAmount = 700;
@@ -23,7 +23,7 @@ void Circle::draw()
     glLineWidth(5.0);
 
     glBegin(GL_LINES);
-        glColor3f(color->r, color->g, color->b);
+        glColor3f(color.r, color.g, color.b);
         for(i = 0; i <= triangleAmount; i++)
         {
             glVertex2f(0, 0);
@@ -34,38 +34,26 @@ void Circle::draw()
     glPopMatrix();
 }
 
-bool Circle::isInside(Point* position)
+bool Circle::isInside(Vector3 position)
 {
-    return distance_2pts(this->position->x, this->position->y, position->x, position->y) < this->radius;
+    return distance_2pts(transform.position.x, transform.position.y, position.x, position.y) < this->radius;
 }
 
-bool Circle::isTouchingCircle(Circle* circle) {
-    return distance_2pts(this->position->x, this->position->y,
-        circle->position->x, circle->position->y) <= this->radius + circle->radius;
+bool Circle::isTouchingCircle(Vector3 pos, GLfloat radius) {
+    return distance_2pts(transform.position.x, transform.position.y,
+        pos.x, pos.y) <= this->radius + radius;
 }
 
-bool Circle::isLeavingCircle(Circle* circle) {
-    return distance_2pts(this->position->x, this->position->y,
-        circle->position->x, circle->position->y) + circle->radius >= this->radius;
-}
-
-void Circle::moveOnYAxis(GLfloat dy) {
-    this->position->y += dy;
-}
-
-void Circle::moveOnXAxis(GLfloat dx) {
-    this->position->x += dx;
+bool Circle::isLeavingCircle(Vector3 pos, GLfloat radius) {
+    return distance_2pts(transform.position.x, transform.position.y,
+        pos.x, pos.y) + radius >= this->radius;
 }
 
 // Getters
 GLfloat Circle::getRadius() { return this->radius; }
-Point* Circle::getPosition() { return this->position; }
-Color* Circle::getColor() { return this->color; }
 
 // Setters
 void Circle::setRadius(GLfloat radius) { this->radius = radius; }
-void Circle::setPosition(Point* position) { this->position = position; }
-void Circle::setColor(Color* color) { this->color = color; }
 
 // Destructor
 Circle::~Circle() {}

@@ -21,9 +21,7 @@ void Obstacle::draw()
 }
 
 bool Obstacle::isTouching(Player* player) {
-	player->getHead()->setRadius(player->getOrgRadius());
-
-	return this->shape->isTouchingCircle(player->getHead());
+	return this->shape->isTouchingCircle(player->transform.position, player->getOrgRadius());
 }
 
 bool Obstacle::canJumpOver() { return this->jumpOver; }

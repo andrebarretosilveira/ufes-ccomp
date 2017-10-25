@@ -8,9 +8,12 @@
 #include <iostream>
 #include <GL/glut.h>
 #include <chrono>
+#include <cmath>
 #include "Circle.h"
+#include "Ellipse.h"
 #include "Rectangle.h"
 #include "Arena.h"
+#include "Time.h"
 
 using namespace std;
 
@@ -19,19 +22,17 @@ using namespace std;
 #define ARM_POS_X 5
 
 // Foward declarations
-class Rectangle;
-class Circle;
 class Arena;
 
 class Player {
 
 private:
 	Arena* arena;
-	Point* position;
     Circle* head;
-	//Ellipse* sholders;
+	Ellipse* sholders;
 	Rectangle* arm, *lLeg, *rLeg;
     GLfloat moveSpeed;
+    GLfloat rotationSpeed;
     GLfloat jumpTime;
     GLfloat orgRadius;
     bool jumping;
@@ -41,13 +42,16 @@ private:
 
 
 public:
+    Transform transform;
+
     // Constructor
-    Player(Circle* head, Point* position, Arena* arena);
+    Player(Circle* head, Transform transform, Arena* arena);
 
 	void defineBody();
     void draw();
-    void moveOnXAxis(GLfloat dx);
-    void moveOnYAxis(GLfloat dy);
+    void drawLegs(bool leftLegFoward);
+    void move(GLfloat direction);
+    void rotate(GLfloat direction);
     void jump();
     void changeSize();
 	bool canMove();
