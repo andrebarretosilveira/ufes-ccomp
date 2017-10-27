@@ -37,7 +37,6 @@ private:
     GLfloat orgRadius;
     bool jumping;
     bool onObstacle;
-    std::chrono::time_point<std::chrono::high_resolution_clock> jumpStartTime;
     std::chrono::duration<double> jumpElapsed;
 
 
@@ -52,10 +51,13 @@ public:
     void drawLegs(bool leftLegFoward);
     void move(GLfloat direction);
     void rotate(GLfloat direction);
+    void rotateArm(GLfloat x, GLfloat y);
     void jump();
+    void fire();
     void changeSize();
 	bool canMove();
     bool isJumping();
+    bool isOnObstacle();
     Circle* getHead();
     GLfloat getOrgRadius();
 

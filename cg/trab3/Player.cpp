@@ -9,8 +9,8 @@ Player::Player(Circle* head, Transform transform, Arena* arena): transform(trans
 {
 	this->arena = arena;
     this->head = head;
-    this->moveSpeed = 1;
-    this->rotationSpeed = 1;
+    this->moveSpeed = 0.1;
+    this->rotationSpeed = 0.1;
     this->jumpTime = 2;
     this->orgRadius = head->getRadius();
     this->jumping = false;
@@ -78,8 +78,8 @@ void Player::move(GLfloat direction) {
 
 	transform.print();
 
-	GLfloat movement = direction * moveSpeed; //* Time::deltaTime;
-	// cout << "deltaTime: " << Time::deltaTime << "\n";
+	GLfloat movement = direction * moveSpeed * Time::deltaTime.count() * 1000;
+	// cout << "movement: " << movement << "\n";
 	GLfloat dx = movement * sin(-transform.rotation.z * DEG2RAD);
 	GLfloat dy = movement * cos(-transform.rotation.z * DEG2RAD);
 
@@ -87,44 +87,54 @@ void Player::move(GLfloat direction) {
 
 	if(!canMove()) {
 		// Return to previous position if went into ilegal position
+		cout << "ILEGAL move\n";
 		transform.position = previousPos;
 	}
 }
 
 void Player::rotate(GLfloat direction) {
-	transform.Rotate(0,0,direction * rotationSpeed);
+	float rotation = direction * rotationSpeed * Time::deltaTime.count() * 1000;
+
+	transform.Rotate(0,0,rotation);
+}
+
+void Player::rotateArm(GLfloat mouseX, GLfloat mouseY) {
+	float dist = d2pts(mouseX, mouseY, transform.position.x, transform.position.y);
+	float angle = atan((dist - mouseX)/(dist - mouseY)) * DEG2RAD;
+	cout << "Rotate arm : angle = " << angle << "\n";
+
+	arm->transform.rotation = Vector3(0,0,angle);
+}
+
+
+void Player::fire() {
+	cout << "Fire\n";
+
 }
 
 
 void Player::jump() {
 	if(!jumping) {
 		jumping = true;
-		jumpStartTime = std::chrono::high_resolution_clock::now();
 		jumpElapsed = std::chrono::duration<double> (0);
 	}
 }
 
 void Player::changeSize() {
-	// Record start time
-	auto jumpCurrentTime = std::chrono::high_resolution_clock::now();
-
-	this->jumpElapsed = jumpCurrentTime - jumpStartTime;
+	jumpElapsed += Time::deltaTime;
+	// cout << "jumpElapsed = " << jumpElapsed.count() << "\n";
 
 	// Aumentando (subindo)
 	if(jumpElapsed.count() <= jumpTime/2.0) {
 		GLfloat scaleFactor = jumpElapsed.count() * (JUMP_RADIUS_MULT - 1) + 1;
 
 		transform.scale = Vector3(scaleFactor, scaleFactor, 0);
-		// head->setRadius(orgRadius * (jumpElapsed.count()/(jumpTime/2.0) * (JUMP_RADIUS_MULT - 1.0) + 1.0));
 	}
 	// Diminuindo (caindo)
 	else {
 		GLfloat scaleFactor = (jumpTime - jumpElapsed.count()) * (JUMP_RADIUS_MULT - 1) + 1;
 
 		transform.scale = Vector3(scaleFactor, scaleFactor, 0);
-		// head->setRadius(orgRadius*JUMP_RADIUS_MULT -
-		// 	(jumpElapsed.count() - (jumpTime/2.0)/(jumpTime/2.0)) *
-		// 	(orgRadius*(JUMP_RADIUS_MULT - 1)));
 	}
 
 	// End of jump
@@ -141,6 +151,7 @@ void Player::changeSize() {
 
 bool Player::canMove() { return arena->isOnLegalLocation(this); }
 bool Player::isJumping() { return this->jumping; }
+bool Player::isOnObstacle() { return this->onObstacle; }
 
 Circle* Player::getHead() { return this->head; }
 GLfloat Player::getOrgRadius() { return this->orgRadius; }

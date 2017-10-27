@@ -49,6 +49,23 @@ void keyRelease(unsigned char key, int x, int y) {
     keyFlags[key] = 0;
 }
 
+void mouse(int button, int state, int x, int y) {
+    // Check if left mouse button was clicked
+    if(button == GLUT_LEFT_BUTTON && state == false &&
+        !player->isJumping() && !player->isOnObstacle()) {
+        player->fire();
+    }
+}
+
+void motion(int x, int y) {
+    int newX = x;
+    int newY = WINDOW_HEIGHT - y;
+
+    cout << "Mouse motion\n";
+
+    player->rotateArm(newX, newY);
+}
+
 void idle() {
 	Time::updateTime();
 
@@ -113,6 +130,8 @@ int main(int argc,char** argv) {
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyPress);
     glutKeyboardUpFunc(keyRelease);
+    glutMouseFunc(mouse);
+    glutMotionFunc(motion);
     glutIdleFunc(idle);
 
 	Time::initTime();

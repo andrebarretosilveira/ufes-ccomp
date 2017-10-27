@@ -18,7 +18,7 @@ private:
 
 public:
     static std::chrono::time_point<std::chrono::high_resolution_clock> lastFrameTime;
-    static float deltaTime;
+    static std::chrono::duration<double> deltaTime;
 
     static void initTime();
     static void updateTime();

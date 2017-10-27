@@ -42,6 +42,7 @@ bool Arena::isOnLegalLocation(Player* player) {
 	for (it = obstacles.begin(); it != obstacles.end(); ++it){
 	    if((*it)->isTouching(player)) {
 	    	if((!player->isJumping() && !(*it)->isPlayerOn()) || !(*it)->canJumpOver()) {
+	    		// cout << "Touching Obstacle!\n";
 	    		return false;
 	    	}
 	    }

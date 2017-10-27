@@ -5,7 +5,7 @@
 #include "Time.h"
 
 std::chrono::time_point<std::chrono::high_resolution_clock> Time::lastFrameTime;
-float Time::deltaTime;
+std::chrono::duration<double> Time::deltaTime;
 
 void Time::initTime() {
 	lastFrameTime = std::chrono::high_resolution_clock::now();
@@ -13,7 +13,8 @@ void Time::initTime() {
 
 void Time::updateTime() {
 	auto currentFrameTime = std::chrono::high_resolution_clock::now();
-	deltaTime = (currentFrameTime - lastFrameTime).count();
-	cout << "deltaTime = " << deltaTime << "\n";
+	deltaTime = (currentFrameTime - lastFrameTime);
 	lastFrameTime = currentFrameTime;
+	
+	// cout << "deltaTime = " << deltaTime.count() << "\n";
 }
