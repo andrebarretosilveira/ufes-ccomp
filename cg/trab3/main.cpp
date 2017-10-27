@@ -14,6 +14,7 @@ int keyFlags[256];
 Settings* settings;
 Arena* arena;
 Player* player;
+Vector3 worldPos;
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -33,6 +34,8 @@ void init(void) {
   float window_pos_x = arena->outerLimit->transform.position.x;
   float window_pos_y = arena->outerLimit->transform.position.y;
 
+  worldPos = Vector3(window_pos_x, window_pos_y, 0);
+
   glOrtho(window_pos_x - window_size/2, window_pos_x + window_size/2,
     window_pos_y - window_size/2, window_pos_y + window_size/2,
     100,-100);
@@ -51,7 +54,7 @@ void keyRelease(unsigned char key, int x, int y) {
 
 void mouse(int button, int state, int x, int y) {
     // Check if left mouse button was clicked
-    if(button == GLUT_LEFT_BUTTON && state == false &&
+    if(button == GLUT_LEFT_BUTTON && !state &&
         !player->isJumping() && !player->isOnObstacle()) {
         player->fire();
     }
@@ -61,7 +64,7 @@ void motion(int x, int y) {
     int newX = x;
     int newY = WINDOW_HEIGHT - y;
 
-    cout << "Mouse motion\n";
+	cout << "newX = " << newX << " | newY = " << newY << "\n";
 
     player->rotateArm(newX, newY);
 }
@@ -131,11 +134,11 @@ int main(int argc,char** argv) {
 	glutKeyboardFunc(keyPress);
     glutKeyboardUpFunc(keyRelease);
     glutMouseFunc(mouse);
-    glutMotionFunc(motion);
+    glutPassiveMotionFunc(motion);
     glutIdleFunc(idle);
 
 	Time::initTime();
-	
+
 	glutMainLoop();
 
 }

@@ -9,7 +9,7 @@ Player::Player(Circle* head, Transform transform, Arena* arena): transform(trans
 {
 	this->arena = arena;
     this->head = head;
-    this->moveSpeed = 0.1;
+    this->moveSpeed = 0.3;
     this->rotationSpeed = 0.1;
     this->jumpTime = 2;
     this->orgRadius = head->getRadius();
@@ -88,7 +88,7 @@ void Player::move(GLfloat direction) {
 	if(!canMove()) {
 		// Return to previous position if went into ilegal position
 		cout << "ILEGAL move\n";
-		transform.position = previousPos;
+		//transform.position = previousPos;
 	}
 }
 
@@ -100,16 +100,16 @@ void Player::rotate(GLfloat direction) {
 
 void Player::rotateArm(GLfloat mouseX, GLfloat mouseY) {
 	float dist = d2pts(mouseX, mouseY, transform.position.x, transform.position.y);
-	float angle = atan((dist - mouseX)/(dist - mouseY)) * DEG2RAD;
-	cout << "Rotate arm : angle = " << angle << "\n";
+	float angle = atan((dist - mouseX)/(dist - mouseY)) * RAD2DEG;
+	// cout << "Rotate arm :: mouse X = " << mouseX << " | mouse Y = " << mouseY << " | Angle = " << angle << "\n";
+	cout << "Rotate arm :: playerX = " << transform.position.x << " | playerY = " << transform.position.y << "\n";
 
 	arm->transform.rotation = Vector3(0,0,angle);
 }
 
 
 void Player::fire() {
-	cout << "Fire\n";
-
+	cout << "Pow!\n";
 }
 
 

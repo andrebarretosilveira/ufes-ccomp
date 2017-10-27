@@ -46,7 +46,7 @@ bool Settings::read_xml(char* config_filepath)
         const char* fill = circleNode->Attribute("fill");
         int id = circleNode->IntAttribute("id");
 
-        // Convert y to world coordinates
+        // Convert y to screen coordinates
         y = WINDOW_HEIGHT - y;
 
         if(strcmp(fill, "blue") == 0) {
