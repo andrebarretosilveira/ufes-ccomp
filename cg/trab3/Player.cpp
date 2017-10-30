@@ -36,6 +36,8 @@ void Player::defineBody()
 
 	transform = Transform(Vector3(0, 0, 0), Vector3(0,0,0), Vector3(1,1,1));
 	sholders = new Ellipse(headRadius*1.8, headRadius/2, transform, head->color);
+
+	lastMousePos = Vector3(0,0,0);
 }
 
 // Draw Player
@@ -79,7 +81,6 @@ void Player::move(GLfloat direction) {
 	transform.print();
 
 	GLfloat movement = direction * moveSpeed * Time::deltaTime.count() * 1000;
-	// cout << "movement: " << movement << "\n";
 	GLfloat dx = movement * sin(-transform.rotation.z * DEG2RAD);
 	GLfloat dy = movement * cos(-transform.rotation.z * DEG2RAD);
 
@@ -88,28 +89,71 @@ void Player::move(GLfloat direction) {
 	if(!canMove()) {
 		// Return to previous position if went into ilegal position
 		cout << "ILEGAL move\n";
-		//transform.position = previousPos;
+		transform.position = previousPos;
 	}
+
+	rotateArm(lastMousePos);
 }
 
 void Player::rotate(GLfloat direction) {
-	float rotation = direction * rotationSpeed * Time::deltaTime.count() * 1000;
+	GLfloat rotation = direction * rotationSpeed * Time::deltaTime.count() * 1000;
 
 	transform.Rotate(0,0,rotation);
+
+	rotateArm(lastMousePos);
 }
 
 void Player::rotateArm(GLfloat mouseX, GLfloat mouseY) {
-	float dist = d2pts(mouseX, mouseY, transform.position.x, transform.position.y);
-	float angle = atan((dist - mouseX)/(dist - mouseY)) * RAD2DEG;
-	// cout << "Rotate arm :: mouse X = " << mouseX << " | mouse Y = " << mouseY << " | Angle = " << angle << "\n";
-	cout << "Rotate arm :: playerX = " << transform.position.x << " | playerY = " << transform.position.y << "\n";
+	GLfloat armPosX = transform.position.x + arm->transform.position.x;
+	GLfloat armPosY = transform.position.y + arm->transform.position.y;
 
-	arm->transform.rotation = Vector3(0,0,angle);
+	GLfloat angle = -atan((armPosX - mouseX)/(armPosY - mouseY)) * RAD2DEG - transform.rotation.z;
+
+	if(angle > ARM_MAX_ROT) angle = ARM_MAX_ROT;
+	else if(angle < -ARM_MAX_ROT) angle = -ARM_MAX_ROT;
+
+	// cout << "Rotate Arm :: mouse X = " << mouseX << " | mouse Y = " << mouseY << " | Angle = " << angle << "\n";
+	// cout << "           :: playerX = " << transform.position.x << " | playerY = " << transform.position.y << "\n";
+
+	lastMousePos = Vector3(mouseX, mouseY, 0);
+
+	arm->transform.rotation.z = angle;
+}
+
+void Player::rotateArm(Vector3 mousePos) {
+	GLfloat bodyRotation = transform.rotation.z;
+	GLfloat armPosX = transform.position.x + arm->transform.position.x;
+	GLfloat armPosY = transform.position.y + arm->transform.position.y;
+
+	GLfloat angle = -atan((armPosX - lastMousePos.x)/(armPosY - lastMousePos.y)) * RAD2DEG - bodyRotation;
+
+	cout << "bodyRotation: " << bodyRotation << " | angle: " << angle << "\n";
+
+	if(angle > ARM_MAX_ROT) angle = ARM_MAX_ROT;
+	else if(angle < -ARM_MAX_ROT) angle = -ARM_MAX_ROT;
+
+	arm->transform.rotation.z = angle;
 }
 
 
-void Player::fire() {
+Bullet* Player::fire() {
 	cout << "Pow!\n";
+
+	GLfloat armPosX = transform.position.x + arm->transform.position.x;
+	GLfloat armPosY = transform.position.y + arm->transform.position.y;
+
+	GLfloat handDelta = arm->getHeight();
+	GLfloat dx = handDelta * sin(-transform.rotation.z * DEG2RAD);
+	GLfloat dy = handDelta * cos(-transform.rotation.z * DEG2RAD);
+
+	Vector3 bulletSpawnPos = Vector3(armPosX, armPosY, 0);
+	bulletSpawnPos.x += dx;
+	bulletSpawnPos.y += dy;
+
+	Vector3 targetDirection = Vector3(lastMousePos.x - armPosX, lastMousePos.y - armPosY, 0);
+	targetDirection.normalize();
+
+	return new Bullet(bulletSpawnPos, targetDirection, BULLET_MOVE_SPEED);
 }
 
 

@@ -46,6 +46,9 @@ public:
 
     bool read_xml(char* filepath);
 
+    GLfloat xScreenToWorld(GLfloat x);
+    GLfloat yScreenToWorld(GLfloat y);
+
     // Destructor
     virtual ~Settings();
 };

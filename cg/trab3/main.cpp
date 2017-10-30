@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <GL/glut.h>
+#include <list>
 #include "Arena.h"
 #include "Player.h"
 #include "Settings.h"
@@ -15,12 +16,21 @@ Settings* settings;
 Arena* arena;
 Player* player;
 Vector3 worldPos;
+list<Bullet*> bullets;
+
+void drawBullets() {
+    list<Bullet*>::iterator it;
+    for (it = bullets.begin(); it != bullets.end(); ++it){
+        (*it)->draw();
+    }
+}
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	arena->draw();
     player->draw();
+    drawBullets();
 
 	glutSwapBuffers();
 }
@@ -30,14 +40,14 @@ void init(void) {
 
   glMatrixMode(GL_PROJECTION);
 
-  float window_size = arena->outerLimit->getRadius() * 2;
-  float window_pos_x = arena->outerLimit->transform.position.x;
-  float window_pos_y = arena->outerLimit->transform.position.y;
+  GLfloat arena_radius = arena->outerLimit->getRadius();
+  GLfloat window_pos_x = arena->outerLimit->transform.position.x;
+  GLfloat window_pos_y = arena->outerLimit->transform.position.y;
 
   worldPos = Vector3(window_pos_x, window_pos_y, 0);
 
-  glOrtho(window_pos_x - window_size/2, window_pos_x + window_size/2,
-    window_pos_y - window_size/2, window_pos_y + window_size/2,
+  glOrtho(window_pos_x - arena_radius, window_pos_x + arena_radius,
+    window_pos_y - arena_radius, window_pos_y + arena_radius,
     100,-100);
 
   glMatrixMode(GL_MODELVIEW);
@@ -56,21 +66,31 @@ void mouse(int button, int state, int x, int y) {
     // Check if left mouse button was clicked
     if(button == GLUT_LEFT_BUTTON && !state &&
         !player->isJumping() && !player->isOnObstacle()) {
-        player->fire();
+        Bullet* bullet = player->fire();
+        bullets.push_back(bullet);
     }
 }
 
-void motion(int x, int y) {
-    int newX = x;
-    int newY = WINDOW_HEIGHT - y;
+void passiveMotion(int x, int y) {
+    int newX = settings->xScreenToWorld(x);
+    int newY = settings->yScreenToWorld(WINDOW_HEIGHT - y);
 
-	cout << "newX = " << newX << " | newY = " << newY << "\n";
+	// cout << "newX = " << newX << " | newY = " << newY << "\n";
 
     player->rotateArm(newX, newY);
 }
 
+void updateBullets() {
+    list<Bullet*>::iterator it;
+    for (it = bullets.begin(); it != bullets.end(); ++it){
+        (*it)->move();
+    }
+}
+
 void idle() {
 	Time::updateTime();
+
+    updateBullets();
 
     if(keyFlags['w'] == 1) {
 		player->move(+1);
@@ -134,7 +154,7 @@ int main(int argc,char** argv) {
 	glutKeyboardFunc(keyPress);
     glutKeyboardUpFunc(keyRelease);
     glutMouseFunc(mouse);
-    glutPassiveMotionFunc(motion);
+    glutPassiveMotionFunc(passiveMotion);
     glutIdleFunc(idle);
 
 	Time::initTime();

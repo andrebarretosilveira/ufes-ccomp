@@ -6,6 +6,7 @@
 #define VECTOR3_H
 
 #include <iostream>
+#include <cmath>
 #include <GL/glut.h>
 
 using namespace std;
@@ -19,6 +20,10 @@ public:
 
     // Constructor
     Vector3(GLfloat x, GLfloat y, GLfloat z);
+    Vector3();
+
+    GLfloat length();
+    void normalize();
 
     // Destructor
     virtual ~Vector3();

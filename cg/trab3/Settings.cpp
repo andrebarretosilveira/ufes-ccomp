@@ -12,6 +12,34 @@ Settings::Settings()
     this->innerLimit = NULL;
 }
 
+GLfloat Settings::xScreenToWorld(GLfloat x)
+{
+    GLfloat xScreenMax, xScreenMin, xWorldMax, xWorldMin;
+    GLfloat arenaRadius = outerLimit->getRadius();
+
+    xScreenMax = WINDOW_WIDTH;
+    xScreenMin = 0;
+    xWorldMax  = outerLimit->transform.position.x + arenaRadius;
+    xWorldMin  = outerLimit->transform.position.x - arenaRadius;
+
+    return (x/xScreenMax) * (xWorldMax - xWorldMin) + xWorldMin;
+}
+
+GLfloat Settings::yScreenToWorld(GLfloat y)
+{
+    GLfloat yScreenMax, yScreenMin, yWorldMax, yWorldMin;
+    GLfloat arenaRadius = outerLimit->getRadius();
+
+    yScreenMax = WINDOW_HEIGHT;
+    yScreenMin = 0;
+    yWorldMax  = outerLimit->transform.position.y + arenaRadius;
+    yWorldMin  = outerLimit->transform.position.y - arenaRadius;
+
+    // cout << "yWorldMax: " << yWorldMax << " | yWorldMin: " << yWorldMin << "\n";
+
+    return (y/yScreenMax) * (yWorldMax - yWorldMin) + yWorldMin;
+}
+
 // Draw Settings
 bool Settings::read_xml(char* config_filepath)
 {
