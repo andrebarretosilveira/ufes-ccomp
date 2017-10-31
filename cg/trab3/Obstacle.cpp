@@ -9,6 +9,7 @@ Obstacle::Obstacle(Circle* shape, bool jumpOver)
 {
 	this->shape = shape;
 	this->jumpOver = jumpOver;
+	this->playerOn = false;
 }
 
 // Draw Obstacle
@@ -22,6 +23,10 @@ void Obstacle::draw()
 
 bool Obstacle::isTouching(Player* player) {
 	return this->shape->isTouchingCircle(player->transform.position, player->getOrgRadius());
+}
+
+bool Obstacle::isTouching(Bullet* bullet) {
+	return this->shape->isTouchingCircle(bullet->transform.position, bullet->shape->getRadius());
 }
 
 bool Obstacle::canJumpOver() { return this->jumpOver; }

@@ -13,6 +13,7 @@
 #include "Obstacle.h"
 #include "Circle.h"
 #include "Player.h"
+#include "Bullet.h"
 
 using namespace std;
 
@@ -38,6 +39,7 @@ public:
     void draw();
 
     bool isOnLegalLocation(Player* player);
+    bool isOnLegalLocation(Bullet* bullet);
     Obstacle* isOnObstacle(Player* player);
 
     // Destructor

@@ -11,6 +11,7 @@
 #include "Arena.h"
 #include "Player.h"
 #include "Circle.h"
+#include "Bullet.h"
 
 using namespace std;
 
@@ -34,6 +35,7 @@ public:
     void draw();
 
     bool isTouching(Player* player);
+    bool isTouching(Bullet* bullet);
 
     Circle* getShape();
     bool canJumpOver();

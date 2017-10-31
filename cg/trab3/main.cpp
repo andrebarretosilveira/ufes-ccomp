@@ -81,10 +81,34 @@ void passiveMotion(int x, int y) {
 }
 
 void updateBullets() {
+    Bullet* bulletToRemove = NULL;
+
     list<Bullet*>::iterator it;
-    for (it = bullets.begin(); it != bullets.end(); ++it){
-        (*it)->move();
+    for (it = bullets.begin(); it != bullets.end(); ++it) {
+
+        if(bulletToRemove) {
+            bullets.remove(bulletToRemove);
+        }
+
+        Bullet* bullet = (*it);
+
+        bullet->move();
+
+        if(!arena->isOnLegalLocation(bullet)) {
+            cout << "Destroy bullet\n";
+            bulletToRemove = bullet;
+            // bullets.remove(bullet);
+            // delete (*it);
+        }
+        else {
+            bulletToRemove = NULL;
+        }
     }
+
+    if(bulletToRemove) {
+        bullets.remove(bulletToRemove);
+        delete(bulletToRemove);
+    }  
 }
 
 void idle() {

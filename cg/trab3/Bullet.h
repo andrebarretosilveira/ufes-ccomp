@@ -22,13 +22,12 @@ class Vector3;
 class Bullet {
 
 private:
+    
+public:
+    Transform transform;
     Circle* shape;
     Vector3 moveDirection;
     GLfloat moveSpeed;
-
-
-public:
-    Transform transform;
 
     // Constructor
     Bullet(Vector3 position, Vector3 moveDirection, GLfloat moveSpeed);

@@ -25,10 +25,10 @@ class Transform;
 class Circle {
 
 private:
-    int id;
-    GLfloat radius;
 
 public:
+    int id;
+    GLfloat radius;
     Transform transform;
     Color color;
     

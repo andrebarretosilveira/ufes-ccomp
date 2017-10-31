@@ -18,11 +18,13 @@
 
 using namespace std;
 
-#define JUMP_RADIUS_MULT 1.5
-#define ON_OBSTACLE_RADIUS_MULT 1.3
+#define JUMP_RADIUS_MULT 1.4
+#define ON_OBSTACLE_RADIUS_MULT 1.1
 #define ARM_POS_X 5
 #define ARM_MAX_ROT 45
-#define BULLET_MOVE_SPEED 0.1
+#define ARM_ROTATION_SPEED 0.3
+#define LEGS_SPEED 0.8
+#define BULLET_MOVE_SPEED 0.2
 
 // Foward declarations
 class Arena;
@@ -35,12 +37,16 @@ private:
     Circle* head;
 	Ellipse* sholders;
 	Rectangle* arm, *lLeg, *rLeg;
+    Vector3 mousePos;
     GLfloat moveSpeed;
     GLfloat rotationSpeed;
     GLfloat jumpTime;
     GLfloat orgRadius;
-    Vector3 lastMousePos;
+    GLfloat legsPosCounter;
+    bool leftLegFoward;
     bool jumping;
+    bool falling;
+    bool climbed;
     bool onObstacle;
     std::chrono::duration<double> jumpElapsed;
 
@@ -56,14 +62,17 @@ public:
     void drawLegs(bool leftLegFoward);
     void move(GLfloat direction);
     void rotate(GLfloat direction);
-    void rotateArm(GLfloat x, GLfloat y);
-    void rotateArm(Vector3 mousePos);
+    void rotateArm(GLfloat mouseX, GLfloat mouseY);
+    // void rotateArm(Vector3 mousePos);
+    void updateLegsPos(GLfloat direction);
     void jump();
     Bullet* fire();
     void changeSize();
 	bool canMove();
     bool isJumping();
     bool isOnObstacle();
+    bool canClimb();
+    bool hasClimbed();
     Circle* getHead();
     GLfloat getOrgRadius();
 
