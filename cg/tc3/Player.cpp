@@ -5,13 +5,14 @@
 #include "Player.h"
 
 // Constructor
-Player::Player(Circle* head, Transform transform, Arena* arena): transform(transform)
+Player::Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bulletSpeed, Arena* arena): transform(transform)
 {
 	this->arena = arena;
     this->head = head;
-    this->moveSpeed = 0.1;
-    this->rotationSpeed = 0.1;
-    this->jumpTime = 1.5;
+    this->moveSpeed = moveSpeed;
+    this->bulletSpeed = bulletSpeed;
+    this->rotationSpeed = ROTATION_SPEED;
+    this->jumpTime = JUMP_TIME;
     this->orgRadius = head->getRadius();
     this->jumping = false;
     this->falling = false;
@@ -124,26 +125,8 @@ void Player::rotateArm(GLfloat mouseX, GLfloat mouseY) {
 	arm->transform.rotation.z = newArmAngle;
 }
 
-// void Player::rotateArm(Vector3 mousePos) {
-// 	GLfloat bodyRotation = transform.rotation.z;
-// 	GLfloat armPosX = transform.position.x + arm->transform.position.x;
-// 	GLfloat armPosY = transform.position.y + arm->transform.position.y;
-
-// 	GLfloat angle = -atan((armPosX - mousePos.x)/(armPosY - mousePos.y)) * RAD2DEG - bodyRotation;
-
-// 	cout << "bodyRotation: " << bodyRotation << " | angle: " << angle << "\n";
-
-// 	if(mousePos.y < armPosY) angle -= 180;
-
-// 	if(angle > ARM_MAX_ROT + bodyRotation) angle = ARM_MAX_ROT;
-// 	else if(angle < -ARM_MAX_ROT - bodyRotation) angle = -ARM_MAX_ROT;
-
-
-// 	arm->transform.rotation.z = angle;
-// }
-
 void Player::updateLegsPos(GLfloat direction) {
-	legsPosCounter += direction * LEGS_SPEED * Time::deltaTime.count() * 1000;
+	legsPosCounter += direction * (moveSpeed*LEGS_SPEED_MULT) * Time::deltaTime.count() * 1000;
 
 	if(sin(legsPosCounter * DEG2RAD) > 0) {
 		leftLegFoward = true;
@@ -155,23 +138,32 @@ void Player::updateLegsPos(GLfloat direction) {
 
 
 Bullet* Player::fire() {
-	GLfloat bodyRotation = transform.rotation.z;
-	GLfloat armPosX = transform.position.x + arm->transform.position.x * cos(bodyRotation * DEG2RAD);
-	GLfloat armPosY = transform.position.y + arm->transform.position.y * sin(bodyRotation * DEG2RAD);
+	GLfloat bodyRotation = this->transform.rotation.z + 90;
 
-	GLfloat handDelta = arm->getHeight();
-	GLfloat armRotation = -(transform.rotation.z + arm->transform.rotation.z);
-	GLfloat dx = handDelta * sin(armRotation * DEG2RAD);
-	GLfloat dy = handDelta * cos(armRotation * DEG2RAD);
+	GLfloat armPosX = transform.position.x;
+	armPosX += arm->transform.position.x * sin(bodyRotation * DEG2RAD);
+	armPosX += arm->transform.position.y * sin(bodyRotation * DEG2RAD);
+
+	GLfloat armPosY = transform.position.y;
+	armPosY += arm->transform.position.y * -cos(bodyRotation * DEG2RAD);
+	armPosY += arm->transform.position.x * -cos(bodyRotation * DEG2RAD);
+
+	GLfloat handSize = arm->getHeight();
+	GLfloat armRotation = bodyRotation + arm->transform.rotation.z;
 
 	Vector3 bulletSpawnPos = Vector3(armPosX, armPosY, 0);
-	bulletSpawnPos.x += dx;
-	bulletSpawnPos.y += dy;
+	bulletSpawnPos.x += handSize * cos(armRotation * DEG2RAD);
+	bulletSpawnPos.y += handSize * sin(armRotation * DEG2RAD);
+
+	// cout << "FIRE: \n";
+	// cout << "armPos: (" << armPosX << ", " << armPosY << ")\n";
+	// cout << "bulletPos: (" << bulletSpawnPos.x << ", " << bulletSpawnPos.y << ")\n";
+	// cout << "bodyRotation = " << bodyRotation << " | ArmRotation = " << armRotation << "\n";
 
 	Vector3 targetDirection = Vector3(bulletSpawnPos.x - armPosX, bulletSpawnPos.y - armPosY, 0);
 	targetDirection.normalize();
 
-	return new Bullet(bulletSpawnPos, targetDirection, BULLET_MOVE_SPEED);
+	return new Bullet(bulletSpawnPos, targetDirection, bulletSpeed);
 }
 
 

@@ -38,7 +38,9 @@ public:
 	char* arenaName;
 	Circle* outerLimit;
     Circle* innerLimit;
-    Circle* player_circle;
+    Circle* playerCircle;
+    GLfloat playerMoveSpeed;
+    GLfloat playerBulletSpeed;
     list<Obstacle*> obstacles;
 
     // Constructor

@@ -12,9 +12,9 @@ Bullet::Bullet(Vector3 position, Vector3 moveDirection, GLfloat moveSpeed)
 	this->shape = new Circle(0, BULLET_RADIUS, Transform(Vector3(0,0,0), Vector3(0,0,0), Vector3(1,1,1)),
 		Color(0,0,0));
 
-	cout << "Bullet created! r = " << shape->getRadius() << "\n";
-	cout << "bulletPos: (" << position.x << ", " << position.y << ")\n";
-	cout << "targetDirection: (" << moveDirection.x << ", " << moveDirection.y << ")\n";
+	// cout << "Bullet created! r = " << shape->getRadius() << "\n";
+	// cout << "bulletPos: (" << position.x << ", " << position.y << ")\n";
+	// cout << "targetDirection: (" << moveDirection.x << ", " << moveDirection.y << ")\n";
 }
 
 // Draw Bullet

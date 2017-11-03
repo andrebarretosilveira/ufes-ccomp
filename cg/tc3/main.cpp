@@ -95,7 +95,7 @@ void updateBullets() {
         bullet->move();
 
         if(!arena->isOnLegalLocation(bullet)) {
-            cout << "Destroy bullet\n";
+            // cout << "Destroy bullet\n";
             bulletToRemove = bullet;
             // bullets.remove(bullet);
             // delete (*it);
@@ -164,7 +164,8 @@ int main(int argc,char** argv) {
     }
 
     arena = new Arena(settings->arenaName, settings->outerLimit, settings->innerLimit, settings->obstacles);
-	player = new Player(settings->player_circle, settings->player_circle->transform, arena);
+	player = new Player(settings->playerCircle, settings->playerCircle->transform,
+        settings->playerMoveSpeed, settings->playerBulletSpeed, arena);
 
 	glutInit(&argc,argv);
 

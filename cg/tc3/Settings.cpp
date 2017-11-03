@@ -7,7 +7,7 @@
 // Constructor
 Settings::Settings()
 {
-    this->player_circle = NULL;
+    this->playerCircle = NULL;
     this->outerLimit = NULL;
     this->innerLimit = NULL;
 }
@@ -67,12 +67,12 @@ bool Settings::read_xml(char* config_filepath)
     }
     XMLElement* svg = arenaSvg.FirstChildElement("svg");
 
-    for (XMLElement* circleNode = svg->FirstChildElement("circle"); circleNode != NULL; circleNode = circleNode->NextSiblingElement("circle")) {
-        int x = circleNode->IntAttribute("cx");
-        int y = circleNode->IntAttribute("cy");
-        float r = circleNode->IntAttribute("r");
-        const char* fill = circleNode->Attribute("fill");
-        int id = circleNode->IntAttribute("id");
+    for (XMLElement* circleElement = svg->FirstChildElement("circle"); circleElement != NULL; circleElement = circleElement->NextSiblingElement("circle")) {
+        int x = circleElement->IntAttribute("cx");
+        int y = circleElement->IntAttribute("cy");
+        float r = circleElement->IntAttribute("r");
+        const char* fill = circleElement->Attribute("fill");
+        int id = circleElement->IntAttribute("id");
 
         // Convert y to screen coordinates
         y = WINDOW_HEIGHT - y;
@@ -87,7 +87,7 @@ bool Settings::read_xml(char* config_filepath)
         }
         else if(strcmp(fill, "green") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
-            player_circle = new Circle(id, r, transform, Color(0,1,0));
+            playerCircle = new Circle(id, r, transform, Color(0,1,0));
         }
         else if(strcmp(fill, "red") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
@@ -100,6 +100,11 @@ bool Settings::read_xml(char* config_filepath)
             obstacles.push_back(new Obstacle(circle, true));
         }
     }
+
+    // Getting PLAYER info from config file
+    XMLElement* playerElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("jogador");
+    playerMoveSpeed = playerElement->FloatAttribute("vel");
+    playerBulletSpeed = playerElement->FloatAttribute("velTiro");
 
     return true;
 }
