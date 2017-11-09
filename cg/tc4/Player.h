@@ -13,6 +13,7 @@
 #include "Ellipse.h"
 #include "Rectangle.h"
 #include "Arena.h"
+#include "Obstacle.h"
 #include "Time.h"
 #include "Bullet.h"
 
@@ -29,6 +30,7 @@ using namespace std;
 
 // Foward declarations
 class Arena;
+class Obstacle;
 class Bullet;
 
 class Player {
@@ -49,7 +51,8 @@ private:
     bool jumping;
     bool falling;
     bool climbed;
-    bool onObstacle;
+    bool overObstacle;
+	bool onObstacle;
     std::chrono::duration<double> jumpElapsed;
 
 
@@ -69,7 +72,8 @@ public:
     void updateLegsPos(GLfloat direction);
     void jump();
     Bullet* fire();
-    void changeSize();
+	void jumpLogic();
+    void changeSize(Obstacle* obstacle);
 	bool canMove();
     bool isJumping();
     bool isOnObstacle();

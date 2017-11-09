@@ -16,7 +16,8 @@ Player::Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bul
     this->orgRadius = head->getRadius() * 1.8;
     this->jumping = false;
     this->falling = false;
-    this->onObstacle = false;
+    this->overObstacle = false;
+	this->onObstacle = false;
     this->climbed = false;
     this->leftLegFoward = true;
     this->legsPosCounter = 90;
@@ -155,11 +156,6 @@ Bullet* Player::fire() {
 	bulletSpawnPos.x += handHeight * cos(armRotation * DEG2RAD);
 	bulletSpawnPos.y += handHeight * sin(armRotation * DEG2RAD);
 
-	// cout << "FIRE: \n";
-	// cout << "armPos: (" << armPosX << ", " << armPosY << ")\n";
-	// cout << "bulletPos: (" << bulletSpawnPos.x << ", " << bulletSpawnPos.y << ")\n";
-	// cout << "bodyRotation = " << bodyRotation << " | ArmRotation = " << armRotation << "\n";
-
 	Vector3 targetDirection = Vector3(bulletSpawnPos.x - armPosX, bulletSpawnPos.y - armPosY, 0);
 	targetDirection.normalize();
 
@@ -174,75 +170,97 @@ void Player::jump() {
 	}
 }
 
-void Player::changeSize() {
+void Player::jumpLogic() {
 	jumpElapsed += Time::deltaTime;
 
-	// Aumentando (subindo)
+	Obstacle* obstacle = arena->isOnObstacle(this);
+
+	// Subindo
 	if(jumpElapsed.count() <= jumpTime/2.0) {
 		jumping = true;
 		falling = false;
 		climbed = false;
-		
+		onObstacle = false;
 	}
 	// No chão
 	else if(jumpElapsed.count() > jumpTime) {
 		jumping = false;
 		falling = false;
+		overObstacle = false;
 	}
 	// Caindo
 	else {
 		jumping = true;
 		falling = true;
-		
-		if(onObstacle && canClimb()) {
+
+		if(overObstacle && canClimb()) {
 			climbed = true;
+		}
+
+		GLfloat heightPercentToClimb = 0;
+		if(obstacle) {
+			heightPercentToClimb = JUMP_RADIUS_MULT * obstacle->getHeightPercent();
+		}
+
+		if(climbed && abs(transform.scale.x - heightPercentToClimb) < 0.01) {
+			onObstacle = true;
+			jumping = false;
+			falling = false;
+		}
+		else {
+			if(obstacle) obstacle->setPlayerOn(false);
 		}
 	}
 
-	Obstacle* obstacle = NULL;
-
 	if(jumping) {
-		Obstacle* obstacle = arena->isOnObstacle(this);
 		if(obstacle) {
-			this->onObstacle = true;
+			overObstacle = true;
 		}
 		else {
-			this->onObstacle = false;
+			overObstacle = false;
+			onObstacle = false;
 			climbed = false;
 		}
+	}
 
+	changeSize(obstacle);
+}
+
+void Player::changeSize(Obstacle* obstacle)
+{
+	GLfloat scaleFactor = 1;
+
+	if(jumping) {
 		// Player rising
 		if(!falling) {
-			GLfloat scaleFactor = jumpElapsed.count() * (JUMP_RADIUS_MULT - 1) + 1;
-			transform.scale = Vector3(scaleFactor, scaleFactor, 0);
+			scaleFactor = jumpElapsed.count() * (JUMP_RADIUS_MULT - 1) + 1;
 		}
 		// Player falling or on Obstacle
 		else if(falling) {
-			GLfloat scaleFactor = (jumpTime - jumpElapsed.count()) * (JUMP_RADIUS_MULT - 1) + 1;
-			// cout << "onObstacle: " << onObstacle << " | scaleFactor = " << scaleFactor << " | " << ON_OBSTACLE_RADIUS_MULT << "\n";
-			if(climbed && abs(transform.scale.x - ON_OBSTACLE_RADIUS_MULT) < 0.01) {
-				// cout << "Climbed\n";
-				if(obstacle) obstacle->setPlayerOn(true);
-				scaleFactor = ON_OBSTACLE_RADIUS_MULT;
-				jumpElapsed -= Time::deltaTime;
-			}
-			else {
-				if(obstacle) obstacle->setPlayerOn(false);
-			}
-
-			transform.scale = Vector3(scaleFactor, scaleFactor, 0);
+			scaleFactor = (jumpTime - jumpElapsed.count()) * (JUMP_RADIUS_MULT - 1) + 1;
+			// cout << "overObstacle: " << overObstacle << " | scaleFactor = " << scaleFactor << " | " << ON_OBSTACLE_RADIUS_MULT << "\n";
 		}
 	}
 	else {
-		transform.scale = Vector3(1,1,1);	
-		this->onObstacle = false;
-		if(obstacle) obstacle->setPlayerOn(false);
+		if(onObstacle) {
+			cout << "On Obstacle. Not jumping.\n";
+			if(obstacle) obstacle->setPlayerOn(true);
+			// scaleFactor = ON_OBSTACLE_RADIUS_MULT;
+			scaleFactor = JUMP_RADIUS_MULT * obstacle->getHeightPercent();
+		}
+		else {
+			cout << "On Ground. Not jumping.\n";
+			transform.scale = Vector3(1,1,1);
+			if(obstacle) obstacle->setPlayerOn(false);
+		}
 	}
+
+	transform.scale = Vector3(scaleFactor, scaleFactor, 0);
 }
 
 bool Player::canMove() { return arena->isOnLegalLocation(this); }
 bool Player::isJumping() { return this->jumping; }
-bool Player::isOnObstacle() { return this->onObstacle; }
+bool Player::isOnObstacle() { return this->overObstacle; }
 bool Player::canClimb() { return transform.scale.x - ON_OBSTACLE_RADIUS_MULT >= 0.01; }
 bool Player::hasClimbed() { return this->climbed; }
 

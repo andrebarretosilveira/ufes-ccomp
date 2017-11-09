@@ -108,7 +108,7 @@ void updateBullets() {
     if(bulletToRemove) {
         bullets.remove(bulletToRemove);
         delete(bulletToRemove);
-    }  
+    }
 }
 
 void idle() {
@@ -133,7 +133,7 @@ void idle() {
     }
 
     if(player->isJumping()) {
-        player->changeSize();
+        player->jumpLogic();
     }
 
     glutPostRedisplay();

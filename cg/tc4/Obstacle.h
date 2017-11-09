@@ -24,13 +24,13 @@ class Obstacle {
 
 private:
     Circle* shape;
-    bool jumpOver;
+    GLfloat heightPercent;
+    bool jumpable;
     bool playerOn;
-
 
 public:
     // Constructor
-    Obstacle(Circle* shape, bool jumpOver);
+    Obstacle(Circle* shape, GLfloat heightPercent, bool jumpable);
 
     void draw();
 
@@ -42,6 +42,7 @@ public:
     bool isPlayerOn();
 
     void setPlayerOn(bool state);
+    GLfloat getHeightPercent();
 
     // Destructor
     virtual ~Obstacle();

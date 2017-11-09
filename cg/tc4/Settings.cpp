@@ -51,6 +51,11 @@ bool Settings::read_xml(char* config_filepath)
         return false;
     }
 
+    // Getting OBSTACLE info from config file
+    XMLElement* obstacleElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("obstaculo");
+    GLfloat obstacleHeightPercent = obstacleElement->FloatAttribute("altura");
+    obstacleHeightPercent /= 100.0;
+
     // Getting ARENA file info from config file
     XMLElement* arqArena = configDoc.FirstChildElement("aplicacao")->FirstChildElement("arquivoDaArena");
     arenaName = strdup(arqArena->Attribute("nome"));
@@ -92,12 +97,12 @@ bool Settings::read_xml(char* config_filepath)
         else if(strcmp(fill, "red") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
             Circle* circle = new Circle(id, r, transform, Color(1,0,0));
-            obstacles.push_back(new Obstacle(circle, false));
+            obstacles.push_back(new Obstacle(circle, obstacleHeightPercent, false));
         }
         else if(strcmp(fill, "black") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
             Circle* circle = new Circle(id, r, transform, Color(0,0,0));
-            obstacles.push_back(new Obstacle(circle, true));
+            obstacles.push_back(new Obstacle(circle, obstacleHeightPercent, true));
         }
     }
 
