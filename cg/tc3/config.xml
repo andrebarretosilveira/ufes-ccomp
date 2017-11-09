@@ -1,5 +1,5 @@
 <aplicacao>
-	<arquivoDaArena nome="Arena" tipo="svg" caminho="./"></arquivoDaArena>
+	<arquivoDaArena nome="TC3" tipo="svg" caminho="./"></arquivoDaArena>
 
 	<jogador velTiro="0.2" vel="0.1"></jogador>
 </aplicacao>

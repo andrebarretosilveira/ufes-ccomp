@@ -28,9 +28,10 @@ public:
     Circle* shape;
     Vector3 moveDirection;
     GLfloat moveSpeed;
+    GLfloat radius;
 
     // Constructor
-    Bullet(Vector3 position, Vector3 moveDirection, GLfloat moveSpeed);
+    Bullet(Vector3 position, Vector3 moveDirection, GLfloat moveSpeed, GLfloat radius);
 
     void draw();
     void move();

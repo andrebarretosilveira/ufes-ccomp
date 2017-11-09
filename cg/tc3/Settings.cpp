@@ -14,11 +14,11 @@ Settings::Settings()
 
 GLfloat Settings::xScreenToWorld(GLfloat x)
 {
-    GLfloat xScreenMax, xScreenMin, xWorldMax, xWorldMin;
+    GLfloat xScreenMax, xWorldMax, xWorldMin;
     GLfloat arenaRadius = outerLimit->getRadius();
 
     xScreenMax = WINDOW_WIDTH;
-    xScreenMin = 0;
+    // xScreenMin = 0;
     xWorldMax  = outerLimit->transform.position.x + arenaRadius;
     xWorldMin  = outerLimit->transform.position.x - arenaRadius;
 
@@ -27,11 +27,11 @@ GLfloat Settings::xScreenToWorld(GLfloat x)
 
 GLfloat Settings::yScreenToWorld(GLfloat y)
 {
-    GLfloat yScreenMax, yScreenMin, yWorldMax, yWorldMin;
+    GLfloat yScreenMax, yWorldMax, yWorldMin;
     GLfloat arenaRadius = outerLimit->getRadius();
 
     yScreenMax = WINDOW_HEIGHT;
-    yScreenMin = 0;
+    // yScreenMin = 0;
     yWorldMax  = outerLimit->transform.position.y + arenaRadius;
     yWorldMin  = outerLimit->transform.position.y - arenaRadius;
 

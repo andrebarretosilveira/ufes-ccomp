@@ -5,11 +5,12 @@
 #include "Bullet.h"
 
 // Constructor
-Bullet::Bullet(Vector3 position, Vector3 moveDirection, GLfloat moveSpeed)
-	: moveDirection(moveDirection), moveSpeed(moveSpeed),
-	  transform(Transform(position, Vector3(0,0,0), Vector3(1,1,1)))
+Bullet::Bullet(Vector3 position, Vector3 moveDirection, GLfloat moveSpeed, GLfloat radius)
+	: transform(Transform(position, Vector3(0,0,0), Vector3(1,1,1))),
+	  moveDirection(moveDirection), moveSpeed(moveSpeed), radius(radius)
+	  
 {
-	this->shape = new Circle(0, BULLET_RADIUS, Transform(Vector3(0,0,0), Vector3(0,0,0), Vector3(1,1,1)),
+	this->shape = new Circle(0, radius, Transform(Vector3(0,0,0), Vector3(0,0,0), Vector3(1,1,1)),
 		Color(0,0,0));
 
 	// cout << "Bullet created! r = " << shape->getRadius() << "\n";

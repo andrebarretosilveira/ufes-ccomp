@@ -13,7 +13,7 @@ Player::Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bul
     this->bulletSpeed = bulletSpeed;
     this->rotationSpeed = ROTATION_SPEED;
     this->jumpTime = JUMP_TIME;
-    this->orgRadius = head->getRadius();
+    this->orgRadius = head->getRadius() * 1.8;
     this->jumping = false;
     this->falling = false;
     this->onObstacle = false;
@@ -112,7 +112,6 @@ void Player::rotateArm(GLfloat mouseX, GLfloat mouseY) {
 
 	mousePos = Vector3(mouseX, mouseY, 0);
 
-	GLfloat bodyRotation = transform.rotation.z;
 	GLfloat deltaRotation = -direction * ARM_ROTATION_SPEED * Time::deltaTime.count() * 1000;
 	GLfloat newArmAngle = arm->transform.rotation.z + deltaRotation;
 
@@ -148,12 +147,13 @@ Bullet* Player::fire() {
 	armPosY += arm->transform.position.y * -cos(bodyRotation * DEG2RAD);
 	armPosY += arm->transform.position.x * -cos(bodyRotation * DEG2RAD);
 
-	GLfloat handSize = arm->getHeight();
+	GLfloat handHeight = arm->getHeight();
+	GLfloat handWidth = arm->getWidth();
 	GLfloat armRotation = bodyRotation + arm->transform.rotation.z;
 
 	Vector3 bulletSpawnPos = Vector3(armPosX, armPosY, 0);
-	bulletSpawnPos.x += handSize * cos(armRotation * DEG2RAD);
-	bulletSpawnPos.y += handSize * sin(armRotation * DEG2RAD);
+	bulletSpawnPos.x += handHeight * cos(armRotation * DEG2RAD);
+	bulletSpawnPos.y += handHeight * sin(armRotation * DEG2RAD);
 
 	// cout << "FIRE: \n";
 	// cout << "armPos: (" << armPosX << ", " << armPosY << ")\n";
@@ -163,7 +163,7 @@ Bullet* Player::fire() {
 	Vector3 targetDirection = Vector3(bulletSpawnPos.x - armPosX, bulletSpawnPos.y - armPosY, 0);
 	targetDirection.normalize();
 
-	return new Bullet(bulletSpawnPos, targetDirection, bulletSpeed);
+	return new Bullet(bulletSpawnPos, targetDirection, bulletSpeed, handWidth*0.7);
 }
 
 
@@ -199,7 +199,7 @@ void Player::changeSize() {
 		}
 	}
 
-	Obstacle* obstacle;
+	Obstacle* obstacle = NULL;
 
 	if(jumping) {
 		Obstacle* obstacle = arena->isOnObstacle(this);
