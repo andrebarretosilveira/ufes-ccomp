@@ -135,6 +135,9 @@ void idle() {
     if(player->isJumping()) {
         player->jumpLogic();
     }
+    else if(player->isOnObstacle()) {
+        player->fallOnLeaveObstacle();
+    }
 
     glutPostRedisplay();
 }

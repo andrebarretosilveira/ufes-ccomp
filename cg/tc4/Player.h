@@ -46,6 +46,7 @@ private:
     GLfloat rotationSpeed;
     GLfloat jumpTime;
     GLfloat orgRadius;
+	GLfloat fallingInitialScale;
     GLfloat legsPosCounter;
     bool leftLegFoward;
     bool jumping;
@@ -68,12 +69,12 @@ public:
     void move(GLfloat direction);
     void rotate(GLfloat direction);
     void rotateArm(GLfloat mouseX, GLfloat mouseY);
-    // void rotateArm(Vector3 mousePos);
     void updateLegsPos(GLfloat direction);
     void jump();
     Bullet* fire();
 	void jumpLogic();
-    void changeSize(Obstacle* obstacle);
+    void changeSize(GLfloat sizeScaleOnJump, Obstacle* obstacle);
+	void fallOnLeaveObstacle();
 	bool canMove();
     bool isJumping();
     bool isOnObstacle();

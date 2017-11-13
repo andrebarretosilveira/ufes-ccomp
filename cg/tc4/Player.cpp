@@ -171,6 +171,8 @@ void Player::jump() {
 }
 
 void Player::jumpLogic() {
+	GLfloat sizeScaleOnJump = transform.scale.x;
+
 	jumpElapsed += Time::deltaTime;
 
 	Obstacle* obstacle = arena->isOnObstacle(this);
@@ -192,6 +194,8 @@ void Player::jumpLogic() {
 	else {
 		jumping = true;
 		falling = true;
+
+		fallingInitialScale = transform.scale.x;
 
 		if(overObstacle && canClimb()) {
 			climbed = true;
@@ -223,29 +227,27 @@ void Player::jumpLogic() {
 		}
 	}
 
-	changeSize(obstacle);
+	changeSize(sizeScaleOnJump, obstacle);
 }
 
-void Player::changeSize(Obstacle* obstacle)
+void Player::changeSize(GLfloat sizeScaleOnJump, Obstacle* obstacle)
 {
 	GLfloat scaleFactor = 1;
 
 	if(jumping) {
 		// Player rising
 		if(!falling) {
-			scaleFactor = jumpElapsed.count() * (JUMP_RADIUS_MULT - 1) + 1;
+			scaleFactor = jumpElapsed.count() * (JUMP_RADIUS_MULT - sizeScaleOnJump) + sizeScaleOnJump;
 		}
 		// Player falling or on Obstacle
 		else if(falling) {
-			scaleFactor = (jumpTime - jumpElapsed.count()) * (JUMP_RADIUS_MULT - 1) + 1;
-			// cout << "overObstacle: " << overObstacle << " | scaleFactor = " << scaleFactor << " | " << ON_OBSTACLE_RADIUS_MULT << "\n";
+			scaleFactor = (jumpTime - jumpElapsed.count()) * (fallingInitialScale - 1) + 1;
 		}
 	}
 	else {
 		if(onObstacle) {
 			cout << "On Obstacle. Not jumping.\n";
 			if(obstacle) obstacle->setPlayerOn(true);
-			// scaleFactor = ON_OBSTACLE_RADIUS_MULT;
 			scaleFactor = JUMP_RADIUS_MULT * obstacle->getHeightPercent();
 		}
 		else {
@@ -256,6 +258,24 @@ void Player::changeSize(Obstacle* obstacle)
 	}
 
 	transform.scale = Vector3(scaleFactor, scaleFactor, 0);
+}
+
+void Player::fallOnLeaveObstacle()
+{
+	Obstacle* obstacle = arena->isOnObstacle(this);
+
+	if(obstacle) return;
+
+	cout << "Not on any obstacle. Falling..." << endl;
+
+	//Not touching any obstacles
+	overObstacle = false;
+	onObstacle = false;
+	climbed = false;
+	jumping = true;
+	falling = true;
+
+	fallingInitialScale = transform.scale.x;
 }
 
 bool Player::canMove() { return arena->isOnLegalLocation(this); }

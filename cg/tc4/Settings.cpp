@@ -51,11 +51,6 @@ bool Settings::read_xml(char* config_filepath)
         return false;
     }
 
-    // Getting OBSTACLE info from config file
-    XMLElement* obstacleElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("obstaculo");
-    GLfloat obstacleHeightPercent = obstacleElement->FloatAttribute("altura");
-    obstacleHeightPercent /= 100.0;
-
     // Getting ARENA file info from config file
     XMLElement* arqArena = configDoc.FirstChildElement("aplicacao")->FirstChildElement("arquivoDaArena");
     arenaName = strdup(arqArena->Attribute("nome"));
@@ -71,6 +66,22 @@ bool Settings::read_xml(char* config_filepath)
         return false;
     }
     XMLElement* svg = arenaSvg.FirstChildElement("svg");
+
+    // Getting OBSTACLE info from config file
+    XMLElement* obstacleElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("obstaculo");
+    GLfloat obstacleHeightPercent = obstacleElement->FloatAttribute("altura");
+    obstacleHeightPercent /= 100.0;
+
+    // Getting ENEMY info from config file
+    XMLElement* enemyElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("inimigo");
+    GLfloat enemyMoveSpeed = enemyElement->FloatAttribute("vel");
+    GLfloat enemyBulletSpeed = enemyElement->FloatAttribute("velTiro");
+    GLfloat enemyFireFreq = enemyElement->FloatAttribute("freqTiro");
+
+    // Getting PLAYER info from config file
+    XMLElement* playerElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("jogador");
+    playerMoveSpeed = playerElement->FloatAttribute("vel");
+    playerBulletSpeed = playerElement->FloatAttribute("velTiro");
 
     for (XMLElement* circleElement = svg->FirstChildElement("circle"); circleElement != NULL; circleElement = circleElement->NextSiblingElement("circle")) {
         int x = circleElement->IntAttribute("cx");
@@ -97,7 +108,8 @@ bool Settings::read_xml(char* config_filepath)
         else if(strcmp(fill, "red") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
             Circle* circle = new Circle(id, r, transform, Color(1,0,0));
-            obstacles.push_back(new Obstacle(circle, obstacleHeightPercent, false));
+            // obstacles.push_back(new Obstacle(circle, obstacleHeightPercent, false));
+            enemies.push_back(new Enemy(circle, circle->transform, enemyMoveSpeed, enemyBulletSpeed, arena));
         }
         else if(strcmp(fill, "black") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
@@ -105,11 +117,6 @@ bool Settings::read_xml(char* config_filepath)
             obstacles.push_back(new Obstacle(circle, obstacleHeightPercent, true));
         }
     }
-
-    // Getting PLAYER info from config file
-    XMLElement* playerElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("jogador");
-    playerMoveSpeed = playerElement->FloatAttribute("vel");
-    playerBulletSpeed = playerElement->FloatAttribute("velTiro");
 
     return true;
 }

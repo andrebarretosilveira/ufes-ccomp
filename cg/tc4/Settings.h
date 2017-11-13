@@ -11,6 +11,7 @@
 #include <string>
 #include "tinyxml2.h"
 #include "Obstacle.h"
+#include "Enemy.h"
 #include "Circle.h"
 #include "Transform.h"
 #include "Vector3.h"
@@ -24,6 +25,7 @@ using namespace tinyxml2;
 
 // Foward declarations
 class Obstacle;
+class Enemy;
 class Circle;
 class Vector3;
 class Transform;
@@ -32,7 +34,7 @@ class Color;
 class Settings {
 
 private:
-    
+
 
 public:
 	char* arenaName;
@@ -42,6 +44,7 @@ public:
     GLfloat playerMoveSpeed;
     GLfloat playerBulletSpeed;
     list<Obstacle*> obstacles;
+    list<Enemy*> enemies;
 
     // Constructor
     Settings();
