@@ -10,8 +10,10 @@
 #include <list>
 #include <string>
 #include "tinyxml2.h"
-#include "Obstacle.h"
+#include "Arena.h"
+#include "Player.h"
 #include "Enemy.h"
+#include "Obstacle.h"
 #include "Circle.h"
 #include "Transform.h"
 #include "Vector3.h"
@@ -24,8 +26,10 @@ using namespace std;
 using namespace tinyxml2;
 
 // Foward declarations
-class Obstacle;
+class Arena;
+class Player;
 class Enemy;
+class Obstacle;
 class Circle;
 class Vector3;
 class Transform;
@@ -35,16 +39,13 @@ class Settings {
 
 private:
 
-
 public:
-	char* arenaName;
+	Arena* arena;
+	Player* player;
 	Circle* outerLimit;
     Circle* innerLimit;
-    Circle* playerCircle;
-    GLfloat playerMoveSpeed;
-    GLfloat playerBulletSpeed;
-    list<Obstacle*> obstacles;
-    list<Enemy*> enemies;
+    // list<Obstacle*> obstacles;
+    // list<Enemy*> enemies;
 
     // Constructor
     Settings();

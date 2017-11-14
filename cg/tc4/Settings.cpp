@@ -7,9 +7,8 @@
 // Constructor
 Settings::Settings()
 {
-    this->playerCircle = NULL;
-    this->outerLimit = NULL;
-    this->innerLimit = NULL;
+    this->arena = NULL;
+    this->player = NULL;
 }
 
 GLfloat Settings::xScreenToWorld(GLfloat x)
@@ -53,8 +52,7 @@ bool Settings::read_xml(char* config_filepath)
 
     // Getting ARENA file info from config file
     XMLElement* arqArena = configDoc.FirstChildElement("aplicacao")->FirstChildElement("arquivoDaArena");
-    arenaName = strdup(arqArena->Attribute("nome"));
-    //const char* arena_type = arqArena->Attribute("tipo");
+    char* arenaName = strdup(arqArena->Attribute("nome"));
     const char* arena_path = arqArena->Attribute("caminho");
     const char* arena_filename = "arena.svg";
 
@@ -71,18 +69,21 @@ bool Settings::read_xml(char* config_filepath)
     XMLElement* obstacleElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("obstaculo");
     GLfloat obstacleHeightPercent = obstacleElement->FloatAttribute("altura");
     obstacleHeightPercent /= 100.0;
+    list<Obstacle*> obstacles;
 
     // Getting ENEMY info from config file
     XMLElement* enemyElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("inimigo");
     GLfloat enemyMoveSpeed = enemyElement->FloatAttribute("vel");
     GLfloat enemyBulletSpeed = enemyElement->FloatAttribute("velTiro");
     GLfloat enemyFireFreq = enemyElement->FloatAttribute("freqTiro");
+    list<Enemy*> enemies;
 
     // Getting PLAYER info from config file
     XMLElement* playerElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("jogador");
-    playerMoveSpeed = playerElement->FloatAttribute("vel");
-    playerBulletSpeed = playerElement->FloatAttribute("velTiro");
-
+    GLfloat playerMoveSpeed = playerElement->FloatAttribute("vel");
+    GLfloat playerBulletSpeed = playerElement->FloatAttribute("velTiro");
+    Circle* playerCircle = NULL;
+    
     for (XMLElement* circleElement = svg->FirstChildElement("circle"); circleElement != NULL; circleElement = circleElement->NextSiblingElement("circle")) {
         int x = circleElement->IntAttribute("cx");
         int y = circleElement->IntAttribute("cy");
@@ -95,20 +96,20 @@ bool Settings::read_xml(char* config_filepath)
 
         if(strcmp(fill, "blue") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
-            outerLimit = new Circle(id, r, transform, Color(0,0,1));
+            this->outerLimit = new Circle(id, r, transform, Color(0,0,1));
         }
         else if(strcmp(fill, "white") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
-            innerLimit = new Circle(id, r, transform, Color(1,1,1));
+            this->innerLimit = new Circle(id, r, transform, Color(1,1,1));
         }
         else if(strcmp(fill, "green") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
             playerCircle = new Circle(id, r, transform, Color(0,1,0));
+            // this->player = new Player(playerCircle, playerCircle->transform, playerMoveSpeed, playerBulletSpeed, arena);
         }
         else if(strcmp(fill, "red") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
             Circle* circle = new Circle(id, r, transform, Color(1,0,0));
-            // obstacles.push_back(new Obstacle(circle, obstacleHeightPercent, false));
             enemies.push_back(new Enemy(circle, circle->transform, enemyMoveSpeed, enemyBulletSpeed, arena));
         }
         else if(strcmp(fill, "black") == 0) {
@@ -117,6 +118,9 @@ bool Settings::read_xml(char* config_filepath)
             obstacles.push_back(new Obstacle(circle, obstacleHeightPercent, true));
         }
     }
+
+    this->arena = new Arena(arenaName, this->outerLimit, this->innerLimit, obstacles, enemies);
+    this->player = new Player(playerCircle, playerCircle->transform, playerMoveSpeed, playerBulletSpeed, arena);
 
     return true;
 }

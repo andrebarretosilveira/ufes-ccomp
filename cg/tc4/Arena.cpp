@@ -5,12 +5,13 @@
 #include "Arena.h"
 
 // Constructor
-Arena::Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Obstacle*> obstacles)
+Arena::Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Obstacle*> obstacles, list<Enemy*> enemies)
 {
 	this->name = name;
     this->outerLimit = outerLimit;
     this->innerLimit = innerLimit;
-    this->obstacles = obstacles;
+	this->obstacles = list<Obstacle*>(obstacles);
+    this->enemies = list<Enemy*>(enemies);
 }
 
 // Draw Arena
@@ -21,24 +22,23 @@ void Arena::draw()
 		exit(1);
 	}
 
-	glPushMatrix();
-	//glTranslatef(outerLimit->getPosition()->x,outerLimit->getPosition()->y,outerLimit->getPosition()->z);
     outerLimit->draw();
-	glPopMatrix();
-
-	glPushMatrix();
-	//glTranslatef(innerLimit->getPosition()->x,innerLimit->getPosition()->y,innerLimit->getPosition()->z);
     innerLimit->draw();
-	glPopMatrix();
 
-    list<Obstacle*>::iterator it;
-	for (it = obstacles.begin(); it != obstacles.end(); ++it){
-	    (*it)->draw();
+    list<Obstacle*>::iterator itObs;
+	for (itObs = obstacles.begin(); itObs != obstacles.end(); ++itObs){
+	    (*itObs)->draw();
+	}
+
+	list<Enemy*>::iterator itEne;
+	for (itEne = enemies.begin(); itEne != enemies.end(); ++itEne){
+	    (*itEne)->draw();
 	}
 }
 
 bool Arena::isOnLegalLocation(Player* player) {
 	list<Obstacle*>::iterator it;
+
 	for (it = obstacles.begin(); it != obstacles.end(); ++it){
 	    if((*it)->isTouching(player)) {
 	    	if((!player->isJumping() && !(*it)->isPlayerOn()) || !(*it)->canJumpOver() ||
@@ -77,8 +77,6 @@ Obstacle* Arena::isOnObstacle(Player* player) {
 	    if((*it)->isTouching(player))
 	    	return (*it);
 	}
-
-	return NULL;
 }
 
 // Destructor

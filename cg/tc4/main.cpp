@@ -1,7 +1,7 @@
 //============================================================================
 // Name        : main.cpp
 // Author      : André Barreto Silveira
-// Description : Main file - TC3 - CG
+// Description : Main file - TC4 - CG
 //============================================================================
 
 #include <iostream>
@@ -166,9 +166,12 @@ int main(int argc,char** argv) {
         return 1;
     }
 
-    arena = new Arena(settings->arenaName, settings->outerLimit, settings->innerLimit, settings->obstacles);
-	player = new Player(settings->playerCircle, settings->playerCircle->transform,
-        settings->playerMoveSpeed, settings->playerBulletSpeed, arena);
+    // arena = new Arena(settings->arenaName, settings->outerLimit, settings->innerLimit, settings->obstacles);
+	// player = new Player(settings->playerCircle, settings->playerCircle->transform,
+    //     settings->playerMoveSpeed, settings->playerBulletSpeed, arena);
+
+    arena = settings->arena;
+	player = settings->player;
 
 	glutInit(&argc,argv);
 

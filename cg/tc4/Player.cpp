@@ -176,6 +176,7 @@ void Player::jumpLogic() {
 	jumpElapsed += Time::deltaTime;
 
 	Obstacle* obstacle = arena->isOnObstacle(this);
+	if(!obstacle) cout << "Player NOT overObstacle" << endl;
 
 	// Subindo
 	if(jumpElapsed.count() <= jumpTime/2.0) {

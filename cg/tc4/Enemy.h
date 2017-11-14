@@ -9,21 +9,13 @@
 
 using namespace std;
 
-#define JUMP_TIME 1.5
-#define JUMP_RADIUS_MULT 1.4
-#define ON_OBSTACLE_RADIUS_MULT 1.1
-#define ARM_POS_X 5
-#define ARM_MAX_ROT 45
-#define ARM_ROTATION_SPEED 0.3
-#define ROTATION_SPEED 0.1
-#define LEGS_SPEED_MULT 5
-
 // Foward declarations
 class Arena;
+class Player;
 class Obstacle;
 class Bullet;
 
-class Enemy : Player {
+class Enemy : public Player {
 
 private:
 

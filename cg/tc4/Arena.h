@@ -11,6 +11,7 @@
 #include <list>
 #include <iterator>
 #include "Obstacle.h"
+// #include "Enemy.h"
 #include "Circle.h"
 #include "Player.h"
 #include "Bullet.h"
@@ -19,22 +20,24 @@ using namespace std;
 
 // Foward declarations
 class Obstacle;
+class Enemy;
 class Circle;
 class Player;
 
 class Arena {
 
 private:
-	
+
 
 public:
     char* name;
     Circle* outerLimit;
     Circle* innerLimit;
-    list<Obstacle*> obstacles;
+	list<Obstacle*> obstacles;
+    list<Enemy*> enemies;
 
     // Constructor
-    Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Obstacle*> obstacles);
+    Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Obstacle*> obstacles, list<Enemy*> enemies);
 
     void draw();
 
