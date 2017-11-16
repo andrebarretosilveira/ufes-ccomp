@@ -10,8 +10,8 @@
 #include <cmath>
 #include <list>
 #include <iterator>
+#include "Bullet.h"
 #include "Obstacle.h"
-// #include "Enemy.h"
 #include "Circle.h"
 #include "Player.h"
 #include "Bullet.h"
@@ -19,8 +19,8 @@
 using namespace std;
 
 // Foward declarations
+class Bullet;
 class Obstacle;
-class Enemy;
 class Circle;
 class Player;
 
@@ -33,14 +33,18 @@ public:
     char* name;
     Circle* outerLimit;
     Circle* innerLimit;
+    list<Bullet*> bullets;
 	list<Obstacle*> obstacles;
-    list<Enemy*> enemies;
+    list<Player*> enemies;
 
     // Constructor
-    Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Obstacle*> obstacles, list<Enemy*> enemies);
+    Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Obstacle*> obstacles, list<Player*> enemies);
 
     void draw();
+    void updateEnemies();
+    void updateBullets(Player* player);
 
+    bool bulletHitEnemy(Bullet* bullet);
     bool isOnLegalLocation(Player* player);
     bool isOnLegalLocation(Bullet* bullet);
     Obstacle* isOnObstacle(Player* player);

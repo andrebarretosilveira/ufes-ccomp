@@ -16,22 +16,14 @@ Settings* settings;
 Arena* arena;
 Player* player;
 Vector3 worldPos;
-list<Bullet*> bullets;
-
-void drawBullets() {
-    list<Bullet*>::iterator it;
-    for (it = bullets.begin(); it != bullets.end(); ++it){
-        (*it)->draw();
-    }
-}
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	arena->draw();
-    player->draw();
-    drawBullets();
 
+    // if(!player) player->draw();
+    player->draw();
 	glutSwapBuffers();
 }
 
@@ -63,15 +55,21 @@ void keyRelease(unsigned char key, int x, int y) {
 }
 
 void mouse(int button, int state, int x, int y) {
+    // if(!player) return;
     // Check if left mouse button was clicked
     if(button == GLUT_LEFT_BUTTON && !state &&
         !player->isJumping() && !player->isOnObstacle()) {
         Bullet* bullet = player->fire();
-        bullets.push_back(bullet);
+
+        if(bullet) {
+            bullet->firedByPlayer = true;
+            arena->bullets.push_back(bullet);
+        }
     }
 }
 
 void passiveMotion(int x, int y) {
+    // if(!player) return;
     int newX = settings->xScreenToWorld(x);
     int newY = settings->yScreenToWorld(WINDOW_HEIGHT - y);
 
@@ -80,41 +78,11 @@ void passiveMotion(int x, int y) {
     player->rotateArm(newX, newY);
 }
 
-void updateBullets() {
-    Bullet* bulletToRemove = NULL;
-
-    list<Bullet*>::iterator it;
-    for (it = bullets.begin(); it != bullets.end(); ++it) {
-
-        if(bulletToRemove) {
-            bullets.remove(bulletToRemove);
-        }
-
-        Bullet* bullet = (*it);
-
-        bullet->move();
-
-        if(!arena->isOnLegalLocation(bullet)) {
-            // cout << "Destroy bullet\n";
-            bulletToRemove = bullet;
-            // bullets.remove(bullet);
-            // delete (*it);
-        }
-        else {
-            bulletToRemove = NULL;
-        }
-    }
-
-    if(bulletToRemove) {
-        bullets.remove(bulletToRemove);
-        delete(bulletToRemove);
-    }
-}
-
 void idle() {
 	Time::updateTime();
 
-    updateBullets();
+    arena->updateBullets(player);
+    arena->updateEnemies();
 
     if(keyFlags['w'] == 1) {
 		player->move(+1);
@@ -172,12 +140,13 @@ int main(int argc,char** argv) {
 
     arena = settings->arena;
 	player = settings->player;
+    player->player = true;
 
 	glutInit(&argc,argv);
 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(WINDOW_WIDTH,WINDOW_HEIGHT);
-	glutInitWindowPosition(100,100);
+	glutInitWindowPosition(30, 50);
 	glutCreateWindow(arena->name);
 	init();
 

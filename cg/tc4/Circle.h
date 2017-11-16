@@ -40,6 +40,7 @@ public:
     bool isInside(Vector3 position);
     bool isTouchingCircle(Vector3 pos, GLfloat radius);
     bool isLeavingCircle(Vector3 pos, GLfloat radius);
+    static bool isCirclesTouching(Vector3 circ1Pos, GLfloat circ1Radius, Vector3 circ2Pos, GLfloat circ2Radius);
 
     // Getters
     GLfloat getRadius();

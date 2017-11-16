@@ -1,6 +1,6 @@
 <aplicacao>
-	<arquivoDaArena nome="TC3" tipo="svg" caminho="./"></arquivoDaArena>
+	<arquivoDaArena nome="TC4" tipo="svg" caminho="./"></arquivoDaArena>
 	<jogador velTiro="0.2" vel="0.1"></jogador>
-	<inimigo freqTiro="0.2" vel="0.1" velTiro="0.2"></inimigo>
-	<obstaculo altura="80"></obstaculo>
+	<inimigo freqTiro="0.8" vel="0.1" velTiro="0.2"></inimigo>
+	<obstaculo altura="90"></obstaculo>
 </aplicacao>

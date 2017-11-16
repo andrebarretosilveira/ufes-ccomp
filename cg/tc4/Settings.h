@@ -12,7 +12,6 @@
 #include "tinyxml2.h"
 #include "Arena.h"
 #include "Player.h"
-#include "Enemy.h"
 #include "Obstacle.h"
 #include "Circle.h"
 #include "Transform.h"
@@ -28,7 +27,6 @@ using namespace tinyxml2;
 // Foward declarations
 class Arena;
 class Player;
-class Enemy;
 class Obstacle;
 class Circle;
 class Vector3;
@@ -44,8 +42,6 @@ public:
 	Player* player;
 	Circle* outerLimit;
     Circle* innerLimit;
-    // list<Obstacle*> obstacles;
-    // list<Enemy*> enemies;
 
     // Constructor
     Settings();

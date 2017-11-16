@@ -11,6 +11,15 @@ void Time::initTime() {
 	lastFrameTime = std::chrono::high_resolution_clock::now();
 }
 
+std::chrono::time_point<std::chrono::high_resolution_clock> Time::now() {
+	return std::chrono::high_resolution_clock::now();
+}
+
+std::chrono::duration<double> Time::elapsed(std::chrono::time_point<std::chrono::high_resolution_clock> before,
+	std::chrono::time_point<std::chrono::high_resolution_clock> now) {
+	return (now - before);
+}
+
 void Time::updateTime() {
 	auto currentFrameTime = std::chrono::high_resolution_clock::now();
 	deltaTime = (currentFrameTime - lastFrameTime);

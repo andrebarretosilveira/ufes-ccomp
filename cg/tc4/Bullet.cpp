@@ -13,6 +13,8 @@ Bullet::Bullet(Vector3 position, Vector3 moveDirection, GLfloat moveSpeed, GLflo
 	this->shape = new Circle(0, radius, Transform(Vector3(0,0,0), Vector3(0,0,0), Vector3(1,1,1)),
 		Color(0,0,0));
 
+	firedByPlayer = false;
+
 	// cout << "Bullet created! r = " << shape->getRadius() << "\n";
 	// cout << "bulletPos: (" << position.x << ", " << position.y << ")\n";
 	// cout << "targetDirection: (" << moveDirection.x << ", " << moveDirection.y << ")\n";
@@ -40,9 +42,14 @@ void Bullet::move()
 	transform.position.y += moveDirection.y * moveSpeed * Time::deltaTime.count() * 1000;
 }
 
-// bool Bullet::isTouching(Player* player) {
-// 	return this->shape->isTouchingCircle(player->transform.position, player->getOrgRadius());
-// }
+bool Bullet::isTouching(Player* player) {
+	return this->shape->isTouchingCircle(player->transform.position, player->getOrgRadius());
+}
+
+void Bullet::destroy()
+{
+	delete(this);
+}
 
 // Destructor
 Bullet::~Bullet() {}

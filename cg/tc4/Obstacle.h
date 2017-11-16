@@ -18,6 +18,7 @@ using namespace std;
 // Foward declarations
 class Arena;
 class Player;
+class Bullet;
 class Circle;
 
 class Obstacle {

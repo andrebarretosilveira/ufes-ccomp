@@ -8,6 +8,7 @@
 #include <iostream>
 #include <GL/glut.h>
 #include "Time.h"
+#include "Player.h"
 #include "Circle.h"
 #include "Vector3.h"
 
@@ -16,6 +17,7 @@
 using namespace std;
 
 // Foward declarations
+class Player;
 class Circle;
 class Vector3;
 
@@ -29,12 +31,15 @@ public:
     Vector3 moveDirection;
     GLfloat moveSpeed;
     GLfloat radius;
+    bool firedByPlayer;
 
     // Constructor
     Bullet(Vector3 position, Vector3 moveDirection, GLfloat moveSpeed, GLfloat radius);
 
     void draw();
     void move();
+    bool isTouching(Player* player);
+    void destroy();
 
     // Destructor
     virtual ~Bullet();

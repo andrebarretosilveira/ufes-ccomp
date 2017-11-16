@@ -19,7 +19,7 @@
 
 using namespace std;
 
-#define JUMP_TIME 1.5
+#define JUMP_TIME 1
 #define JUMP_RADIUS_MULT 1.4
 #define ON_OBSTACLE_RADIUS_MULT 1.1
 #define ARM_POS_X 5
@@ -43,8 +43,10 @@ private:
     Vector3 mousePos;
     GLfloat moveSpeed;
     GLfloat bulletSpeed;
+    GLfloat fireFreq;
     GLfloat rotationSpeed;
     GLfloat jumpTime;
+    GLfloat sizeScaleOnJump;
     GLfloat orgRadius;
 	GLfloat fallingInitialScale;
     GLfloat legsPosCounter;
@@ -53,15 +55,18 @@ private:
     bool falling;
     bool climbed;
     bool overObstacle;
-	bool onObstacle;
+    bool onObstacle;
+    bool alive;
     std::chrono::duration<double> jumpElapsed;
+    std::chrono::time_point<std::chrono::high_resolution_clock> lastFireTime;
 
 
 public:
     Transform transform;
+    bool player;
 
     // Constructor
-    Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bulletSpeed, Arena* arena);
+    Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bulletSpeed, GLfloat fireFreq, Arena* arena);
 
 	void defineBody();
     void draw();
@@ -72,16 +77,20 @@ public:
     void updateLegsPos(GLfloat direction);
     void jump();
     Bullet* fire();
+    Bullet* fireOnFreq();
 	void jumpLogic();
     void changeSize(GLfloat sizeScaleOnJump, Obstacle* obstacle);
 	void fallOnLeaveObstacle();
 	bool canMove();
     bool isJumping();
     bool isOnObstacle();
-    bool canClimb();
+    bool canClimb(Obstacle* obstacle);
     bool hasClimbed();
     Circle* getHead();
     GLfloat getOrgRadius();
+    void setArena(Arena* arena);
+    bool gotHitBy(Bullet* bullet);
+    void die();
 
     // Destructor
     virtual ~Player();

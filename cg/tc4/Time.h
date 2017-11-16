@@ -22,6 +22,9 @@ public:
 
     static void initTime();
     static void updateTime();
+    static std::chrono::time_point<std::chrono::high_resolution_clock> now();
+	static std::chrono::duration<double> elapsed(std::chrono::time_point<std::chrono::high_resolution_clock> before, std::chrono::time_point<std::chrono::high_resolution_clock> now);
+
 };
 
 #endif

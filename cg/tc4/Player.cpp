@@ -5,12 +5,13 @@
 #include "Player.h"
 
 // Constructor
-Player::Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bulletSpeed, Arena* arena): transform(transform)
+Player::Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bulletSpeed, GLfloat fireFreq, Arena* arena): transform(transform)
 {
 	this->arena = arena;
     this->head = head;
     this->moveSpeed = moveSpeed;
     this->bulletSpeed = bulletSpeed;
+    this->fireFreq = fireFreq;
     this->rotationSpeed = ROTATION_SPEED;
     this->jumpTime = JUMP_TIME;
     this->orgRadius = head->getRadius() * 1.8;
@@ -20,7 +21,11 @@ Player::Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bul
 	this->onObstacle = false;
     this->climbed = false;
     this->leftLegFoward = true;
+    this->player = false;
+    this->alive = true;
     this->legsPosCounter = 90;
+
+    lastFireTime = Time::now();
 
 	defineBody();
 }
@@ -49,6 +54,8 @@ void Player::defineBody()
 // Draw Player
 void Player::draw()
 {
+	if(!alive) return;
+
 	glPushMatrix();
 	glTranslatef(transform.position.x,transform.position.y,transform.position.z);
 	glRotatef(transform.rotation.x,1,0,0);
@@ -137,7 +144,10 @@ void Player::updateLegsPos(GLfloat direction) {
 }
 
 
-Bullet* Player::fire() {
+Bullet* Player::fire()
+{
+	if(!alive) return NULL;
+
 	GLfloat bodyRotation = this->transform.rotation.z + 90;
 
 	GLfloat armPosX = transform.position.x;
@@ -162,21 +172,30 @@ Bullet* Player::fire() {
 	return new Bullet(bulletSpawnPos, targetDirection, bulletSpeed, handWidth*0.7);
 }
 
+Bullet* Player::fireOnFreq()
+{
+	if(Time::elapsed(lastFireTime, Time::now()).count() > fireFreq) {
+		lastFireTime = Time::now();
+		return fire();
+	}
+
+	return NULL;
+}
+
 
 void Player::jump() {
 	if(!jumping) {
 		jumping = true;
 		jumpElapsed = std::chrono::duration<double> (0);
+		sizeScaleOnJump = transform.scale.x;
+		fallingInitialScale = JUMP_RADIUS_MULT;
 	}
 }
 
 void Player::jumpLogic() {
-	GLfloat sizeScaleOnJump = transform.scale.x;
-
 	jumpElapsed += Time::deltaTime;
 
 	Obstacle* obstacle = arena->isOnObstacle(this);
-	if(!obstacle) cout << "Player NOT overObstacle" << endl;
 
 	// Subindo
 	if(jumpElapsed.count() <= jumpTime/2.0) {
@@ -196,18 +215,17 @@ void Player::jumpLogic() {
 		jumping = true;
 		falling = true;
 
-		fallingInitialScale = transform.scale.x;
-
-		if(overObstacle && canClimb()) {
+		if(overObstacle && canClimb(obstacle)) {
 			climbed = true;
 		}
 
-		GLfloat heightPercentToClimb = 0;
+		GLfloat heightPercentToClimb = 1;
 		if(obstacle) {
 			heightPercentToClimb = JUMP_RADIUS_MULT * obstacle->getHeightPercent();
 		}
 
-		if(climbed && abs(transform.scale.x - heightPercentToClimb) < 0.01) {
+		cout << "climbed: " << climbed << " | scale: " << transform.scale.x << " , heightToClimp: " << heightPercentToClimb << endl; 
+		if(climbed && abs(transform.scale.x - (1 + heightPercentToClimb)) < 0.01) {
 			onObstacle = true;
 			jumping = false;
 			falling = false;
@@ -217,15 +235,13 @@ void Player::jumpLogic() {
 		}
 	}
 
-	if(jumping) {
-		if(obstacle) {
-			overObstacle = true;
-		}
-		else {
-			overObstacle = false;
-			onObstacle = false;
-			climbed = false;
-		}
+	if(obstacle) {
+		overObstacle = true;
+	}
+	else {
+		overObstacle = false;
+		onObstacle = false;
+		climbed = false;
 	}
 
 	changeSize(sizeScaleOnJump, obstacle);
@@ -238,18 +254,19 @@ void Player::changeSize(GLfloat sizeScaleOnJump, Obstacle* obstacle)
 	if(jumping) {
 		// Player rising
 		if(!falling) {
-			scaleFactor = jumpElapsed.count() * (JUMP_RADIUS_MULT - sizeScaleOnJump) + sizeScaleOnJump;
+			scaleFactor = (jumpElapsed.count()*2.0/jumpTime) * (JUMP_RADIUS_MULT - sizeScaleOnJump)
+				+ sizeScaleOnJump;
 		}
-		// Player falling or on Obstacle
-		else if(falling) {
-			scaleFactor = (jumpTime - jumpElapsed.count()) * (fallingInitialScale - 1) + 1;
+		// Player falling
+		else {
+			scaleFactor = (jumpTime - jumpElapsed.count())*2.0/jumpTime * (fallingInitialScale - 1) + 1;
 		}
 	}
 	else {
 		if(onObstacle) {
 			cout << "On Obstacle. Not jumping.\n";
 			if(obstacle) obstacle->setPlayerOn(true);
-			scaleFactor = JUMP_RADIUS_MULT * obstacle->getHeightPercent();
+			scaleFactor = 1 + JUMP_RADIUS_MULT * obstacle->getHeightPercent();
 		}
 		else {
 			cout << "On Ground. Not jumping.\n";
@@ -275,18 +292,46 @@ void Player::fallOnLeaveObstacle()
 	climbed = false;
 	jumping = true;
 	falling = true;
+}
 
-	fallingInitialScale = transform.scale.x;
+bool Player::gotHitBy(Bullet* bullet)
+{
+	if(Circle::isCirclesTouching(bullet->transform.position, bullet->shape->radius,
+    	this->transform.position, this->getOrgRadius())) {
+
+		if(this->player && bullet->firedByPlayer) {
+    		cout << "Player bullet hitting Player. Ignore." << endl;
+    		return false;
+		}
+
+    	cout << "Enemy bullet hitting Player" << endl;
+
+    	this->die();
+
+    	return true;
+    }
+
+    return false;
+}
+
+void Player::die()
+{
+	alive = false;
+	// delete(this);
 }
 
 bool Player::canMove() { return arena->isOnLegalLocation(this); }
 bool Player::isJumping() { return this->jumping; }
 bool Player::isOnObstacle() { return this->overObstacle; }
-bool Player::canClimb() { return transform.scale.x - ON_OBSTACLE_RADIUS_MULT >= 0.01; }
+bool Player::canClimb(Obstacle* obstacle) {
+	return transform.scale.x > 1 + JUMP_RADIUS_MULT * obstacle->getHeightPercent();
+}
 bool Player::hasClimbed() { return this->climbed; }
 
 Circle* Player::getHead() { return this->head; }
 GLfloat Player::getOrgRadius() { return this->orgRadius; }
+
+void Player::setArena(Arena* arena) { this->arena = arena; }
 
 // Destructor
 Player::~Player() {}

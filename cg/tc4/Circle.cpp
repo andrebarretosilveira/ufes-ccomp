@@ -53,6 +53,11 @@ bool Circle::isLeavingCircle(Vector3 pos, GLfloat radius) {
         pos.x, pos.y) + radius >= this->radius;
 }
 
+bool Circle::isCirclesTouching(Vector3 circ1Pos, GLfloat circ1Radius, Vector3 circ2Pos, GLfloat circ2Radius) {
+    return distance_2pts(circ1Pos.x, circ1Pos.y,
+        circ2Pos.x, circ2Pos.y) <= circ1Radius + circ2Radius;
+}
+
 // Getters
 GLfloat Circle::getRadius() { return this->radius; }
 
