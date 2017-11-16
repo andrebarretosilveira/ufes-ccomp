@@ -8,6 +8,7 @@
 #include <iostream>
 #include <GL/glut.h>
 #include <cmath>
+#include <cstring>
 #include <list>
 #include <iterator>
 #include "Bullet.h"
@@ -41,6 +42,7 @@ public:
     Arena(char* name, Circle* outerLimit, Circle* innerLimit, list<Obstacle*> obstacles, list<Player*> enemies);
 
     void draw();
+    void drawScore(Player* player);
     void updateEnemies();
     void updateBullets(Player* player);
 

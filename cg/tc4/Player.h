@@ -21,7 +21,6 @@ using namespace std;
 
 #define JUMP_TIME 1
 #define JUMP_RADIUS_MULT 1.4
-#define ON_OBSTACLE_RADIUS_MULT 1.1
 #define ARM_POS_X 5
 #define ARM_MAX_ROT 45
 #define ARM_ROTATION_SPEED 0.3
@@ -50,6 +49,7 @@ private:
     GLfloat orgRadius;
 	GLfloat fallingInitialScale;
     GLfloat legsPosCounter;
+	GLint score;
     bool leftLegFoward;
     bool jumping;
     bool falling;
@@ -86,7 +86,9 @@ public:
     bool isOnObstacle();
     bool canClimb(Obstacle* obstacle);
     bool hasClimbed();
+	void incrementScore();
     Circle* getHead();
+	GLint getScore();
     GLfloat getOrgRadius();
     void setArena(Arena* arena);
     bool gotHitBy(Bullet* bullet);

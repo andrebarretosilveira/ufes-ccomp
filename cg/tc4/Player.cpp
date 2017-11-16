@@ -182,7 +182,6 @@ Bullet* Player::fireOnFreq()
 	return NULL;
 }
 
-
 void Player::jump() {
 	if(!jumping) {
 		jumping = true;
@@ -221,11 +220,13 @@ void Player::jumpLogic() {
 
 		GLfloat heightPercentToClimb = 1;
 		if(obstacle) {
-			heightPercentToClimb = JUMP_RADIUS_MULT * obstacle->getHeightPercent();
+			// heightPercentToClimb = JUMP_RADIUS_MULT * obstacle->getHeightPercent();
+			heightPercentToClimb = obstacle->getHeightPercent();
 		}
 
-		cout << "climbed: " << climbed << " | scale: " << transform.scale.x << " , heightToClimp: " << heightPercentToClimb << endl; 
-		if(climbed && abs(transform.scale.x - (1 + heightPercentToClimb)) < 0.01) {
+		cout << "climbed: " << climbed << " | scale: " << transform.scale.x << " , heightToClimp: " << heightPercentToClimb << endl;
+		if(climbed && abs((transform.scale.x - 1) < (JUMP_RADIUS_MULT - 1) * heightPercentToClimb)) {
+		// if(climbed && abs(transform.scale.x < (1 + heightPercentToClimb))) {
 			onObstacle = true;
 			jumping = false;
 			falling = false;
@@ -266,7 +267,7 @@ void Player::changeSize(GLfloat sizeScaleOnJump, Obstacle* obstacle)
 		if(onObstacle) {
 			cout << "On Obstacle. Not jumping.\n";
 			if(obstacle) obstacle->setPlayerOn(true);
-			scaleFactor = 1 + JUMP_RADIUS_MULT * obstacle->getHeightPercent();
+			scaleFactor = 1 + (JUMP_RADIUS_MULT - 1) * obstacle->getHeightPercent();
 		}
 		else {
 			cout << "On Ground. Not jumping.\n";
@@ -296,6 +297,8 @@ void Player::fallOnLeaveObstacle()
 
 bool Player::gotHitBy(Bullet* bullet)
 {
+	// if(!this) return false;
+
 	if(Circle::isCirclesTouching(bullet->transform.position, bullet->shape->radius,
     	this->transform.position, this->getOrgRadius())) {
 
@@ -320,15 +323,27 @@ void Player::die()
 	// delete(this);
 }
 
+void Player::incrementScore()
+{
+	this->score++;
+}
+
 bool Player::canMove() { return arena->isOnLegalLocation(this); }
 bool Player::isJumping() { return this->jumping; }
 bool Player::isOnObstacle() { return this->overObstacle; }
 bool Player::canClimb(Obstacle* obstacle) {
-	return transform.scale.x > 1 + JUMP_RADIUS_MULT * obstacle->getHeightPercent();
+	// return transform.scale.x > 1 + JUMP_RADIUS_MULT * obstacle->getHeightPercent();
+
+	return transform.scale.x - 1 > (JUMP_RADIUS_MULT - 1) * obstacle->getHeightPercent();
+
+	// 1.0 -> 1.0*1.4
+	// 0.0 -> 0.4
+	// (x-1)
 }
 bool Player::hasClimbed() { return this->climbed; }
 
 Circle* Player::getHead() { return this->head; }
+GLint Player::getScore() { return this->score; }
 GLfloat Player::getOrgRadius() { return this->orgRadius; }
 
 void Player::setArena(Arena* arena) { this->arena = arena; }

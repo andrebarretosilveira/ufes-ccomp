@@ -49,6 +49,28 @@ void Arena::draw()
     }
 }
 
+void Arena::drawScore(Player* player)
+{
+	if(!player) return;
+
+	glPushMatrix();
+	glTranslatef(outerLimit->transform.position.x-30,outerLimit->transform.position.y,outerLimit->transform.position.z);
+
+	//
+	string scoreIncompleteString = "Score: ";
+	string playerScoreStr = std::to_string(player->getScore());
+	const char* scoreString = (scoreIncompleteString + playerScoreStr).c_str();
+	int j = strlen( scoreString );
+
+	glColor3f(0, 0, 0);
+	glRasterPos2f(0, 0);
+	for( int i = 0; i < j; i++ ) {
+		glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, scoreString[i] );
+	}
+
+	glPopMatrix();
+}
+
 void Arena::updateEnemies()
 {
 	list<Player*>::iterator it;
@@ -86,11 +108,12 @@ void Arena::updateBullets(Player* player) {
 
         if(this->bulletHitEnemy(bullet)) {
             bulletToRemove = bullet;
+			player->incrementScore();
         }
 
         if(player->gotHitBy(bullet)) {
             bulletToRemove = bullet;
-            player = NULL;
+            // player = NULL;
             // Game Over?
         }
     }
@@ -123,17 +146,30 @@ bool Arena::bulletHitEnemy(Bullet* bullet)
 bool Arena::isOnLegalLocation(Player* player) {
 	list<Obstacle*>::iterator it;
 
+	// Check collision with obstacles
 	for (it = obstacles.begin(); it != obstacles.end(); ++it){
-	    if((*it)->isTouching(player)) {
-	    	if((!player->isJumping() && !(*it)->isPlayerOn()) || !(*it)->canJumpOver() ||
-	    		(player->isJumping() && !player->canClimb((*it)) && !player->hasClimbed())) {
+		Obstacle* obstacle = (*it);
+
+	    if(obstacle->isTouching(player)) {
+	    	if((!player->isJumping() && !obstacle->isPlayerOn()) || !obstacle->canJumpOver() ||
+	    		(player->isJumping() && !player->canClimb(obstacle) && !player->hasClimbed())) {
 	    		// cout << "Touching Obstacle!\n";
 	    		return false;
 	    	}
 	    }
 	    else {
-	    	(*it)->setPlayerOn(false);
+	    	obstacle->setPlayerOn(false);
 	    }
+	}
+
+	list<Player*>::iterator it2;
+	// Check collision with enemies
+	for (it2 = enemies.begin(); it2 != enemies.end(); ++it2){
+		Player* enemy = (*it2);
+		if(Circle::isCirclesTouching(enemy->transform.position, enemy->getOrgRadius(),
+	    	player->transform.position, player->getOrgRadius())) {
+			return false;
+		}
 	}
 
 	return

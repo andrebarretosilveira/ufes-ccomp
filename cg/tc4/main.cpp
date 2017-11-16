@@ -21,6 +21,7 @@ void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	arena->draw();
+	arena->drawScore(player);
 
     // if(!player) player->draw();
     player->draw();
