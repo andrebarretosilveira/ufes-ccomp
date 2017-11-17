@@ -101,7 +101,7 @@ void Player::move(GLfloat direction) {
 
 	if(!canMove()) {
 		// Return to previous position if went into ilegal position
-		// cout << "ILEGAL move\n";
+		cout << "ILEGAL move\n";
 		transform.position = previousPos;
 	}
 
@@ -143,6 +143,23 @@ void Player::updateLegsPos(GLfloat direction) {
 	}
 }
 
+void Player::moveRandomly()
+{
+	int move = rand()%2;
+	int direction = rand()%(1-(-1) + 1) + (-1);
+
+	// cout << "Move? " << move << endl;
+	// cout << "Direction: " << direction << endl;
+
+	if(move) {
+		// Do a walk movement
+		this->move(0);
+	}
+	else {
+		// Do a rotate movement
+		this->rotate(direction);
+	}
+}
 
 Bullet* Player::fire()
 {
@@ -187,7 +204,7 @@ void Player::jump() {
 		jumping = true;
 		jumpElapsed = std::chrono::duration<double> (0);
 		sizeScaleOnJump = transform.scale.x;
-		fallingInitialScale = JUMP_RADIUS_MULT;
+		fallingInitialScale = JUMP_RADIUS_MULT * sizeScaleOnJump;
 	}
 }
 
@@ -224,7 +241,7 @@ void Player::jumpLogic() {
 			heightPercentToClimb = obstacle->getHeightPercent();
 		}
 
-		cout << "climbed: " << climbed << " | scale: " << transform.scale.x << " , heightToClimp: " << heightPercentToClimb << endl;
+		// cout << "climbed: " << climbed << " | scale: " << transform.scale.x << " , heightToClimp: " << heightPercentToClimb << endl;
 		if(climbed && abs((transform.scale.x - 1) < (JUMP_RADIUS_MULT - 1) * heightPercentToClimb)) {
 		// if(climbed && abs(transform.scale.x < (1 + heightPercentToClimb))) {
 			onObstacle = true;
@@ -255,7 +272,7 @@ void Player::changeSize(GLfloat sizeScaleOnJump, Obstacle* obstacle)
 	if(jumping) {
 		// Player rising
 		if(!falling) {
-			scaleFactor = (jumpElapsed.count()*2.0/jumpTime) * (JUMP_RADIUS_MULT - sizeScaleOnJump)
+			scaleFactor = (jumpElapsed.count()*2.0/jumpTime) * (JUMP_RADIUS_MULT*sizeScaleOnJump - sizeScaleOnJump)
 				+ sizeScaleOnJump;
 		}
 		// Player falling
@@ -328,18 +345,16 @@ void Player::incrementScore()
 	this->score++;
 }
 
+bool Player::canClimb(Obstacle* obstacle)
+{
+	if(!obstacle) return false;
+
+	return transform.scale.x - 1 > (JUMP_RADIUS_MULT - 1) * obstacle->getHeightPercent();
+}
+
 bool Player::canMove() { return arena->isOnLegalLocation(this); }
 bool Player::isJumping() { return this->jumping; }
 bool Player::isOnObstacle() { return this->overObstacle; }
-bool Player::canClimb(Obstacle* obstacle) {
-	// return transform.scale.x > 1 + JUMP_RADIUS_MULT * obstacle->getHeightPercent();
-
-	return transform.scale.x - 1 > (JUMP_RADIUS_MULT - 1) * obstacle->getHeightPercent();
-
-	// 1.0 -> 1.0*1.4
-	// 0.0 -> 0.4
-	// (x-1)
-}
 bool Player::hasClimbed() { return this->climbed; }
 
 Circle* Player::getHead() { return this->head; }

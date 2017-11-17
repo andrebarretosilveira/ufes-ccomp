@@ -54,10 +54,11 @@ void Arena::drawScore(Player* player)
 	if(!player) return;
 
 	glPushMatrix();
-	glTranslatef(outerLimit->transform.position.x-30,outerLimit->transform.position.y,outerLimit->transform.position.z);
+	glTranslatef(outerLimit->transform.position.x,outerLimit->transform.position.y,outerLimit->transform.position.z);
+	glTranslatef(outerLimit->radius - 90, outerLimit->radius - 40, 0);
 
 	//
-	string scoreIncompleteString = "Score: ";
+	string scoreIncompleteString = "Kills: ";
 	string playerScoreStr = std::to_string(player->getScore());
 	const char* scoreString = (scoreIncompleteString + playerScoreStr).c_str();
 	int j = strlen( scoreString );
@@ -75,7 +76,13 @@ void Arena::updateEnemies()
 {
 	list<Player*>::iterator it;
 	for (it = enemies.begin(); it != enemies.end(); ++it) {
-	    Bullet* bulletFired = (*it)->fireOnFreq();
+
+		Player* enemy = (*it);
+
+		enemy->moveRandomly();
+
+		// Fire on frequency
+	    Bullet* bulletFired = enemy->fireOnFreq();
 	    if(bulletFired) {
 	    	bullets.push_back(bulletFired);
 	    }
@@ -132,11 +139,17 @@ bool Arena::bulletHitEnemy(Bullet* bullet)
 
 	    if(Circle::isCirclesTouching(bullet->transform.position, bullet->shape->radius,
 	    	enemy->transform.position, enemy->getOrgRadius())) {
-	    	cout << "Bullet touching enemy" << endl;
-        	enemies.remove(enemy);
-	    	enemy->die();
+	    	cout << "Bullet hit Enemy... ";
 
-	    	return true;
+	    	if(bullet->firedByPlayer) {
+	    		cout << "Fired by Player. Kill Enemy." << endl;
+	    		enemies.remove(enemy);
+	    		enemy->die();
+
+	    		return true;
+	    	}
+
+	    	cout << "Fired by Enemy. Friendly Fire." << endl;
 	    }
 	}
 

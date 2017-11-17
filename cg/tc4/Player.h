@@ -9,6 +9,7 @@
 #include <GL/glut.h>
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include "Circle.h"
 #include "Ellipse.h"
 #include "Rectangle.h"
@@ -26,6 +27,9 @@ using namespace std;
 #define ARM_ROTATION_SPEED 0.3
 #define ROTATION_SPEED 0.1
 #define LEGS_SPEED_MULT 5
+#define RANDOM_ROTATION_AMOUNT 10
+#define RANDOM_MOVE_AMOUNT 10
+#define RANDOM_ROTATION_AMOUNT 10
 
 // Foward declarations
 class Arena;
@@ -75,6 +79,7 @@ public:
     void rotate(GLfloat direction);
     void rotateArm(GLfloat mouseX, GLfloat mouseY);
     void updateLegsPos(GLfloat direction);
+    void moveRandomly();
     void jump();
     Bullet* fire();
     Bullet* fireOnFreq();
