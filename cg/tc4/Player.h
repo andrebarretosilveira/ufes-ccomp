@@ -28,8 +28,7 @@ using namespace std;
 #define ROTATION_SPEED 0.1
 #define LEGS_SPEED_MULT 5
 #define RANDOM_ROTATION_AMOUNT 10
-#define RANDOM_MOVE_AMOUNT 10
-#define RANDOM_ROTATION_AMOUNT 10
+#define RANDOM_MOVE_TIME 0.5
 
 // Foward declarations
 class Arena;
@@ -43,6 +42,7 @@ private:
     Circle* head;
 	Ellipse* sholders;
 	Rectangle* arm, *lLeg, *rLeg;
+    Obstacle* lastObstacleOn;
     Vector3 mousePos;
     GLfloat moveSpeed;
     GLfloat bulletSpeed;
@@ -53,7 +53,11 @@ private:
     GLfloat orgRadius;
 	GLfloat fallingInitialScale;
     GLfloat legsPosCounter;
-	GLint score;
+	GLint kills;
+    GLint lastRandomMove;
+    GLint randomMoveDirection;
+    std::chrono::time_point<std::chrono::high_resolution_clock> lastRandomMoveTime;
+    bool player;
     bool leftLegFoward;
     bool jumping;
     bool falling;
@@ -67,15 +71,14 @@ private:
 
 public:
     Transform transform;
-    bool player;
 
     // Constructor
-    Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bulletSpeed, GLfloat fireFreq, Arena* arena);
+    Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bulletSpeed, GLfloat fireFreq);
 
 	void defineBody();
     void draw();
     void drawLegs(bool leftLegFoward);
-    void move(GLfloat direction);
+    bool move(GLfloat direction);
     void rotate(GLfloat direction);
     void rotateArm(GLfloat mouseX, GLfloat mouseY);
     void updateLegsPos(GLfloat direction);
@@ -89,13 +92,18 @@ public:
 	bool canMove();
     bool isJumping();
     bool isOnObstacle();
+    bool isPlayer();
     bool canClimb(Obstacle* obstacle);
     bool hasClimbed();
-	void incrementScore();
+	void incrementKills();
+    void setKills(GLint kills);
     Circle* getHead();
-	GLint getScore();
+	GLint getKills();
     GLfloat getOrgRadius();
+    bool isAlive();
+    void setAlive(bool state);
     void setArena(Arena* arena);
+    void setPlayer(bool state);
     bool gotHitBy(Bullet* bullet);
     void die();
 

@@ -69,7 +69,6 @@ bool Settings::read_xml(char* config_filepath)
     XMLElement* obstacleElement = configDoc.FirstChildElement("aplicacao")->FirstChildElement("obstaculo");
     GLfloat obstacleHeightPercent = obstacleElement->FloatAttribute("altura");
     obstacleHeightPercent /= 100.0;
-    cout << obstacleHeightPercent << endl;
     list<Obstacle*> obstacles;
 
     // Getting ENEMY info from config file
@@ -106,12 +105,12 @@ bool Settings::read_xml(char* config_filepath)
         else if(strcmp(fill, "green") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
             playerCircle = new Circle(id, r, transform, Color(0,1,0));
-            // this->player = new Player(playerCircle, playerCircle->transform, playerMoveSpeed, playerBulletSpeed, arena);
+            this->player = new Player(playerCircle, playerCircle->transform, playerMoveSpeed, playerBulletSpeed, enemyFireFreq);
         }
         else if(strcmp(fill, "red") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
             Circle* circle = new Circle(id, r, transform, Color(1,0,0));
-            enemies.push_back(new Player(circle, circle->transform, enemyMoveSpeed, enemyBulletSpeed, enemyFireFreq, arena));
+            enemies.push_back(new Player(circle, circle->transform, enemyMoveSpeed, enemyBulletSpeed, enemyFireFreq));
         }
         else if(strcmp(fill, "black") == 0) {
             Transform transform = Transform(Vector3(x,y,0), Vector3(0,0,0), Vector3(1,1,1));
@@ -120,8 +119,8 @@ bool Settings::read_xml(char* config_filepath)
         }
     }
 
-    this->arena = new Arena(arenaName, this->outerLimit, this->innerLimit, obstacles, enemies);
-    this->player = new Player(playerCircle, playerCircle->transform, playerMoveSpeed, playerBulletSpeed, 0, arena);
+    this->arena = new Arena(arenaName, this->outerLimit, this->innerLimit, player, obstacles, enemies);
+
 
     return true;
 }

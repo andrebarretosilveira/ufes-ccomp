@@ -21,7 +21,6 @@ void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	arena->draw();
-	arena->drawScore(player);
 
     // if(!player) player->draw();
     player->draw();
@@ -58,14 +57,17 @@ void keyRelease(unsigned char key, int x, int y) {
 void mouse(int button, int state, int x, int y) {
     // if(!player) return;
     // Check if left mouse button was clicked
-    if(button == GLUT_LEFT_BUTTON && !state &&
-        !player->isJumping() && !player->isOnObstacle()) {
+    if(button == GLUT_LEFT_BUTTON && !state) {
         Bullet* bullet = player->fire();
 
         if(bullet) {
             bullet->firedByPlayer = true;
             arena->bullets.push_back(bullet);
         }
+
+        // if(!player->isAlive()) {
+            arena->reset();
+        // }
     }
 }
 
@@ -82,8 +84,7 @@ void passiveMotion(int x, int y) {
 void idle() {
 	Time::updateTime();
 
-    arena->updateBullets(player);
-    arena->updateEnemies();
+    arena->update();
 
     if(keyFlags['w'] == 1) {
 		player->move(+1);
@@ -141,7 +142,7 @@ int main(int argc,char** argv) {
 
     arena = settings->arena;
 	player = settings->player;
-    player->player = true;
+    player->setPlayer(true);
 
 	glutInit(&argc,argv);
 

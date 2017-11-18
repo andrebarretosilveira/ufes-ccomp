@@ -7,7 +7,9 @@
 
 #include <iostream>
 #include <GL/glut.h>
+#include <list>
 #include <chrono>
+#include <algorithm>
 #include "Arena.h"
 #include "Player.h"
 #include "Circle.h"
@@ -26,8 +28,9 @@ class Obstacle {
 private:
     Circle* shape;
     GLfloat heightPercent;
+    list<Player*> playersOn;
     bool jumpable;
-    bool playerOn;
+    // bool playerOn;
 
 public:
     // Constructor
@@ -40,9 +43,9 @@ public:
 
     Circle* getShape();
     bool canJumpOver();
-    bool isPlayerOn();
+    bool isPlayerOn(Player* player);
 
-    void setPlayerOn(bool state);
+    void setPlayerOn(Player* player, bool state);
     GLfloat getHeightPercent();
 
     // Destructor

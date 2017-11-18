@@ -10,7 +10,8 @@ Obstacle::Obstacle(Circle* shape, GLfloat heightPercent, bool jumpable)
 	this->shape = shape;
 	this->heightPercent = heightPercent;
 	this->jumpable = jumpable;
-	this->playerOn = false;
+	// this->playerOn = false;
+	this->playersOn = list<Player*>();
 }
 
 // Draw Obstacle
@@ -27,10 +28,29 @@ bool Obstacle::isTouching(Bullet* bullet) {
 	return this->shape->isTouchingCircle(bullet->transform.position, bullet->shape->getRadius());
 }
 
-bool Obstacle::canJumpOver() { return this->jumpable; }
-bool Obstacle::isPlayerOn() { return this->playerOn; }
+void Obstacle::setPlayerOn(Player* player, bool state) {
+	if(state) {
+		// add player to list if not already there
+		playersOn.push_back(player);
+	}
+	else {
+		// remove player from list
+		playersOn.remove(player);
+	}
 
-void Obstacle::setPlayerOn(bool state) { this->playerOn = state; }
+	// cout << "SetPlayerOn. List size: " << playersOn.size() << endl;
+	// this->playerOn = state;
+}
+
+bool Obstacle::isPlayerOn(Player* player) {
+	bool isPlayerOnList = (std::find(playersOn.begin(), playersOn.end(), player) != playersOn.end());
+
+	// cout << "isPlayerOn? " << isPlayerOnList << endl;
+	return isPlayerOnList;
+}
+
+
+bool Obstacle::canJumpOver() { return this->jumpable; }
 GLfloat Obstacle::getHeightPercent() { return this->heightPercent; }
 Circle* Obstacle::getShape() { return this->shape; }
 

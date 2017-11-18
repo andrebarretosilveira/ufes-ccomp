@@ -17,6 +17,7 @@ private:
     Time() {}
 
 public:
+    static std::chrono::time_point<std::chrono::high_resolution_clock> initialTime;
     static std::chrono::time_point<std::chrono::high_resolution_clock> lastFrameTime;
     static std::chrono::duration<double> deltaTime;
 
@@ -24,6 +25,7 @@ public:
     static void updateTime();
     static std::chrono::time_point<std::chrono::high_resolution_clock> now();
 	static std::chrono::duration<double> elapsed(std::chrono::time_point<std::chrono::high_resolution_clock> before, std::chrono::time_point<std::chrono::high_resolution_clock> now);
+	static std::chrono::duration<double> zeroDuration();
 
 };
 

@@ -5,9 +5,8 @@
 #include "Player.h"
 
 // Constructor
-Player::Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bulletSpeed, GLfloat fireFreq, Arena* arena): transform(transform)
+Player::Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bulletSpeed, GLfloat fireFreq): transform(transform)
 {
-	this->arena = arena;
     this->head = head;
     this->moveSpeed = moveSpeed;
     this->bulletSpeed = bulletSpeed;
@@ -20,12 +19,17 @@ Player::Player(Circle* head, Transform transform, GLfloat moveSpeed, GLfloat bul
     this->overObstacle = false;
 	this->onObstacle = false;
     this->climbed = false;
+    this->lastObstacleOn = NULL;
     this->leftLegFoward = true;
     this->player = false;
     this->alive = true;
     this->legsPosCounter = 90;
+    this->kills = 0;
 
-    lastFireTime = Time::now();
+	lastRandomMove = 1;
+	randomMoveDirection = 1;
+	lastRandomMoveTime = Time::now();
+	lastFireTime = Time::now();
 
 	defineBody();
 }
@@ -86,10 +90,8 @@ void Player::drawLegs(bool leftLegFoward)
 	lLeg->draw();
 }
 
-void Player::move(GLfloat direction) {
+bool Player::move(GLfloat direction) {
 	Vector3 previousPos = transform.position;
-
-	// transform.print();
 
 	GLfloat movement = direction * moveSpeed * Time::deltaTime.count() * 1000;
 	GLfloat dx = movement * sin(-transform.rotation.z * DEG2RAD);
@@ -101,11 +103,17 @@ void Player::move(GLfloat direction) {
 
 	if(!canMove()) {
 		// Return to previous position if went into ilegal position
-		cout << "ILEGAL move\n";
+		// cout << "ILEGAL move\n";
+		if(arena->isTouchingObstacle(this) && !this->isPlayer() && !this->onObstacle) {
+			// cout << "touching obstacle" << endl;
+			this->jump();
+		}
 		transform.position = previousPos;
+
+		return false;
 	}
 
-	// rotateArm(mousePos);
+	return true;
 }
 
 void Player::rotate(GLfloat direction) {
@@ -145,25 +153,59 @@ void Player::updateLegsPos(GLfloat direction) {
 
 void Player::moveRandomly()
 {
-	int move = rand()%2;
-	int direction = rand()%(1-(-1) + 1) + (-1);
+	int move, direction;
 
-	// cout << "Move? " << move << endl;
-	// cout << "Direction: " << direction << endl;
+	if(Time::elapsed(lastRandomMoveTime, Time::now()).count() < RANDOM_MOVE_TIME) {
+		move = lastRandomMove;
+		direction = randomMoveDirection;
+	}
+	else {
+		if(lastRandomMoveTime == Time::initialTime) {
+			// Has hit a wall, rotate now
+			move = 0;
+		}
+		else {
+			// Keep moving foward a little more
+			move = 1;
+		}
+		
+		// Setting the direction to 1 here avoids too much moonwalk
+		direction = randomMoveDirection;
+
+		lastRandomMove = move;
+		lastRandomMoveTime = Time::now();
+	}
 
 	if(move) {
 		// Do a walk movement
-		this->move(0);
+		if(!this->move(direction) && !this->isJumping()) {
+			// Ilegal move, then try another type on next move
+			lastRandomMoveTime = Time::initialTime;
+			randomMoveDirection = rand()%2 * 2 - 1;
+		}
 	}
 	else {
 		// Do a rotate movement
 		this->rotate(direction);
 	}
+
+	// if(arena->isTouchingObstacle(this) != NULL) {
+	// 	cout << "touching obstacle" << endl;
+	// 	this->jump();
+	// }
+
+	// Jump stuff
+	if(this->isJumping()) {
+        this->jumpLogic();
+    }
+    else if(this->isOnObstacle()) {
+        this->fallOnLeaveObstacle();
+    }
 }
 
 Bullet* Player::fire()
 {
-	if(!alive) return NULL;
+	if(!alive || this->isJumping() || this->isOnObstacle()) return NULL;
 
 	GLfloat bodyRotation = this->transform.rotation.z + 90;
 
@@ -211,7 +253,9 @@ void Player::jump() {
 void Player::jumpLogic() {
 	jumpElapsed += Time::deltaTime;
 
-	Obstacle* obstacle = arena->isOnObstacle(this);
+	Obstacle* obstacle = arena->isTouchingObstacle(this);
+
+	GLfloat jumpTime = this->jumpTime * this->sizeScaleOnJump;
 
 	// Subindo
 	if(jumpElapsed.count() <= jumpTime/2.0) {
@@ -237,19 +281,16 @@ void Player::jumpLogic() {
 
 		GLfloat heightPercentToClimb = 1;
 		if(obstacle) {
-			// heightPercentToClimb = JUMP_RADIUS_MULT * obstacle->getHeightPercent();
 			heightPercentToClimb = obstacle->getHeightPercent();
 		}
 
-		// cout << "climbed: " << climbed << " | scale: " << transform.scale.x << " , heightToClimp: " << heightPercentToClimb << endl;
 		if(climbed && abs((transform.scale.x - 1) < (JUMP_RADIUS_MULT - 1) * heightPercentToClimb)) {
-		// if(climbed && abs(transform.scale.x < (1 + heightPercentToClimb))) {
 			onObstacle = true;
 			jumping = false;
 			falling = false;
 		}
 		else {
-			if(obstacle) obstacle->setPlayerOn(false);
+			if(obstacle) obstacle->setPlayerOn(this, false);
 		}
 	}
 
@@ -268,6 +309,8 @@ void Player::jumpLogic() {
 void Player::changeSize(GLfloat sizeScaleOnJump, Obstacle* obstacle)
 {
 	GLfloat scaleFactor = 1;
+	
+	GLfloat jumpTime = this->jumpTime * this->sizeScaleOnJump;
 
 	if(jumping) {
 		// Player rising
@@ -282,14 +325,15 @@ void Player::changeSize(GLfloat sizeScaleOnJump, Obstacle* obstacle)
 	}
 	else {
 		if(onObstacle) {
-			cout << "On Obstacle. Not jumping.\n";
-			if(obstacle) obstacle->setPlayerOn(true);
+			// cout << "On Obstacle. Not jumping.\n";
+			if(obstacle) obstacle->setPlayerOn(this, true);
+			lastObstacleOn = obstacle;
 			scaleFactor = 1 + (JUMP_RADIUS_MULT - 1) * obstacle->getHeightPercent();
 		}
 		else {
-			cout << "On Ground. Not jumping.\n";
+			// cout << "On Ground. Not jumping.\n";
 			transform.scale = Vector3(1,1,1);
-			if(obstacle) obstacle->setPlayerOn(false);
+			if(lastObstacleOn) lastObstacleOn->setPlayerOn(this, false);
 		}
 	}
 
@@ -298,11 +342,11 @@ void Player::changeSize(GLfloat sizeScaleOnJump, Obstacle* obstacle)
 
 void Player::fallOnLeaveObstacle()
 {
-	Obstacle* obstacle = arena->isOnObstacle(this);
+	Obstacle* obstacle = arena->isTouchingObstacle(this);
 
 	if(obstacle) return;
 
-	cout << "Not on any obstacle. Falling..." << endl;
+	// cout << "Not on any obstacle. Falling..." << endl;
 
 	//Not touching any obstacles
 	overObstacle = false;
@@ -319,16 +363,17 @@ bool Player::gotHitBy(Bullet* bullet)
 	if(Circle::isCirclesTouching(bullet->transform.position, bullet->shape->radius,
     	this->transform.position, this->getOrgRadius())) {
 
-		if(this->player && bullet->firedByPlayer) {
-    		cout << "Player bullet hitting Player. Ignore." << endl;
+		if(this->isOnObstacle() || (this->player && bullet->firedByPlayer)) {
+    		// cout << "Player bullet hitting Player. Ignore." << endl;
     		return false;
 		}
 
-    	cout << "Enemy bullet hitting Player" << endl;
+    	// cout << "Enemy bullet hitting Player" << endl;
+    	if(this->isAlive()) {
+    		this->die();
 
-    	this->die();
-
-    	return true;
+    		return true;
+    	}
     }
 
     return false;
@@ -340,10 +385,6 @@ void Player::die()
 	// delete(this);
 }
 
-void Player::incrementScore()
-{
-	this->score++;
-}
 
 bool Player::canClimb(Obstacle* obstacle)
 {
@@ -353,15 +394,19 @@ bool Player::canClimb(Obstacle* obstacle)
 }
 
 bool Player::canMove() { return arena->isOnLegalLocation(this); }
+bool Player::isPlayer() { return this->player; }
 bool Player::isJumping() { return this->jumping; }
 bool Player::isOnObstacle() { return this->overObstacle; }
 bool Player::hasClimbed() { return this->climbed; }
-
 Circle* Player::getHead() { return this->head; }
-GLint Player::getScore() { return this->score; }
+GLint Player::getKills() { return this->kills; }
+void Player::incrementKills() { this->kills++; }
+void Player::setKills(GLint kills) { this->kills = kills; }
 GLfloat Player::getOrgRadius() { return this->orgRadius; }
-
+bool Player::isAlive() { return this->alive; }
+void Player::setAlive(bool state) { this->alive = state; }
 void Player::setArena(Arena* arena) { this->arena = arena; }
+void Player::setPlayer(bool state) { this->player = state; }
 
 // Destructor
 Player::~Player() {}
