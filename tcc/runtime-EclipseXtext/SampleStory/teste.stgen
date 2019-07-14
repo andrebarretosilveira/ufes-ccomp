@@ -1,0 +1,439 @@
+Story data { }
+
+Space
+{
+	player actor BearGrylls {
+		name: "Bear Grylls"
+		fact possuiGancho = false
+		fact possuiEstilingue = false
+	}
+}
+
+Plot
+{
+	// No avião
+	
+	opening event Abertura {
+		description: "A missão é resgatar a doutora que está perdida nesta floresta amazônica."
+		triggers: DP_GanchoOuEstiligue
+	}
+	
+	action DP_GanchoOuEstiligue {
+		type: communication
+		description: "Tenho espaço para mais um item. O gancho pode me ajudar caso eu fique preso em algum lugar, e o estilingue é ótimo para lidar com animais indesejados. O que acha? Devo levar o gancho ou o estilingue?"
+		short-description: ""
+		actor: BearGrylls
+		require: be-triggered
+	}
+	action EscolherGancho {
+		type: communication
+		description: "Ok, vou levar o gancho."
+		short-description: "Gancho."
+		actor: BearGrylls
+		triggers: DesceuDoAviao
+		require: after DP_GanchoOuEstiligue
+		require: before EscolherGancho
+		require: before EscolherEstilingue
+		change: BearGrylls.possuiGancho = true
+	}
+	action EscolherEstilingue {
+		type: communication
+		description: "Ok, vou levar o estilingue."
+		short-description: "Estilingue."
+		actor: BearGrylls
+		triggers: DesceuDoAviao
+		require: after DP_GanchoOuEstiligue
+		require: before EscolherGancho
+		require: before EscolherEstilingue
+		change: BearGrylls.possuiEstilingue = true
+	}
+	
+	// Na costa, início da aventura
+	
+	event DesceuDoAviao {
+		description: "Bear Grylls desce do avião e se encontra às margens da floresta."
+		triggers: DP_FlorestaOuRio
+		require: be-triggered
+	}
+	
+	action DP_FlorestaOuRio {
+		type: communication
+		description: "Acha que eu devo seguir pelo rio ou cortar meu caminho pela floresta?"
+		short-description: ""
+		actor: BearGrylls
+		require: be-triggered
+	}
+	action EscolherFloresta {
+		type: communication
+		description: "Ok, vou cortar meu caminho pela densa floresta."
+		short-description: "Floresta."
+		actor: BearGrylls
+		triggers: EncontrarAcampamento
+		require: after DP_FlorestaOuRio
+		require: before EscolherFloresta
+		require: before EscolherRio
+	}
+	action EscolherRio {
+		type: communication
+		description: "Você quer que eu vá pelo rio perigoso? Tudo bem, realmente pode ser mais rápido dessa forma."
+		short-description: "Rio."
+		actor: BearGrylls
+		triggers: EncontrarCrocodilo
+		require: after DP_FlorestaOuRio
+		require: before EscolherFloresta
+		require: before EscolherRio
+		
+	}
+	
+	// No rio
+	
+	event EncontrarCrocodilo {
+		description: "Andando pelo rio, um crocodilo aparece bloqueando o caminho."
+		may-trigger: DP_EsgueirarOuIntimidarCrocodilo, EspantarCrocodiloEstilingue
+		require: be-triggered
+	}
+	
+	action EspantarCrocodiloEstilingue {
+		type: combat
+		description: "É por isso que você deve ter cuidado nesses rios, olha só esses dentes. Ainda bem que tenho este estilingue. Vou usá-lo para espantar o crocodilo."
+		short-description: ""
+		actor: BearGrylls
+		triggers: SairDoRio
+		require: be-triggered
+		require: BearGrylls.possuiEstilingue
+	}
+	
+	action DP_EsgueirarOuIntimidarCrocodilo {
+		type: communication
+		description: "É por isso que você deve ter cuidado nesses rios, olha só esses dentes. Posso tentar me esgueirar pelo rio, nadando embaixo da água ou ir pra cima dele, fazendo barulho e batendo na água para intimidá-lo. Então, qual você escolhe?"
+		short-description: ""
+		actor: BearGrylls
+		require: be-triggered
+		require: not BearGrylls.possuiEstilingue
+	}
+	action EscolherEsgueirar {
+		type: communication
+		description: "Você acha que devo me esgueirar? Ok, pode ser a melhor opção mesmo."
+		short-description: "Esgueirar-se pela água."
+		actor: BearGrylls
+		triggers: EsgueirarCrocodilo
+		require: after DP_EsgueirarOuIntimidarCrocodilo
+		require: before EscolherEsgueirar
+		require: before EscolherIntimidar
+	}
+	action EscolherIntimidar {
+		type: communication
+		description: "Ir pra cima dele? Espero que ele fique assustado, se não vou ter problemas."
+		short-description: "Encarar o crocodilo."
+		actor: BearGrylls
+		triggers: CrocodiloIntimidado
+		require: after DP_EsgueirarOuIntimidarCrocodilo
+		require: before EscolherEsgueirar
+		require: before EscolherIntimidar
+	}
+	
+	event CrocodiloIntimidado {
+		description: "Fazendo barulho, e agitando a água na direção do crocodilo, Bear Grylls o assusta e o predador foge para os arbustros, liberando o caminho."
+		triggers: SairDoRio
+		require: be-triggered
+	}
+	
+	event EsgueirarCrocodilo {
+		description: "Bear Grylls tenta se esgueirar por baixo da água, mas o crocodilo avança em sua direção. Após uma confusão na água, Bear Grylls se levanta, com o crocodilo dominado."
+		triggers: JogarCrocodiloLonge
+		require: be-triggered
+	}
+	
+	action JogarCrocodiloLonge {
+		type: communication
+		description: "Ufa! Essa foi por pouco. Consegui fechar a mandíbula dele e o segurar. Olha só, um bom tamanho pra um crocodilo! Vou jogá-lo atrás daquele tronco e prosseguir."
+		short-description: ""
+		actor: BearGrylls
+		triggers: AposConfrontoCrocodilo
+		require: be-triggered
+	}
+	
+	event AposConfrontoCrocodilo {
+		description: "Seguindo caminho, Bear Grylls se depara com mais vários crocodilos, que devem ter vindo por causa da confusão anterior. Agitos prolongados na água são sinal de presa e isso deve ter atraído mais deles."
+		triggers: DesvioNoRio
+		require: be-triggered
+	}
+	
+	event DesvioNoRio {
+		description: "Sendo forçado a desviar por outro ramo do rio, Bear Grylls se vê sendo puxado pela correnteza do rio. Em pouco tempo, é arrastado com força e expelido até o mar."
+		triggers: DP_EnfrentarCorrentezaOuIrAFavor
+		require: be-triggered
+	}
+	
+	action DP_EnfrentarCorrentezaOuIrAFavor {
+		type: communication
+		description: "Essa correnteza está muito forte e me levando cada vez mais pra longe. O que acha que devo fazer, tentar enfrentar a correnteza e voltar ou nadar a favor tentando chegar em outro ponto da costa?"
+		short-description: ""
+		actor: BearGrylls
+		require: be-triggered
+	}
+	action EscolherEnfrentarCorrenteza {
+		type: communication
+		description: "Enfrentar a correnteza? Isso pode ser difícil. Vou ter que me livar da minha mochila, ela está me pesando."
+		short-description: "Nadar contra a correnteza."
+		actor: BearGrylls
+		triggers: FalharEmEnfrentarCorrenteza
+		require: after DP_EnfrentarCorrentezaOuIrAFavor
+		require: before EscolherEnfrentarCorrenteza
+		require: before EscolherIrAFavor
+	}
+	action EscolherIrAFavor {
+		type: communication
+		description: "Nadar a favor da correnteza? Ok, é uma boa ideia. Vamos ver onde vou parar."
+		short-description: "Nadar a favor."
+		actor: BearGrylls
+		triggers: NadarAFavor
+		require: after DP_EnfrentarCorrentezaOuIrAFavor
+		require: before EscolherEnfrentarCorrenteza
+		require: before EscolherIrAFavor
+	}
+	
+	event NadarAFavor {
+		description: "Nadando a favor da correnteza, Bear Grylls consegue voltar a margem eventualmente, e sem muito esforço. Agora o caminho é pela floresta."
+		triggers: EncontrarAcampamento
+		require: be-triggered
+	}
+	
+	event FalharEmEnfrentarCorrenteza {
+		description: "Após tentar por minutos, a correnteza exaure o Bear Grylls e o arrasta para longe. Desistindo, ele começa a nadar a favor da correnteza e em direção a uma ilha."
+		triggers: ComentarioNaIlha
+		require: be-triggered
+	}
+	
+	action ComentarioNaIlha {
+		type: communication
+		description: "Pra falar a verdade, dei sorte em ter vindo parar nessa ilha. Tentar enfrentar a correnteza nunca é uma boa ideia. Sem equipamentos e muito distante do objetivo, não posso continuar a busca. Agora eu estou no modo sobrevivência também. Vou sinalizar com fogo para ser resgatado."
+		short-description: ""
+		actor: BearGrylls
+		triggers: IlhadoAposCorrenteza
+		require: be-triggered
+	}
+	
+	
+	// Saindo do rio, precisa comer
+	
+	event SairDoRio {
+		description: "Seguindo pelo rio, Bear Grylls chega em um ponto onde deve continuar pela floresta, já que o rio desvia por outras direções."
+		triggers: DP_CupinsOuLarva
+		require: be-triggered
+	}
+	
+	action DP_CupinsOuLarva {
+		type: communication
+		description: "Certamente sentindo que preciso comer um pouco agora. Olha só, um ninho de cupins. Estes pequenos podem encher a barriga se conseguir vários. Ou então essa larva grande aqui, que está certamente cheia de energia. Qual delas devo comer?"
+		short-description: ""
+		actor: BearGrylls
+		require: be-triggered
+	}
+	action EscolherCupins {
+		type: communication
+		description: "Cupins é? Vou fazer como os macacos. Eles usam um graveto, enfiando no ninho e esperando encher de cupins... e aí é só colocar na boca, assim. Ok, vamos continuar."
+		short-description: "Comer cupins."
+		actor: BearGrylls
+		triggers: EncontrarPrecipicio
+		require: after DP_CupinsOuLarva
+		require: before EscolherCupins
+		require: before EscolherLarva
+	}
+	action EscolherLarva {
+		type: communication
+		description: "A larva... claro que você escolheu a larva. Vou tirar a cabeça, porque não quero essas presas medievais na minha boca... Ugh. Ok, vamos continuar."
+		short-description: "Comer a larva."
+		actor: BearGrylls
+		triggers: EncontrarPrecipicio
+		require: after DP_CupinsOuLarva
+		require: before EscolherCupins
+		require: before EscolherLarva
+	}
+		
+	// Na Floresta
+	
+	event EncontrarAcampamento {
+		description: "Após andar e cortar seu caminho pela floresta, Bear Grylls encontra sinais de um acampamento."
+		triggers: DP_ArvoreOuMacacos
+		require: be-triggered
+	}
+		
+	action DP_ArvoreOuMacacos {
+		type: communication
+		description: "Este acampamento é recente, e com certeza é da doutura. Daqui eu posso subir em uma árvore para obter uma visão melhor ou seguir os sons dos macacos, que podem indicam estresse e provavelmente pode haver algo. O que acha, subir na árvore ou seguir os macacos?"
+		short-description: ""
+		actor: BearGrylls
+		require: be-triggered
+	}
+	action EscolherArvore {
+		type: communication
+		description: "Então vou subir na árvore usando essa corda."
+		short-description: "Subir na árvore."
+		actor: BearGrylls
+		triggers: EncontrarFumaca
+		require: after DP_ArvoreOuMacacos
+		require: before EscolherArvore
+		require: before EscolherMacacos
+	}
+	action EscolherMacacos {
+		type: communication
+		description: "Ok, vou seguir os sons dos macacos."
+		short-description: "Seguir os macacos."
+		actor: BearGrylls
+		triggers: EncontrarMacacos
+		require: after DP_ArvoreOuMacacos
+		require: before EscolherArvore
+		require: before EscolherMacacos
+	}
+	
+	// Na floresta, seguindo os macacos...
+	event EncontrarMacacos {
+		description: "Seguindo os sons dos macacos, Bear Grylls encontra uma mochila no chão, e um macaco está mexendo nela."
+		may-trigger: EspantarMacaco, PerseguirMacaco
+		require: be-triggered
+	}
+	action EspantarMacaco {
+		type: combat
+		description: "Ele provavelmente está procurando comida. Parece inofensivo, mas pode ser bem feroz. Ainda bem que tenho este estilingue, vou usá-lo para espantar o macaco."
+		short-description: ""
+		actor: BearGrylls
+		triggers: RecuperarBolsa
+		require: BearGrylls.possuiEstilingue
+		require: be-triggered
+	}
+	action PerseguirMacaco {
+		type: movement
+		description: "Ele provavelmente está procurando comida. Parece inofensivo, mas pode ser bem feroz. Se eu tivesse um estilingue poderia espatá-lo facilmente... Ah! Ele está fugindo com a mochila, vou correr atrás dele!"
+		short-description: ""
+		actor: BearGrylls
+		triggers: CorrerEMachucar
+		require: not BearGrylls.possuiEstilingue
+		require: be-triggered
+	}
+	
+	action RecuperarBolsa {
+		type: interaction
+		description: "Ok, consegui pegar a bolsa. Tem suprimentos médicos aqui, com certeza é da doutora. Ela não deve estar muito longe. Vou continuar andando e gritar por ela."
+		short-description: ""
+		actor: BearGrylls
+		triggers: ProximoADoutora
+		require: be-triggered
+	}
+	
+	event CorrerEMachucar {
+		description: "Correndo atrás do macaco, Bear Grylls tropeça, desliza em um desfiladeiro e torce o tornozelo."
+		triggers: IncapacitadoDeAndar
+		require: be-triggered
+	}
+	
+	// Na floresta, após subir na árvore...
+	action EncontrarFumaca {
+		type: communication
+		description: "Olha lá, fumaça subindo naquela direção. Deve ser onde a doutora está. Vou seguir nessa direção."
+		short-description: ""
+		actor: BearGrylls
+		triggers: EncontrarPrecipicio
+		require: be-triggered
+	}
+	
+	// Precipício DP
+	
+	event EncontrarPrecipicio {
+		description: "Após prosseguir mais um tempo, Bear Grylls se depara com um grande precipício no caminho, que se estende largamente para todos os lados."
+		triggers: DP_TroncoOuCipo
+		require: be-triggered
+	}
+	
+	action DP_TroncoOuCipo {
+		type: communication
+		description: "Não tem jeito, preciso atravessar esse precipício. Posso tentar caminhar por aquele tronco ou usar um cipó estilo Tarzan. O que você acha?"
+		short-description: ""
+		actor: BearGrylls
+		require: be-triggered
+	}
+	action EscolherTronco {
+		type: communication
+		description: "Você acha melhor eu tentar o tronco? Não dá pra saber se vai aguentar, e só vou descobrir tentando. Vou me segurar a esse cipó aqui por segurança."
+		short-description: "Passar pelo tronco."
+		actor: BearGrylls
+		triggers: CairNoPrecipicio
+		require: after DP_TroncoOuCipo
+		require: before EscolherTronco
+		require: before EscolherCipo
+	}
+	action EscolherCipo {
+		type: communication
+		description: "Ok, vou seguir os sons dos macacos."
+		short-description: "Usar cipó."
+		actor: BearGrylls
+		triggers: AtravessouUsandoCipo
+		require: after DP_TroncoOuCipo
+		require: before EscolherTronco
+		require: before EscolherCipo
+	}
+	
+	// Caiu no precipício
+	event CairNoPrecipicio {
+		description: "Bear Grylss tenta atravessar pelo tronco mas ele cede. O cipó salva Bear Grylls de uma queda livre, mas ainda cai no fundo do precipício."
+		may-trigger: EscalarPrecipicio, TentarEscalarPrecipicio
+		require: be-triggered
+	}
+	
+	action EscalarPrecipicio {
+		type: interaction
+		description: "Ainda bem que você escolheu o gancho de escalada. Com ele consigo escalar o precipício."
+		short-description: ""
+		actor: BearGrylls
+		triggers: ProximoADoutora
+		require: BearGrylls.possuiGancho
+		require: be-triggered
+	}
+	action TentarEscalarPrecipicio {
+		type: idle
+		description: "As paredes são muito escorregadias. Sem equipamento apropriado, não vou conseguir sair daqui..."
+		short-description: ""
+		actor: BearGrylls
+		triggers: PresoNoPrecipicio
+		require: not BearGrylls.possuiGancho
+		require: be-triggered
+	}
+	
+	
+	// Atravessou o precipício
+	event AtravessouUsandoCipo {
+		description: "O cipó é bastante resistente e Bear Grylls consegue atravessar sem problemas."
+		triggers: ProximoADoutora
+		require: be-triggered
+	}
+	
+	// Na reta final
+	
+	event ProximoADoutora {
+		description: "Continuando no caminho, Bear Grylls encontra uma construção antiga, e grita pela doutura. Ela responde!"
+		triggers: EncontrouDoutura
+		require: be-triggered
+	}
+	
+	// Finais
+	
+	ending event PresoNoPrecipicio {
+		description: "Preso neste precipício e sem ter como subir, a missão falhou."
+		require: be-triggered	
+	}
+	
+	ending event IncapacitadoDeAndar {
+		description: "Com o tornozelo ferido desta forma, a missão falhou."
+		require: be-triggered
+	}
+	
+	ending event IlhadoAposCorrenteza {
+		description: "Ilhado e muito longe do objetivo, a missão falhou."
+		require: be-triggered	
+	}
+	
+	ending event EncontrouDoutura {
+		description: "A doutora foi resgatada, missão cumprida!"
+		require: be-triggered
+	}
+}

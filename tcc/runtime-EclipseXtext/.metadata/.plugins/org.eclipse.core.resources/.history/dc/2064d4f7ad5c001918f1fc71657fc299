@@ -1,0 +1,104 @@
+Space
+{
+	abstract existent Character
+	{
+		fact isAlive
+		fact awaken
+		quantity health
+		quantity hunger
+		quantity thirst
+	}
+	
+	existent Player is Character
+	{
+		fact onBoat
+		quantity wood
+		quantity food
+	}
+
+	//fact isNightTime
+	//fact isCampfireLit
+	//fact hasBoatArrived
+	
+	
+	//quantity pyreBuildStage
+	
+}
+
+event SailAway
+{
+	requires Player.food > 1
+}
+
+/*
+	abstract event Action
+	{
+		requires (isAlive and awaken) and (isAlive and awaken)
+	}
+	
+	event BoatArrives
+	{
+		requires not hasBoatArrived
+		requires pyreBuildStage > 3
+	}
+	
+	event GoToBoat is Action
+	{
+		requires hasBoatArrived
+	}
+	
+	event SailAway is Action
+	{
+		requires Player.
+	}
+	
+	event GatherWood is Action
+	{
+		requires not isNightTime
+		requires not hasBoatArrived
+	}
+	
+	event GatherFood is Action
+	{
+		requires food < 10
+		requires not isNightTime
+		requires not hasBoatArrived
+	}
+	
+	event LightFire is Action
+	{
+		requires wood > 0
+		requires not isNightTime
+		requires not isCampfireLit
+		requires not hasBoatArrived
+	} 
+	
+	event BuildPyre is Action
+	{
+		requires wood > 3
+		requires pyreBuildStage < 4
+		requires not isNightTime
+		requires not hasBoatArrived
+	}
+	
+	event Sleep is Action
+	{
+		requires isNightTime and isCampfireLit
+		requires not hasBoatArrived
+	}
+	
+	event Awake 
+	{
+		requires isAlive
+		requires not isNightTime
+		requires not awaken 
+	}
+	
+	event Die
+	{
+		requires isAlive
+		requires not hasBoatArrived
+		requires food <= 0
+	}
+
+ */

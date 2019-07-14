@@ -1,0 +1,2242 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+ 
+namespace StoryManager
+{
+	public class Story
+    {
+        public static Space space;
+		public static Plot plot;
+		
+		private static int clock = 0;
+		public static int Clock
+		{
+		    get { return clock; }
+		    set { clock = value; }
+		}
+		private static int act = 2;
+		public static int Act
+		{
+		    get { return act; }
+		    set { act = value; }
+		}
+		private static bool isNightTime = false;
+		public static bool IsNightTime
+		{
+			get { return isNightTime; }
+			set { isNightTime = value; }
+		}
+		private static bool isGettingDark = false;
+		public static bool IsGettingDark
+		{
+			get { return isGettingDark; }
+			set { isGettingDark = value; }
+		}
+		private static bool isDayTime = true;
+		public static bool IsDayTime
+		{
+			get { return isDayTime; }
+			set { isDayTime = value; }
+		}
+		public static bool __isOver;
+        public static List<Plot.Event> pastEvents;
+
+        private StoryGenerator generator;
+
+
+        public Story()
+        {
+			plot = new Plot();
+			space = new Space();
+			
+			plot.SetEventsRefs();
+
+			clock = 0;
+			act = 2;
+			isNightTime = false;
+			isGettingDark = false;
+			isDayTime = true;
+			__isOver = false;
+			pastEvents = new List<Plot.Event>();
+
+            generator = new StoryGenerator();
+        }
+
+        public List<Plot.Event> Begin()
+        {
+            return generator.ApplyOpening();
+        }
+
+        public List<Plot.Event> Tick(Plot.Event playerAction)
+        {
+            return generator.ApplyNext(playerAction);;
+        }
+
+        public List<Plot.ActionEvent> GetPossiblePlayerActions()
+        {
+            if(Story.__isOver) return new List<Plot.ActionEvent>();
+			
+            else return space.player.GetPossibleActions();
+        }
+
+        public static bool HasEventOcurred(Plot.Event consideredEvent)
+        {
+            return pastEvents.Any(e => e.Equals(consideredEvent));
+        }
+
+        //-----
+        #region Story Generator
+
+        public class StoryGenerator
+        {
+            Random random;
+
+            //
+            // Constructor
+            public StoryGenerator()
+            {
+                random = new Random();
+            }
+
+            public List<Plot.Event> ApplyOpening()
+            {
+                return ApplyEventChanges(plot.opening);
+            }
+
+            public List<Plot.Event> ApplyNext(Plot.Event playerAction)
+            {
+                List<Plot.Event> eventsApplied = new List<Plot.Event>();
+
+                if (playerAction != null)
+                {
+                    eventsApplied.AddRange(ApplyEventChanges(playerAction));
+                }
+
+                if(Story.__isOver) return eventsApplied;
+
+                var actionsToApply = CheckForOtherActorsActions();
+                foreach (var action in actionsToApply)
+                {
+                    eventsApplied.AddRange(ApplyEventChanges(action));
+
+                    if(Story.__isOver) return eventsApplied;
+                }
+
+                var happeningsToApply = CheckForHappenings();
+				foreach (var happening in happeningsToApply)
+				{
+					eventsApplied.AddRange(ApplyEventChanges(happening));
+				}
+
+                return eventsApplied;
+            }
+
+
+            private List<Plot.Event> ApplyEventChanges(Plot.Event er)
+            {
+                List<Plot.Event> appliedEvents = new List<Plot.Event>();
+                
+                er.ApplyChanges();
+                Story.pastEvents.Add(er);
+
+				appliedEvents.Add(er);
+
+				// Increments every event
+
+				if(er is Plot.HappeningEvent)
+				{
+					// Increments every happening event
+				}
+				else if(er is Plot.ActionEvent)
+				{
+					// Increments every action event
+
+					if(Story.space.player.actions.Contains(er))
+					{
+						// Increments every player action event
+						Story.Clock += 1;
+						space.joe.Hunger -= 1;
+					}
+				}
+                
+                if(Story.plot.IsEnding(er)) 
+				{
+					Story.__isOver = true;
+					
+					return appliedEvents;
+				}
+				
+				if(er.eventToTrigger != null)
+				{
+					appliedEvents.AddRange(ApplyEventChanges(er.eventToTrigger));
+				}
+				if(er.eventsThatMayTrigger != null)
+				{
+					var possibleTriggers = er.eventsThatMayTrigger.Where(t => t.PreconditionsMet(true));
+					var triggers = ResolveEventsToHappen(possibleTriggers.ToList());
+
+					foreach(var trigger in triggers)
+					{
+						appliedEvents.AddRange(ApplyEventChanges(trigger));
+					}
+				}
+
+				return appliedEvents;
+	        }
+
+	        public List<Plot.Event> CheckForHappenings()
+	        {
+				return ResolveEventsToHappen(
+					plot.GetPossibleHappenings()
+					.Select(a => (Plot.Event) a).ToList()
+				);
+	        }
+	        
+	        public List<Plot.Event> CheckForOtherActorsActions()
+	        {
+	            var actors = space.actors;
+	
+	            List<Plot.Event> actionsToHappen = new List<Plot.Event>();
+	
+	            foreach (var actor in actors)
+	            {
+					actionsToHappen.AddRange(
+						ResolveEventsToHappen(actor.GetPossibleActions()
+						.Select(a => (Plot.Event) a).ToList())
+					);
+	            }
+	
+	            return actionsToHappen;
+	        }
+	
+			private List<Plot.Event> ResolveEventsToHappen(List<Plot.Event> candidateEvents)
+			{
+				List<Plot.Event> eventsToHappen = new List<Plot.Event>();
+	
+				var importantEvents = candidateEvents.Where(e => e.isImportant).ToList();
+				var importantExclusiveEvents = importantEvents.Where(e => e.isExclusive).ToList();
+	
+				if(importantExclusiveEvents.Count > 0)
+				{
+					// One or more important and exclusive events
+					eventsToHappen.AddRange(importantExclusiveEvents);
+				}
+				else if(importantEvents.Count > 0)
+				{
+					// One or more important events
+					eventsToHappen.AddRange(importantEvents);
+				}
+	            else if (candidateEvents.Count > 0)
+	            {
+					// One random normal event
+	                int r = random.Next(0, candidateEvents.Count);
+	                eventsToHappen.Add(candidateEvents[r]);
+	            }
+	
+				return eventsToHappen;
+			}
+
+        }
+
+        #endregion
+    }
+	
+	public class Plot
+	{
+		// Plot opening & endings
+	    public HappeningEvent opening;
+		public List<HappeningEvent> endings;
+	
+		// Happenings
+		public HappeningEvent shipwrecked;
+		public HappeningEvent lookAroundFollowUp;
+		public HappeningEvent exploreFollowUp;
+		public HappeningEvent axeCollect;
+		public HappeningEvent foodCollect;
+		public HappeningEvent act1Closure;
+		public HappeningEvent foundBerries;
+		public HappeningEvent foundCarrots;
+		public HappeningEvent foundNothing;
+		public HappeningEvent reachedCamp;
+		public HappeningEvent reachedCampLuckly;
+		public HappeningEvent lostInTheDark;
+		public HappeningEvent survivedLostInTheDark;
+		public HappeningEvent diedLostInTheDark;
+		public HappeningEvent sleptWithFire;
+		public HappeningEvent sleptWithoutFire;
+		public HappeningEvent deathByDarkness;
+		public HappeningEvent pyreStartFollowUp;
+		public HappeningEvent pyreFinished;
+		public HappeningEvent pyreNeedsMoreUpgrades;
+		public HappeningEvent hungerWarning;
+		public HappeningEvent starvationWarning;
+		public HappeningEvent starvationCheck;
+		public HappeningEvent starvationSave;
+		public HappeningEvent starveToDeath;
+		public HappeningEvent shipArrives;
+		public HappeningEvent morningStart;
+		public HappeningEvent sunset;
+		public HappeningEvent dayEnded;
+		public HappeningEvent rescuedByShip;
+	
+		// Actions
+		public ActionEvent joeLookAround;
+		public ActionEvent joeExploreAndFindCamp;
+		public ActionEvent joeCheckFirepit;
+		public ActionEvent joeSearchOutsideCamp;
+		public ActionEvent joeSearchInsideTent;
+		public ActionEvent joeLeaveCamp;
+		public ActionEvent joeEatFood;
+		public ActionEvent joeGatherFood;
+		public ActionEvent joeGatherWood;
+		public ActionEvent joeGoBackToCamp;
+		public ActionEvent joeLightCampfire;
+		public ActionEvent joeSleepAtCamp;
+		public ActionEvent joeStartBuildingPyre;
+		public ActionEvent joeUpgradePyre;
+		public ActionEvent joeLightThePyre;
+		public ActionEvent joeGoToShip;
+		public ActionEvent joeDoNothing;
+	
+		// Collections of Events
+		public List<Event> events;
+		public List<HappeningEvent> happenings;
+		public List<ActionEvent> actions;
+		
+		
+		public Plot()
+		{
+			shipwrecked = new Shipwrecked();
+			lookAroundFollowUp = new LookAroundFollowUp();
+			exploreFollowUp = new ExploreFollowUp();
+			axeCollect = new AxeCollect();
+			foodCollect = new FoodCollect();
+			act1Closure = new Act1Closure();
+			foundBerries = new FoundBerries();
+			foundCarrots = new FoundCarrots();
+			foundNothing = new FoundNothing();
+			reachedCamp = new ReachedCamp();
+			reachedCampLuckly = new ReachedCampLuckly();
+			lostInTheDark = new LostInTheDark();
+			survivedLostInTheDark = new SurvivedLostInTheDark();
+			diedLostInTheDark = new DiedLostInTheDark();
+			sleptWithFire = new SleptWithFire();
+			sleptWithoutFire = new SleptWithoutFire();
+			deathByDarkness = new DeathByDarkness();
+			pyreStartFollowUp = new PyreStartFollowUp();
+			pyreFinished = new PyreFinished();
+			pyreNeedsMoreUpgrades = new PyreNeedsMoreUpgrades();
+			hungerWarning = new HungerWarning();
+			starvationWarning = new StarvationWarning();
+			starvationCheck = new StarvationCheck();
+			starvationSave = new StarvationSave();
+			starveToDeath = new StarveToDeath();
+			shipArrives = new ShipArrives();
+			morningStart = new MorningStart();
+			sunset = new Sunset();
+			dayEnded = new DayEnded();
+			rescuedByShip = new RescuedByShip();
+		
+			joeLookAround = new JoeLookAround();
+			joeExploreAndFindCamp = new JoeExploreAndFindCamp();
+			joeCheckFirepit = new JoeCheckFirepit();
+			joeSearchOutsideCamp = new JoeSearchOutsideCamp();
+			joeSearchInsideTent = new JoeSearchInsideTent();
+			joeLeaveCamp = new JoeLeaveCamp();
+			joeEatFood = new JoeEatFood();
+			joeGatherFood = new JoeGatherFood();
+			joeGatherWood = new JoeGatherWood();
+			joeGoBackToCamp = new JoeGoBackToCamp();
+			joeLightCampfire = new JoeLightCampfire();
+			joeSleepAtCamp = new JoeSleepAtCamp();
+			joeStartBuildingPyre = new JoeStartBuildingPyre();
+			joeUpgradePyre = new JoeUpgradePyre();
+			joeLightThePyre = new JoeLightThePyre();
+			joeGoToShip = new JoeGoToShip();
+			joeDoNothing = new JoeDoNothing();
+			
+			opening = shipwrecked;
+			endings = new List<HappeningEvent>() { diedLostInTheDark, deathByDarkness, starveToDeath, rescuedByShip,  };
+		
+			happenings = new List<HappeningEvent>() { lookAroundFollowUp, exploreFollowUp, axeCollect, foodCollect, act1Closure, foundBerries, foundCarrots, foundNothing, reachedCamp, reachedCampLuckly, lostInTheDark, survivedLostInTheDark, diedLostInTheDark, sleptWithFire, sleptWithoutFire, deathByDarkness, pyreStartFollowUp, pyreFinished, pyreNeedsMoreUpgrades, hungerWarning, starvationWarning, starvationCheck, starvationSave, starveToDeath, shipArrives, morningStart, sunset, dayEnded, rescuedByShip,  };
+			actions = new List<ActionEvent>() { joeLookAround, joeExploreAndFindCamp, joeCheckFirepit, joeSearchOutsideCamp, joeSearchInsideTent, joeLeaveCamp, joeEatFood, joeGatherFood, joeGatherWood, joeGoBackToCamp, joeLightCampfire, joeSleepAtCamp, joeStartBuildingPyre, joeUpgradePyre, joeLightThePyre, joeGoToShip, joeDoNothing,  };
+			
+			events = new List<Event>() { opening };
+			events.AddRange(happenings);
+			events.AddRange(actions);
+			events.AddRange(endings);
+		}
+		
+		public void SetEventsRefs()
+		{
+			foreach (var e in events)
+			{
+				e.SetReferences();
+			}
+		}
+		
+		public List<HappeningEvent> GetPossibleHappenings()
+		{
+			return happenings.Where(e => e.PreconditionsMet()).ToList();
+		}
+		
+		public bool IsEnding(Event e)
+		{
+			if(e is ActionEvent) return false;
+			
+			return endings.Contains(e as HappeningEvent);
+		}
+		
+		//-----
+		#region Event Definitions
+	
+		public abstract class Event
+		{
+			public string name;
+			public string description;
+			public string shortDescription;
+			
+			public bool isImportant;
+			public bool isExclusive;
+			
+			public Plot.Event eventToTrigger;
+			public List<Plot.Event> eventsThatMayTrigger;
+			
+			public abstract bool PreconditionsMet(bool isTriggerCheck = false);
+			public abstract void ApplyChanges();
+			public abstract void SetReferences();
+	
+	   		// override object.Equals
+	        public override bool Equals(object obj)
+	        {
+	            if (obj == null || GetType() != obj.GetType())
+	            {
+	                return false;
+	            }
+	
+	            return (obj as Event).name == this.name;
+	        }
+	
+	        // override object.GetHashCode
+	        public override int GetHashCode()
+	        {
+	            return base.GetHashCode();
+	        }
+	    }
+	
+	    //-----
+	    #region Happenings
+	
+	    public abstract class HappeningEvent : Event
+	    {
+	    }
+	    
+	    public class Shipwrecked : HappeningEvent
+	    {	
+	    	public Shipwrecked()
+	    	{
+	    		name = "Shipwrecked";
+	    		description = "You shipwrecked. By a miracle you woke up is this shore.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ( true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class LookAroundFollowUp : HappeningEvent
+	    {	
+	    	public LookAroundFollowUp()
+	    	{
+	    		name = "LookAroundFollowUp";
+	    		description = "From the looks of it, this island is big. Further in there's a dense forest, and the beach extends widely extends around it.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class ExploreFollowUp : HappeningEvent
+	    {	
+	    	public ExploreFollowUp()
+	    	{
+	    		name = "ExploreFollowUp";
+	    		description = "The camp has a tent and a fire pit near it. No signs of anyone nearby though...";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class AxeCollect : HappeningEvent
+	    {	
+	    	public AxeCollect()
+	    	{
+	    		name = "AxeCollect";
+	    		description = "You take the axe and the log.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Wood 
+	    		+=
+	    		 1;
+	    	}
+	    }
+	    public class FoodCollect : HappeningEvent
+	    {	
+	    	public FoodCollect()
+	    	{
+	    		name = "FoodCollect";
+	    		description = "Nevertheless you take it. It looks appetizing, but it could be just you massive hunger speaking.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Food 
+	    		+=
+	    		 1;
+	    	}
+	    }
+	    public class Act1Closure : HappeningEvent
+	    {	
+	    	public Act1Closure()
+	    	{
+	    		name = "Act1Closure";
+	    		description = "You can only think of making a big fire and hope it draws anyones attention.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.Act =
+	    		 2;
+	    		Story.Clock =
+	    		 0;
+	    		Story.space.joe.Hunger 
+	    		=
+	    		 3;
+	    	}
+	    }
+	    public class FoundBerries : HappeningEvent
+	    {	
+	    	public FoundBerries()
+	    	{
+	    		name = "FoundBerries";
+	    		description = "You found and collected some tasty berries.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Food 
+	    		+=
+	    		 2;
+	    	}
+	    }
+	    public class FoundCarrots : HappeningEvent
+	    {	
+	    	public FoundCarrots()
+	    	{
+	    		name = "FoundCarrots";
+	    		description = "You were able to find some uncommon looking carrots.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Food 
+	    		+=
+	    		 3;
+	    	}
+	    }
+	    public class FoundNothing : HappeningEvent
+	    {	
+	    	public FoundNothing()
+	    	{
+	    		name = "FoundNothing";
+	    		description = "You couldn't find any food around.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class ReachedCamp : HappeningEvent
+	    {	
+	    	public ReachedCamp()
+	    	{
+	    		name = "ReachedCamp";
+	    		description = "And back you are at the camp.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (!Story.IsNightTime
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.IsNearCamp 
+	    		=
+	    		 true;
+	    	}
+	    }
+	    public class ReachedCampLuckly : HappeningEvent
+	    {	
+	    	public ReachedCampLuckly()
+	    	{
+	    		name = "ReachedCampLuckly";
+	    		description = "It got dark but you were able to find the camp anyway. That was lucky.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (Story.IsNightTime
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.IsNearCamp 
+	    		=
+	    		 true;
+	    	}
+	    }
+	    public class LostInTheDark : HappeningEvent
+	    {	
+	    	public LostInTheDark()
+	    	{
+	    		name = "LostInTheDark";
+	    		description = "You get lost when trying to go back.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = new List<Plot.Event>() { Story.plot.survivedLostInTheDark, Story.plot.diedLostInTheDark,  };
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (Story.IsNightTime
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class SurvivedLostInTheDark : HappeningEvent
+	    {	
+	    	public SurvivedLostInTheDark()
+	    	{
+	    		name = "SurvivedLostInTheDark";
+	    		description = "Eventually you are forced to give up and lay down near some tree to wait for the night. It was a horrible night.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = Story.plot.morningStart;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (Story.space.joe.Health
+	    		>0
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Health 
+	    		-=
+	    		 5;
+	    	}
+	    }
+	    public class DiedLostInTheDark : HappeningEvent
+	    {	
+	    	public DiedLostInTheDark()
+	    	{
+	    		name = "DiedLostInTheDark";
+	    		description = "Exposed in the dark you didn't survive this brutal night. No one will hear about you again.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (Story.space.joe.Health
+	    		<=0
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class SleptWithFire : HappeningEvent
+	    {	
+	    	public SleptWithFire()
+	    	{
+	    		name = "SleptWithFire";
+	    		description = "The fire was reconforting.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = Story.plot.morningStart;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (Story.space.campfire.IsLit
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class SleptWithoutFire : HappeningEvent
+	    {	
+	    	public SleptWithoutFire()
+	    	{
+	    		name = "SleptWithoutFire";
+	    		description = "Without a fire, the night was dark and cold... It was a terrible sleep.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = Story.plot.morningStart;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (!Story.space.campfire.IsLit
+	    		 && (Story.space.joe.Health
+	    		>0)
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Health 
+	    		-=
+	    		 5;
+	    	}
+	    }
+	    public class DeathByDarkness : HappeningEvent
+	    {	
+	    	public DeathByDarkness()
+	    	{
+	    		name = "DeathByDarkness";
+	    		description = "Without the fire to keep away bad things, you did not make it through the night. No one will hear about you again.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (!Story.space.campfire.IsLit
+	    		 && (Story.space.joe.Health
+	    		==0)
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class PyreStartFollowUp : HappeningEvent
+	    {	
+	    	public PyreStartFollowUp()
+	    	{
+	    		name = "PyreStartFollowUp";
+	    		description = "Once completed it will be able to make a big fire and maybe someone will see it...";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class PyreFinished : HappeningEvent
+	    {	
+	    	public PyreFinished()
+	    	{
+	    		name = "PyreFinished";
+	    		description = "The pyre is completed! Now all it needs is a little bit of fire.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (Story.space.pyre.BuildStage
+	    		==5
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class PyreNeedsMoreUpgrades : HappeningEvent
+	    {	
+	    	public PyreNeedsMoreUpgrades()
+	    	{
+	    		name = "PyreNeedsMoreUpgrades";
+	    		description = "It's bigger now, but still needs more structure and size.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (Story.space.pyre.BuildStage
+	    		<5
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class HungerWarning : HappeningEvent
+	    {	
+	    	public HungerWarning()
+	    	{
+	    		name = "HungerWarning";
+	    		description = "You are hungry.";
+	    		shortDescription = "";
+	    		isImportant = true;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return (((Story.space.joe.Hunger
+	    		<=3) && (Story.space.joe.Hunger
+	    		>1)
+	    		) && (Story.IsDayTime
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class StarvationWarning : HappeningEvent
+	    {	
+	    	public StarvationWarning()
+	    	{
+	    		name = "StarvationWarning";
+	    		description = "You are starving!";
+	    		shortDescription = "";
+	    		isImportant = true;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.space.joe.Hunger
+	    		<=1
+	    		) && (Story.IsDayTime
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.HasStarvationRisk 
+	    		=
+	    		 true;
+	    	}
+	    }
+	    public class StarvationCheck : HappeningEvent
+	    {	
+	    	public StarvationCheck()
+	    	{
+	    		name = "StarvationCheck";
+	    		description = "You desperately need to eat...";
+	    		shortDescription = "";
+	    		isImportant = true;
+	    		isExclusive = true;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = new List<Plot.Event>() { Story.plot.starvationSave, Story.plot.starveToDeath,  };
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return (((Story.space.joe.Hunger
+	    		<=0) && Story.space.joe.HasStarvationRisk
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class StarvationSave : HappeningEvent
+	    {	
+	    	public StarvationSave()
+	    	{
+	    		name = "StarvationSave";
+	    		description = "Luckily you had food with you, so you desperately consumed it all.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (Story.space.joe.Food
+	    		>0
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Food 
+	    		=
+	    		 0;
+	    		Story.space.joe.Hunger 
+	    		=
+	    		 10;
+	    		Story.space.joe.HasStarvationRisk 
+	    		=
+	    		 false;
+	    	}
+	    }
+	    public class StarveToDeath : HappeningEvent
+	    {	
+	    	public StarveToDeath()
+	    	{
+	    		name = "StarveToDeath";
+	    		description = "Without any food you starved to death.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) && (Story.space.joe.Food
+	    		<=0
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class ShipArrives : HappeningEvent
+	    {	
+	    	public ShipArrives()
+	    	{
+	    		name = "ShipArrives";
+	    		description = "A ship is arriving! They must have seen the smoke.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.space.pyre.IsLit
+	    		 && Story.IsDayTime
+	    		) && (!Story.HasEventOcurred(Story.plot.
+	    		shipArrives
+	    		)
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class MorningStart : HappeningEvent
+	    {	
+	    	public MorningStart()
+	    	{
+	    		name = "MorningStart";
+	    		description = "Another day is starting. Time to do things.";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.Clock =
+	    		 0;
+	    		Story.IsDayTime =
+	    		 true;
+	    		Story.IsGettingDark =
+	    		 false;
+	    		Story.IsNightTime =
+	    		 false;
+	    		Story.space.campfire.IsLit 
+	    		=
+	    		 false;
+	    	}
+	    }
+	    public class Sunset : HappeningEvent
+	    {	
+	    	public Sunset()
+	    	{
+	    		name = "Sunset";
+	    		description = "The sun is setting. It will be dark soon.";
+	    		shortDescription = "";
+	    		isImportant = true;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return (((Story.Clock
+	    		>=5) && Story.IsDayTime
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.Clock =
+	    		 0;
+	    		Story.IsGettingDark =
+	    		 true;
+	    		Story.IsDayTime =
+	    		 false;
+	    		Story.IsNightTime =
+	    		 false;
+	    	}
+	    }
+	    public class DayEnded : HappeningEvent
+	    {	
+	    	public DayEnded()
+	    	{
+	    		name = "DayEnded";
+	    		description = "It's night time. You can barely see anything around.";
+	    		shortDescription = "";
+	    		isImportant = true;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return (((Story.Clock
+	    		>=1) && Story.IsGettingDark
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.Clock =
+	    		 0;
+	    		Story.IsNightTime =
+	    		 true;
+	    		Story.IsGettingDark =
+	    		 false;
+	    		Story.IsDayTime =
+	    		 false;
+	    	}
+	    }
+	    public class RescuedByShip : HappeningEvent
+	    {	
+	    	public RescuedByShip()
+	    	{
+	    		name = "RescuedByShip";
+	    		description = "You board the ship. You are saved!";
+	    		shortDescription = "";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		if(!isTriggerCheck) return false;
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	
+	    #endregion
+	
+	    //-----
+	    #region Actions
+	
+	    public abstract class ActionEvent : Event
+	    {
+	    	public ActionType type;
+	    	public Space.StoryActor actor;
+	    }
+	    
+	    public class JoeLookAround : ActionEvent
+	    {
+	    	public JoeLookAround()
+	    	{
+	    		name = "LookAround";
+	    		description = "You don't see any other crew member around. And no wrecks as well.";
+	    		shortDescription = "Look around.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Visual;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = Story.plot.lookAroundFollowUp;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((!Story.HasEventOcurred(Story.plot.
+	    		joeLookAround
+	    		)
+	    		) && (Story.Act
+	    		==1
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class JoeExploreAndFindCamp : ActionEvent
+	    {
+	    	public JoeExploreAndFindCamp()
+	    	{
+	    		name = "ExploreAndFindCamp";
+	    		description = "After walking for some time, you discover a campsite! So it's not just any deserted island...";
+	    		shortDescription = "Explore the surroundings.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Visual;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = Story.plot.exploreFollowUp;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.HasEventOcurred(Story.plot.
+	    		joeLookAround
+	    		)
+	    		) && (!Story.HasEventOcurred(Story.plot.
+	    		joeExploreAndFindCamp
+	    		)
+	    		) && (Story.Act
+	    		==1
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class JoeCheckFirepit : ActionEvent
+	    {
+	    	public JoeCheckFirepit()
+	    	{
+	    		name = "CheckFirepit";
+	    		description = "The ashes are completely cold. Likely this pit wasn't lit in a very long time.";
+	    		shortDescription = "Check the fire pit.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Visual;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.HasEventOcurred(Story.plot.
+	    		exploreFollowUp
+	    		)
+	    		) && (!Story.HasEventOcurred(Story.plot.
+	    		joeCheckFirepit
+	    		)
+	    		) && (Story.Act
+	    		==1
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class JoeSearchOutsideCamp : ActionEvent
+	    {
+	    	public JoeSearchOutsideCamp()
+	    	{
+	    		name = "SearchOutsideCamp";
+	    		description = "There isn't much around, except for an axe stuck into a log. This will be useful.";
+	    		shortDescription = "Check around the camp.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Visual;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = Story.plot.axeCollect;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.HasEventOcurred(Story.plot.
+	    		exploreFollowUp
+	    		)
+	    		) && (!Story.HasEventOcurred(Story.plot.
+	    		joeSearchOutsideCamp
+	    		)
+	    		) && (Story.Act
+	    		==1
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class JoeSearchInsideTent : ActionEvent
+	    {
+	    	public JoeSearchInsideTent()
+	    	{
+	    		name = "SearchInsideTent";
+	    		description = "Inside is pretty much empty, but there is some jerky inside a small box. Why would anyone leave this behind?";
+	    		shortDescription = "Check inside the tent.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Visual;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = Story.plot.foodCollect;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.HasEventOcurred(Story.plot.
+	    		exploreFollowUp
+	    		)
+	    		) && (!Story.HasEventOcurred(Story.plot.
+	    		joeSearchInsideTent
+	    		)
+	    		) && (Story.Act
+	    		==1
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Food 
+	    		+=
+	    		 1;
+	    	}
+	    }
+	    public class JoeLeaveCamp : ActionEvent
+	    {
+	    	public JoeLeaveCamp()
+	    	{
+	    		name = "LeaveCamp";
+	    		description = "The camp is behind you. You need to find a way to survive and leave this island...";
+	    		shortDescription = "Leave the camp.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Movement;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = Story.plot.act1Closure;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.HasEventOcurred(Story.plot.
+	    		foodCollect
+	    		)
+	    		) && (Story.HasEventOcurred(Story.plot.
+	    		axeCollect
+	    		)
+	    		) && (Story.Act
+	    		==1
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class JoeEatFood : ActionEvent
+	    {
+	    	public JoeEatFood()
+	    	{
+	    		name = "EatFood";
+	    		description = "You ate and now feel satisfied.";
+	    		shortDescription = "Eat something.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Interaction;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.space.joe.Food
+	    		>=1
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Food 
+	    		-=
+	    		 1;
+	    		Story.space.joe.Hunger 
+	    		=
+	    		 10;
+	    		Story.space.joe.HasStarvationRisk 
+	    		=
+	    		 false;
+	    	}
+	    }
+	    public class JoeGatherFood : ActionEvent
+	    {
+	    	public JoeGatherFood()
+	    	{
+	    		name = "GatherFood";
+	    		description = "You went looking for food.";
+	    		shortDescription = "Search for food.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Visual;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = new List<Plot.Event>() { Story.plot.foundBerries, Story.plot.foundCarrots, Story.plot.foundNothing,  };
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((!Story.IsNightTime
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.IsNearCamp 
+	    		=
+	    		 false;
+	    	}
+	    }
+	    public class JoeGatherWood : ActionEvent
+	    {
+	    	public JoeGatherWood()
+	    	{
+	    		name = "GatherWood";
+	    		description = "You chopped down a tree and got some logs.";
+	    		shortDescription = "Gather wood.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Interaction;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((!Story.IsNightTime
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Wood 
+	    		+=
+	    		 5;
+	    		Story.space.joe.IsNearCamp 
+	    		=
+	    		 false;
+	    	}
+	    }
+	    public class JoeGoBackToCamp : ActionEvent
+	    {
+	    	public JoeGoBackToCamp()
+	    	{
+	    		name = "GoBackToCamp";
+	    		description = "You start walking back to the camp...";
+	    		shortDescription = "Go back to camp.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Movement;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = new List<Plot.Event>() { Story.plot.reachedCamp, Story.plot.reachedCampLuckly, Story.plot.lostInTheDark,  };
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((!Story.space.joe.IsNearCamp
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class JoeLightCampfire : ActionEvent
+	    {
+	    	public JoeLightCampfire()
+	    	{
+	    		name = "LightCampfire";
+	    		description = "The fire is now warm and welcoming.";
+	    		shortDescription = "Light the campfire.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Interaction;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((!Story.IsDayTime
+	    		 && !Story.space.campfire.IsLit
+	    		) && ((Story.space.joe.Wood
+	    		>0) && Story.space.joe.IsNearCamp
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.campfire.IsLit 
+	    		=
+	    		 true;
+	    		Story.space.joe.Wood 
+	    		-=
+	    		 1;
+	    	}
+	    }
+	    public class JoeSleepAtCamp : ActionEvent
+	    {
+	    	public JoeSleepAtCamp()
+	    	{
+	    		name = "SleepAtCamp";
+	    		description = "You decide to get some sleep.";
+	    		shortDescription = "Go to sleep.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Interaction;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = new List<Plot.Event>() { Story.plot.sleptWithFire, Story.plot.sleptWithoutFire, Story.plot.deathByDarkness,  };
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.IsNightTime
+	    		) && (Story.space.joe.IsNearCamp
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class JoeStartBuildingPyre : ActionEvent
+	    {
+	    	public JoeStartBuildingPyre()
+	    	{
+	    		name = "StartBuildingPyre";
+	    		description = "Near the beach, you lay down logs and start tying them together to construct a pyre.";
+	    		shortDescription = "Start building a pyre.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Interaction;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = Story.plot.pyreStartFollowUp;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return (((Story.space.joe.Wood
+	    		>=5) && Story.IsDayTime
+	    		) && (!Story.HasEventOcurred(Story.plot.
+	    		joeStartBuildingPyre
+	    		)
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Wood 
+	    		-=
+	    		 5;
+	    		Story.space.pyre.BuildStage 
+	    		+=
+	    		 1;
+	    		Story.space.joe.IsNearCamp 
+	    		=
+	    		 false;
+	    	}
+	    }
+	    public class JoeUpgradePyre : ActionEvent
+	    {
+	    	public JoeUpgradePyre()
+	    	{
+	    		name = "UpgradePyre";
+	    		description = "You spend an hour working on the pyre.";
+	    		shortDescription = "Keep working on the pyre.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Interaction;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = new List<Plot.Event>() { Story.plot.pyreFinished, Story.plot.pyreNeedsMoreUpgrades,  };
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return (((Story.space.joe.Wood
+	    		>=5) && Story.IsDayTime
+	    		) && (Story.HasEventOcurred(Story.plot.
+	    		joeStartBuildingPyre
+	    		)
+	    		) && (!Story.HasEventOcurred(Story.plot.
+	    		pyreFinished
+	    		)
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joe.Wood 
+	    		-=
+	    		 5;
+	    		Story.space.pyre.BuildStage 
+	    		+=
+	    		 1;
+	    		Story.space.joe.IsNearCamp 
+	    		=
+	    		 false;
+	    	}
+	    }
+	    public class JoeLightThePyre : ActionEvent
+	    {
+	    	public JoeLightThePyre()
+	    	{
+	    		name = "LightThePyre";
+	    		description = "The fire is huge. Maybe someone will see it.";
+	    		shortDescription = "Light up the pyre.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Interaction;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.space.pyre.IsCompleted
+	    		 && !Story.space.pyre.IsLit
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.pyre.IsLit 
+	    		=
+	    		 true;
+	    		Story.space.joe.IsNearCamp 
+	    		=
+	    		 false;
+	    	}
+	    }
+	    public class JoeGoToShip : ActionEvent
+	    {
+	    	public JoeGoToShip()
+	    	{
+	    		name = "GoToShip";
+	    		description = "You run to the ship's location.";
+	    		shortDescription = "Go to the ship.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Movement;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = Story.plot.rescuedByShip;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.HasEventOcurred(Story.plot.
+	    		shipArrives
+	    		)
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class JoeDoNothing : ActionEvent
+	    {
+	    	public JoeDoNothing()
+	    	{
+	    		name = "DoNothing";
+	    		description = "You just stand there, thinking why this happened to you.";
+	    		shortDescription = "Do nothing.";
+	    		isImportant = false;
+	    		isExclusive = false;
+	    		type = ActionType.Idle;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joe;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((!Story.IsNightTime
+	    		) && (Story.Act
+	    		==2
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	
+	    #endregion
+	
+	    #endregion
+	}
+	
+	public class Space
+	{
+		// Player
+		public Joe player;
+		
+	    // Actors
+	    public Joe joe;
+	    
+	    // Objects
+	    public Campfire campfire;
+	    public Pyre pyre;
+	
+	    // Collections of Existents
+	    public List<StoryExistent> existents;
+	    public List<StoryActor> actors;
+	    public List<StoryObject> objects;
+	
+		public Space()
+		{
+		    joe = new Joe();
+	
+		    campfire = new Campfire();
+		    pyre = new Pyre();
+	
+		    player = joe;
+	
+		    existents = new List<StoryExistent>() { joe, campfire, pyre,  };
+		    actors = new List<StoryActor>() {  };
+		    objects = new List<StoryObject>() { campfire, pyre,  };
+		}
+	
+	
+	    //-----
+	    #region Existent Definitions
+	
+	    public abstract class StoryExistent
+	    {
+	    }
+	
+	    //-----
+	    #region Actors
+	
+	    public abstract class StoryActor : StoryExistent
+	    {
+	    	public string displayName;
+	        public List<Plot.ActionEvent> actions;
+	
+	        public List<Plot.ActionEvent> GetPossibleActions()
+	        {
+	            return actions.Where(a => a.PreconditionsMet()).ToList();
+	        }
+	    }
+	    
+	    public class Joe : StoryActor
+	    {   	
+	    	public Joe()
+	    	{
+	    		displayName = "Player";
+	    		actions = new List<Plot.ActionEvent>() { Story.plot.joeLookAround, Story.plot.joeExploreAndFindCamp, Story.plot.joeCheckFirepit, Story.plot.joeSearchOutsideCamp, Story.plot.joeSearchInsideTent, Story.plot.joeLeaveCamp, Story.plot.joeEatFood, Story.plot.joeGatherFood, Story.plot.joeGatherWood, Story.plot.joeGoBackToCamp, Story.plot.joeLightCampfire, Story.plot.joeSleepAtCamp, Story.plot.joeStartBuildingPyre, Story.plot.joeUpgradePyre, Story.plot.joeLightThePyre, Story.plot.joeGoToShip, Story.plot.joeDoNothing,  };
+	    	}
+	    	
+	    	private  int food = 0;
+	    	public  int Food
+	    	{
+	    	    get { return food; }
+	    	    set { food = value; }
+	    	}
+	    	private  int wood = 0;
+	    	public  int Wood
+	    	{
+	    	    get { return wood; }
+	    	    set { wood = value; }
+	    	}
+	    	private  int health = 5;
+	    	public  int Health
+	    	{
+	    	    get { return health; }
+	    	    set { health = value; }
+	    	}
+	    	private  int hunger = 10;
+	    	public  int Hunger
+	    	{
+	    	    get { return hunger; }
+	    	    set { hunger = value; }
+	    	}
+	    	private  bool hasStarvationRisk = false;
+	    	public  bool HasStarvationRisk
+	    	{
+	    		get { return hasStarvationRisk; }
+	    		set { hasStarvationRisk = value; }
+	    	}
+	    	private  bool isNearCamp = true;
+	    	public  bool IsNearCamp
+	    	{
+	    		get { return isNearCamp; }
+	    		set { isNearCamp = value; }
+	    	}
+	    }
+	
+	    #endregion
+	
+	    //-----
+	    #region Objects
+	
+	    public abstract class StoryObject : StoryExistent
+	    {
+	    }
+	    
+	    public class Campfire : StoryObject
+	    {
+	    	private  bool isLit = false;
+	    	public  bool IsLit
+	    	{
+	    		get { return isLit; }
+	    		set { isLit = value; }
+	    	}
+	    }
+	    public class Pyre : StoryObject
+	    {
+	    	private  int buildStage = 0;
+	    	public  int BuildStage
+	    	{
+	    	    get { return buildStage; }
+	    	    set { buildStage = value; }
+	    	}
+	    	public  bool IsCompleted
+	    	{
+	    		get { return Story.space.pyre.BuildStage
+	    		>=5; }
+	    	}
+	    	private  bool isLit = false;
+	    	public  bool IsLit
+	    	{
+	    		get { return isLit; }
+	    		set { isLit = value; }
+	    	}
+	    }
+	
+	    #endregion
+	
+	    #endregion
+	}
+	
+	public enum ActionType
+	{
+		Idle,
+		Visual,
+		Interaction,
+		Movement,
+		Communication,
+		Combat,
+	}
+}
+

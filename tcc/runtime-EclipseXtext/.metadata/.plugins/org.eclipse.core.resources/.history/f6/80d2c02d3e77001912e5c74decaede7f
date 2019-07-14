@@ -1,0 +1,389 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+ 
+namespace StoryManager
+{
+	public class Story
+    {
+        public static List<Plot.Event> pastEvents = new List<Plot.Event>();
+        public static int time = 0;
+        public static int stage = 1;
+
+        private StoryGenerator generator;
+
+        public Story()
+        {
+            generator = new StoryGenerator();
+        }
+
+        public Plot.Event Begin()
+        {
+            var opening = generator.ApplyOpening();
+
+            time += 1;
+
+            return opening;
+        }
+
+        public List<Plot.Event> Tick(Plot.Event playerAction)
+        {
+            var eventsOccured = generator.ApplyNext(playerAction);
+
+            time += 1;
+
+            return eventsOccured;
+        }
+
+        public List<Plot.Event> GetPossiblePlayerActions()
+        {
+            return Space.player.GetPossibleActions();
+        }
+
+        public static bool HasEventOcurred(Plot.Event consideredEvent)
+        {
+            return pastEvents.Any(e => e.Equals(consideredEvent));
+        }
+
+        //-----
+        #region Story Generator
+
+        public class StoryGenerator
+        {
+            Random random;
+
+            //
+            // Constructor
+            public StoryGenerator()
+            {
+                random = new Random();
+            }
+
+            public Plot.Event ApplyOpening()
+            {
+                var opening = Plot.opening;
+                ApplyEventChanges(opening);
+
+                return opening;
+            }
+
+            public List<Plot.Event> ApplyNext(Plot.Event playerAction)
+            {
+                List<Plot.Event> eventsApplied = new List<Plot.Event>();
+
+                if (playerAction != null)
+                {
+                    ApplyEventChanges(playerAction);
+                    eventsApplied.Add(playerAction);
+                }
+
+
+                var actionsToExecute = CheckForActorsActions();
+                foreach (var action in actionsToExecute)
+                {
+                    ApplyEventChanges(action);
+                    eventsApplied.Add(action);
+                }
+
+                var happening = CheckForHappenings();
+                if(happening != null)
+                {
+	                ApplyEventChanges(happening);
+	                eventsApplied.Add(happening);
+	            }
+
+                return eventsApplied;
+            }
+
+            private void ApplyEventChanges(Plot.Event er)
+            {
+                er.ApplyChanges();
+                Story.pastEvents.Add(er);
+            }
+
+            public Plot.Event CheckForHappenings()
+            {
+                var possibleHappenings = Plot.GetPossibleHappenings();
+
+                if (possibleHappenings.Count > 0)
+                {
+                    int r = random.Next(0, possibleHappenings.Count);
+                    return possibleHappenings[r];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            public List<Plot.Event> CheckForActorsActions()
+            {
+                var actors = Space.actors;
+
+                List<Plot.Event> actionsToExecute = new List<Plot.Event>();
+
+                foreach (var actor in actors)
+                {
+                    var possibleActions = actor.GetPossibleActions();
+
+                    if (possibleActions.Count > 0)
+                    {
+                        int r = random.Next(0, possibleActions.Count);
+                        actionsToExecute.Add(possibleActions[r]);
+                    }
+                }
+
+                return actionsToExecute;
+            }
+        }
+
+        #endregion
+    }
+	
+	public static class Plot
+	{
+		// Plot opening & Endings
+	    public static HappeningEvent opening = name;
+		public static List<HappeningEvent> endings = new List<HappeningEvent>() { bahgg,  };
+	
+		// Happenings
+		public static HappeningEvent name = new Name();
+		public static HappeningEvent bahgg = new Bahgg();
+	
+		// Actions
+		public static ActionEvent blahEatFood = new BlahEatFood();
+		public static ActionEvent blahFffff = new BlahFffff();
+		public static ActionEvent blahAttackDude = new BlahAttackDude();
+	
+		// Collections of Events
+		public static List<HappeningEvent> happenings = new List<HappeningEvent>() { name, bahgg,  };
+		public static List<ActionEvent> actions = new List<ActionEvent>() { blahEatFood, blahFffff, blahAttackDude,  };
+		
+		
+		public static List<HappeningEvent> GetPossibleHappenings()
+		{
+			return happenings.Where(e => e.PreconditionsMet()).ToList();
+		}
+		
+		public static bool IsEnding(Event e)
+		{
+			if(e is ActionEvent) return false;
+			
+			return endings.Contains(e as HappeningEvent);
+		}
+		
+		//-----
+		#region Event Definitions
+	
+		public abstract class Event
+		{
+			public string name;
+			public string description;
+			public string shortDescription;
+			
+			public abstract bool PreconditionsMet();
+			public abstract void ApplyChanges();
+	
+	   		// override object.Equals
+	        public override bool Equals(object obj)
+	        {
+	            if (obj == null || GetType() != obj.GetType())
+	            {
+	                return false;
+	            }
+	
+	            return (obj as Event).name == this.name;
+	        }
+	
+	        // override object.GetHashCode
+	        public override int GetHashCode()
+	        {
+	            return base.GetHashCode();
+	        }
+	    }
+	
+	    //-----
+	    #region Happenings
+	
+	    public abstract class HappeningEvent : Event
+	    {
+	    }
+	    
+	    public class Name : HappeningEvent
+	    {
+	    	public new string name = "Name";
+	    	public new string description = "Description";
+	    	public new string shortDescription = "shortDescription";
+	    	
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ((Story.stage != 1
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class Bahgg : HappeningEvent
+	    {
+	    	public new string name = "Bahgg";
+	    	public new string description = "Description";
+	    	public new string shortDescription = "";
+	    	
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ( true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	
+	    #endregion
+	
+	    //-----
+	    #region Actions
+	
+	    public abstract class ActionEvent : Event
+	    {
+	    }
+	    
+	    public class BlahEatFood : ActionEvent
+	    {
+	    	public new string name = "BlahEatFood";
+	    	public new string description = "You ate some food.";
+	    	public new string shortDescription = "Yum yum.";
+	    			
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return (((!Space.blah.Sleeping
+	    		 || true) && (Space.blah.Hunger
+	    		<=3) && ((Space.blah.Hunger
+	    		<3) || (Space.blah.Hunger
+	    		>=10))
+	    		) && (Story.time == 3
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Space.blah.Sleeping 
+	    		=
+	    		 false;
+	    		Space.blah.Hunger 
+	    		+=
+	    		 3;
+	    		Story.stage =
+	    		 3;
+	    	}
+	    }
+	    public class BlahFffff : ActionEvent
+	    {
+	    	public new string name = "BlahFffff";
+	    	public new string description = "Description";
+	    	public new string shortDescription = "shortDescription";
+	    			
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ( true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class BlahAttackDude : ActionEvent
+	    {
+	    	public new string name = "BlahAttackDude";
+	    	public new string description = "Attack";
+	    	public new string shortDescription = "blah";
+	    			
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ((true
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	
+	    #endregion
+	
+	    #endregion
+	}
+	
+	public static class Space
+	{
+		// Player
+		public static Blah player = blah;
+		
+	    // Actors
+	    public static Blah blah = new Blah();
+	    
+	    // Objects
+	
+	    // Collections of Existents
+	    public static List<StoryExistent> existents = new List<StoryExistent>() { blah,  };
+	    public static List<StoryActor> actors = new List<StoryActor>() { blah,  };
+	    public static List<StoryObject> objects = new List<StoryObject>() {  };
+	
+	
+	    //-----
+	    #region Existent Definitions
+	
+	    public abstract class StoryExistent
+	    {
+	    }
+	
+	    //-----
+	    #region Actors
+	
+	    public abstract class StoryActor : StoryExistent
+	    {
+	        public List<Plot.Event> actions;
+	
+	        public List<Plot.Event> GetPossibleActions()
+	        {
+	            return actions.Where(a => a.PreconditionsMet()).ToList();
+	        }
+	    }
+	    
+	    public class Blah : StoryActor
+	    {
+	    	public new List<Plot.Event> actions = new List<Plot.Event>() { Plot.blahEatFood, Plot.blahFffff, Plot.blahAttackDude,  };
+	    	
+	    	private bool sleeping = false;
+	    	public bool Sleeping
+	    	{
+	    		get { return sleeping; }
+	    		set { sleeping = value; }
+	    	}
+	    	private int hunger = 1;
+	    	public int Hunger
+	    	{
+	    	    get { return hunger; }
+	    	    set { hunger = value; }
+	    	}
+	    }
+	
+	    #endregion
+	
+	    //-----
+	    #region Objects
+	
+	    public abstract class StoryObject : StoryExistent
+	    {
+	    }
+	    
+	
+	    #endregion
+	
+	    #endregion
+	}
+	
+}
+

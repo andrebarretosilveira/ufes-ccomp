@@ -1,0 +1,179 @@
+using System;
+using System.Collections.Generic;
+ 
+namespace StoryGeneration
+{
+	public class StoryGenerator
+	{
+		Plot plot;
+		Space space;
+		Random random;
+		List<Plot.Event> pastEvents;
+		
+		int time;
+		public int Time
+		{
+			get {return time;}
+			set {time = value;}
+		}
+		
+		public StoryGenerator()
+		{
+            plot = new Plot();
+            space = new Space();
+			random = new Random();
+			
+			pastEvents = new List<Plot.Event>();
+		}
+		
+		public Plot.Event ChooseEvent()
+		{
+            var consideredEvents = plot.GetPossibleEvents(space);
+			
+			if(consideredEvents.Count > 0)
+			{
+				int r = random.Next(0,consideredEvents.Count);
+				pastEvents.Add(consideredEvents[r].EventEnum);
+				return consideredEvents[r].EventEnum;
+			}
+			else
+			{
+				return (new Plot.DoNothingEventRules()).EventEnum;
+			}
+		}
+		
+		public static bool HasEventOcurred(Plot.Event consideredEvent)
+		{
+			return pastEvents.Any(e => e == consideredEvent);
+		}
+	}
+	
+	public class Plot
+	{
+		public EventRules events;
+	
+		public Plot()
+		{
+		events = new EventRules[1];
+			events[0] = new SailAwayEventRules();
+		}
+		
+		public List<EventRules> GetPossibleEvents(Space space)
+		{
+			events.Where(e => e.PreconditionsMet(space)).ToList();
+		}
+		
+		public enum Event {DoNothing, SailAway}
+	
+		public abstract class EventRules
+		{
+			public abstract Event EventEnum {get;}
+			public abstract bool PreconditionsMet(Space space);
+			public abstract void ApplyChanges(Space space);
+		}
+		
+		public class DoNothingEventRules : EventRules
+		{
+			public override Event EventEnum
+			{get{return Event.DoNothing;}}
+			
+			public override bool PreconditionsMet(Space space){return true;}
+			
+			public override void ApplyChanges(Space space) { }
+		}
+		
+		public abstract  class PlayerActionEventRules : EventRules
+		{
+			
+			public override bool PreconditionsMet(Space space)
+			{
+				return ((space.character.IsAlive
+				)
+				 && (StoryGenerator.Time >
+				 3
+				)
+				 &&  true);
+			}
+			
+			public override void ApplyChanges(Space space)
+			{
+			}
+		}
+		
+		public  class SailAwayEventRules : EventRules
+		{
+			public override Event EventEnum
+			{get{return Event.SailAway;}}
+			
+			public override bool PreconditionsMet(Space space)
+			{
+				return ((space.player.Sleeping
+				&&
+				space.player.IsAlive
+				)
+				 && (StoryGenerator.Time >
+				 3
+				)
+				 &&  true);
+			}
+			
+			public override void ApplyChanges(Space space)
+			{
+			}
+		}
+		
+	}
+	
+	public class Space
+	{
+	    public Space()
+	    {
+	    	character = new Character();
+	    	player = new Player();
+	    }
+	    
+	    
+	    public abstract  class Character
+	    {
+	    }
+	    
+	    public Player player;
+	    
+	    public  class Player
+	     : Character
+	    {
+	    	private bool sleeping = false;
+	    	public bool Sleeping
+	    	{
+	    		get { return sleeping; }
+	    		set { sleeping = value; }
+	    	}
+	    	private int health = 10;
+	    	public int Health
+	    	{
+	    	    get { return health; }
+	    	    set { health = value; }
+	    	}
+	    	private int hunger = 10;
+	    	public int Hunger
+	    	{
+	    	    get { return hunger; }
+	    	    set { hunger = value; }
+	    	}
+	    	private int thirst = 10;
+	    	public int Thirst
+	    	{
+	    	    get { return thirst; }
+	    	    set { thirst = value; }
+	    	}
+	    	private bool isAlive = true;
+	    	public bool IsAlive
+	    	{
+	    		get { return isAlive; }
+	    		set { isAlive = value; }
+	    	}
+	    }
+	    
+	}
+}
+

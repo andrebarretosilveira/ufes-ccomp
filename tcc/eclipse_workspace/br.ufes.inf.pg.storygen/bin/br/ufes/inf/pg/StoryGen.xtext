@@ -1,0 +1,239 @@
+grammar br.ufes.inf.pg.StoryGen with org.eclipse.xtext.common.Terminals
+
+generate storyGen "http://www.ufes.br/inf/pg/StoryGen"
+
+/*
+ * Story
+ */
+
+Story:
+	data=StoryData
+	space=Space
+	plot=Plot
+;
+
+StoryData:
+	{StoryData} 'Story' 'data' '{'
+		attributes+=Attribute*
+	'}'
+;
+
+Space:
+    {Space} 'Space' '{'
+        existents+=Existent*
+    '}'
+;
+
+Plot:
+	{Plot} 'Plot' '{'
+		events+=Event*
+	'}'
+;
+
+/*
+ * Existents
+ */
+ 
+Existent: Actor | Object ;
+
+Actor:
+	(playable?='player')? 'actor' name=ID
+	'{' 'name:' displayName=STRING attributes+=Attribute* '}'
+;
+
+Object:
+	'object' name=ID
+	'{' attributes+=Attribute* '}'
+;
+
+/*
+ * Attributes
+ */
+
+Attribute: FactAttribute | QuantityAttribute ;
+	
+FactAttribute:
+	'fact' name=ID '=' (initValue=BooleanTerm  | '(' macroExp=Expression ')')
+;
+
+QuantityAttribute:
+	'quantity' name=ID '=' initValue=IntegerTerm ('['setting=AttributeSetting']')?
+;
+
+AttributeSetting:
+	(positive?='increments' | negative?='decrements') 'by' amount=INT frequency=AttributeSettingFrequency
+;
+
+
+/*
+ * Events
+ */
+
+Event: HappeningEvent | ActionEvent;
+
+HappeningEvent:
+	(opening?='opening' | ending?='ending')? 
+	'event' name=ID '{'
+		('priority:' priority=EventPriority)?
+		'description:' description=STRING
+		('short-description:' shortDescription=STRING)?
+		('triggers:' trigger=[Event])?
+		('may-trigger:' (mayTriggers+=[Event] ',')* mayTriggers+=[Event])?
+		conditions+=Condition*
+		changes+=Change*
+	'}'
+;
+
+ActionEvent:
+	'action' name=ID '{'
+		('priority:' priority=EventPriority)?
+		'type:' type=ActionType
+		'description:' description=STRING
+		('short-description:' shortDescription=STRING)?
+		'actor:' actor=[Actor]
+		('triggers:' trigger=[Event])?
+		('may-trigger:' (mayTriggers+=[Event] ',')* mayTriggers+=[Event])?
+		conditions+=Condition*
+		changes+=Change*
+	'}'
+;
+
+
+/*
+ * Conditions
+ */
+
+Condition:
+	ExpressionCondition |
+	OrderCondition      |
+	TriggerCondition    ;
+
+ExpressionCondition:
+	'require:' exp=Expression
+;
+
+OrderCondition:
+	'require:' order=Order event=[Event]
+;
+
+TriggerCondition:
+	'require:' trigger?='be-triggered'
+;
+
+
+/*
+ * Changes
+ */
+
+Change:
+	ExistentChange |
+	StoryDataChange  ;
+
+ExistentChange:
+	'change:' existent=[Existent] '.' attribute=[Attribute]
+	op=AttributionOperator term=(IntegerTerm|BooleanTerm)
+;
+
+
+StoryDataChange:
+	'change:' 'Story' '.' attribute=[Attribute]
+	op=AttributionOperator term=(IntegerTerm|BooleanTerm)
+;
+
+/*
+ * Expressions
+ */
+
+Expression:
+	BinaryExpression
+;
+
+BinaryExpression returns Expression:
+	UnitExpression 
+		(  ({OrExpression.operands+=current}   'or'   operands+=UnitExpression ('or'  operands+=UnitExpression)*)  
+ 		 | ({AndExpression.operands+=current}  'and'  operands+=UnitExpression ('and' operands+=UnitExpression)*) 
+ 		 | ({ComparisonExpression.left=current} operator=ComparisonOperator right=UnitExpression)
+ 		)?
+;
+
+
+UnitExpression returns Expression:
+	NegationExpression |
+	UnitaryExpression  ;
+
+NegationExpression returns Expression:
+	{NegationExpression} 'not' operand=UnitExpression
+;
+
+UnitaryExpression returns Expression:
+    "(" Expression ")"
+    | Term
+;
+
+Term:
+	ExistentAttributeTerm |
+	StoryAttributeTerm |
+	IntegerTerm   |
+	BooleanTerm   ;
+
+ExistentAttributeTerm:
+	existent=[Existent] '.' attribute=[Attribute]
+;
+
+StoryAttributeTerm:
+	'Story' '.' attribute=[Attribute]
+;
+
+
+IntegerTerm:
+	value=INT
+;
+
+BooleanTerm:
+	value=('true'|'false')
+;
+
+
+/*
+ * Data types
+ */
+ 
+enum ActionType:
+	VISUAL='visual' |
+	INTERACTION='interaction' |
+	MOVEMENT='movement' |
+	COMMUNICATION='communication' |
+	COMBAT='combat' |
+	IDLE='idle'
+;
+
+enum ComparisonOperator :
+	LT="<"   |
+	LE="<="  |
+	EQ="=="  |
+	NEQ="!=" |
+	GE=">="  |
+	GT=">"   ;
+	
+enum AttributionOperator:
+	ASSIGN='='     |
+	INCREMENT='+=' |
+	DECREMENT='-=' ;
+	
+enum Order:
+	AFTER='after'   |
+	BEFORE='before' ;
+	
+enum AttributeSettingFrequency:
+	EVERY_EVENT='every event' |
+	EVERY_HAPPENING='every happening' |
+	EVERY_ACTION='every action' |
+	EVERY_PLAYER_ACTION='every player action'
+;
+
+enum EventPriority:
+	NORMAL='normal' |
+	HIGH='high' |
+	VERY_HIGH='veryHigh'
+	
+;

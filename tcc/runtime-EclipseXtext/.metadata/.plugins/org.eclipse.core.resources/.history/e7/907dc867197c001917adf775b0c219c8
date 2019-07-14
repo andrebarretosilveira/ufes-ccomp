@@ -1,0 +1,507 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+ 
+namespace StoryManager
+{
+	public class Story
+    {
+        public static Space space;
+		public static Plot plot;
+
+        public static int time;
+        public static int stage;
+		public static bool isOver;
+        public static List<Plot.Event> pastEvents;
+
+        private StoryGenerator generator;
+
+
+        public Story()
+        {
+			plot = new Plot();
+			space = new Space();
+
+			time = 0;
+			stage = 1;
+			isOver = false;
+			pastEvents = new List<Plot.Event>();
+
+            generator = new StoryGenerator();
+        }
+
+        public List<Plot.Event> Begin()
+        {
+            var opening = generator.ApplyOpening();
+
+            time += 1;
+
+            return new List<Plot.Event>() { opening };
+        }
+
+        public List<Plot.Event> Tick(Plot.Event playerAction)
+        {
+            var eventsOccured = generator.ApplyNext(playerAction);
+
+            time += 1;
+
+            return eventsOccured;
+        }
+
+        public List<Plot.ActionEvent> GetPossiblePlayerActions()
+        {
+            if(Story.isOver) return new List<Plot.ActionEvent>();
+			
+            else return space.player.GetPossibleActions();
+        }
+
+        public static bool HasEventOcurred(Plot.Event consideredEvent)
+        {
+            return pastEvents.Any(e => e.Equals(consideredEvent));
+        }
+
+        //-----
+        #region Story Generator
+
+        public class StoryGenerator
+        {
+            Random random;
+
+            //
+            // Constructor
+            public StoryGenerator()
+            {
+                random = new Random();
+            }
+
+            public Plot.Event ApplyOpening()
+            {
+                var opening = plot.opening;
+                ApplyEventChanges(opening);
+
+                return opening;
+            }
+
+            public List<Plot.Event> ApplyNext(Plot.Event playerAction)
+            {
+                List<Plot.Event> eventsApplied = new List<Plot.Event>();
+
+                if (playerAction != null)
+                {
+                    ApplyEventChanges(playerAction);
+                    eventsApplied.Add(playerAction);
+                }
+
+
+                var actionsToExecute = CheckForOtherActorsActions();
+                foreach (var action in actionsToExecute)
+                {
+                    ApplyEventChanges(action);
+                    eventsApplied.Add(action);
+                }
+
+                var happening = CheckForHappenings();
+                if(happening != null)
+                {
+	                ApplyEventChanges(happening);
+	                eventsApplied.Add(happening);
+	            }
+
+                return eventsApplied;
+            }
+
+            private void ApplyEventChanges(Plot.Event er)
+            {
+                er.ApplyChanges();
+                Story.pastEvents.Add(er);
+                
+                if(Story.plot.IsEnding(er)) 
+				{
+					Story.isOver = true;
+				}
+            }
+
+            public Plot.Event CheckForHappenings()
+            {
+                var possibleHappenings = plot.GetPossibleHappenings();
+
+                if (possibleHappenings.Count > 0)
+                {
+                    int r = random.Next(0, possibleHappenings.Count);
+                    return possibleHappenings[r];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            public List<Plot.Event> CheckForOtherActorsActions()
+            {
+                var actors = space.actors;
+
+                List<Plot.Event> actionsToExecute = new List<Plot.Event>();
+
+                foreach (var actor in actors)
+                {
+                    var possibleActions = actor.GetPossibleActions();
+
+                    if (possibleActions.Count > 0)
+                    {
+                        int r = random.Next(0, possibleActions.Count);
+                        actionsToExecute.Add(possibleActions[r]);
+                    }
+                }
+
+                return actionsToExecute;
+            }
+        }
+
+        #endregion
+    }
+	
+	public class Plot
+	{
+		// Plot opening & endings
+	    public HappeningEvent opening;
+		public List<HappeningEvent> endings;
+	
+		// Happenings
+		public HappeningEvent firstSomething;
+		public HappeningEvent callForMoreSomethings;
+		public HappeningEvent gameOver_NothingDone;
+		public HappeningEvent gameOver_FewDone;
+		public HappeningEvent gameOver_LotsDone;
+	
+		// Actions
+		public ActionEvent youDoSomething;
+		public ActionEvent youDoNothing;
+	
+		// Collections of Events
+		public List<HappeningEvent> happenings;
+		public List<ActionEvent> actions;
+		
+		
+		public Plot()
+		{
+			firstSomething = new FirstSomething();
+			callForMoreSomethings = new CallForMoreSomethings();
+			gameOver_NothingDone = new GameOver_NothingDone();
+			gameOver_FewDone = new GameOver_FewDone();
+			gameOver_LotsDone = new GameOver_LotsDone();
+		
+			youDoSomething = new YouDoSomething();
+			youDoNothing = new YouDoNothing();
+			
+			opening = firstSomething;
+			endings = new List<HappeningEvent>() { gameOver_NothingDone, gameOver_FewDone, gameOver_LotsDone,  };
+		
+			happenings = new List<HappeningEvent>() { callForMoreSomethings, gameOver_NothingDone, gameOver_FewDone, gameOver_LotsDone,  };
+			actions = new List<ActionEvent>() { youDoSomething, youDoNothing,  };
+		}
+		
+		public List<HappeningEvent> GetPossibleHappenings()
+		{
+			return happenings.Where(e => e.PreconditionsMet()).ToList();
+		}
+		
+		public bool IsEnding(Event e)
+		{
+			if(e is ActionEvent) return false;
+			
+			return endings.Contains(e as HappeningEvent);
+		}
+		
+		//-----
+		#region Event Definitions
+	
+		public abstract class Event
+		{
+			public string name;
+			public string description;
+			public string shortDescription;
+			
+			public abstract bool PreconditionsMet();
+			public abstract void ApplyChanges();
+	
+	   		// override object.Equals
+	        public override bool Equals(object obj)
+	        {
+	            if (obj == null || GetType() != obj.GetType())
+	            {
+	                return false;
+	            }
+	
+	            return (obj as Event).name == this.name;
+	        }
+	
+	        // override object.GetHashCode
+	        public override int GetHashCode()
+	        {
+	            return base.GetHashCode();
+	        }
+	    }
+	
+	    //-----
+	    #region Happenings
+	
+	    public abstract class HappeningEvent : Event
+	    {
+	    }
+	    
+	    public class FirstSomething : HappeningEvent
+	    {
+	    	public FirstSomething()
+	    	{
+	    		name = "FirstSomething";
+	    		description = "Do something?";
+	    		shortDescription = "";
+	    	}
+	    	
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ( true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class CallForMoreSomethings : HappeningEvent
+	    {
+	    	public CallForMoreSomethings()
+	    	{
+	    		name = "CallForMoreSomethings";
+	    		description = "Do something more?";
+	    		shortDescription = "";
+	    	}
+	    	
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ((!Story.HasEventOcurred(Story.plot.
+	    		youDoNothing
+	    		)
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class GameOver_NothingDone : HappeningEvent
+	    {
+	    	public GameOver_NothingDone()
+	    	{
+	    		name = "GameOver_NothingDone";
+	    		description = "So that's how you end this story: having done nothing.";
+	    		shortDescription = "";
+	    	}
+	    	
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ((Story.space.you.DidNothing
+	    		) && (Story.HasEventOcurred(Story.plot.
+	    		youDoNothing
+	    		)
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class GameOver_FewDone : HappeningEvent
+	    {
+	    	public GameOver_FewDone()
+	    	{
+	    		name = "GameOver_FewDone";
+	    		description = "In the end you did OK...";
+	    		shortDescription = "";
+	    	}
+	    	
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ((Story.space.you.DidOK
+	    		) && (Story.HasEventOcurred(Story.plot.
+	    		youDoNothing
+	    		)
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class GameOver_LotsDone : HappeningEvent
+	    {
+	    	public GameOver_LotsDone()
+	    	{
+	    		name = "GameOver_LotsDone";
+	    		description = "Wow, you did a lot of stuff! Congratulations. 
+	    								But now it's time to say bye-bye.
+	    								Oh and... nice job.";
+	    		shortDescription = "";
+	    	}
+	    	
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ((Story.space.you.DidALot
+	    		) && (Story.HasEventOcurred(Story.plot.
+	    		youDoNothing
+	    		)
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	
+	    #endregion
+	
+	    //-----
+	    #region Actions
+	
+	    public abstract class ActionEvent : Event
+	    {
+	    }
+	    
+	    public class YouDoSomething : ActionEvent
+	    {
+	    	public YouDoSomething()
+	    	{
+	    		name = "DoSomething";
+	    		description = "You did something!";
+	    		shortDescription = "Do it";
+	    	}
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ( true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.you.ThingsDone 
+	    		+=
+	    		 1;
+	    	}
+	    }
+	    public class YouDoNothing : ActionEvent
+	    {
+	    	public YouDoNothing()
+	    	{
+	    		name = "DoNothing";
+	    		description = "You did nothing...";
+	    		shortDescription = "No, thanks.";
+	    	}
+	    	public override bool PreconditionsMet()
+	    	{
+	    		return ( true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	
+	    #endregion
+	
+	    #endregion
+	}
+	
+	public class Space
+	{
+		// Player
+		public You player;
+		
+	    // Actors
+	    public You you;
+	    
+	    // Objects
+	
+	    // Collections of Existents
+	    public List<StoryExistent> existents;
+	    public List<StoryActor> actors;
+	    public List<StoryObject> objects;
+	
+		public Space()
+		{
+		    you = new You();
+	
+	
+		    player = you;
+	
+		    existents = new List<StoryExistent>() { you,  };
+		    actors = new List<StoryActor>() {  };
+		    objects = new List<StoryObject>() {  };
+		}
+	
+	
+	    //-----
+	    #region Existent Definitions
+	
+	    public abstract class StoryExistent
+	    {
+	    }
+	
+	    //-----
+	    #region Actors
+	
+	    public abstract class StoryActor : StoryExistent
+	    {
+	        public List<Plot.ActionEvent> actions;
+	
+	        public List<Plot.ActionEvent> GetPossibleActions()
+	        {
+	            return actions.Where(a => a.PreconditionsMet()).ToList();
+	        }
+	    }
+	    
+	    public class You : StoryActor
+	    {   	
+	    	public You()
+	    	{
+	    		actions = new List<Plot.ActionEvent>() { Story.plot.youDoSomething, Story.plot.youDoNothing,  };
+	    	}
+	    	
+	    	private int thingsDone = 0;
+	    	public int ThingsDone
+	    	{
+	    	    get { return thingsDone; }
+	    	    set { thingsDone = value; }
+	    	}
+	    	public bool DidNothing
+	    	{
+	    		get { return Story.space.you.ThingsDone
+	    		==0; }
+	    	}
+	    	public bool DidOK
+	    	{
+	    		get { return (Story.space.you.ThingsDone
+	    		>0) && (Story.space.you.ThingsDone
+	    		<10); }
+	    	}
+	    	public bool DidALot
+	    	{
+	    		get { return Story.space.you.ThingsDone
+	    		>=10; }
+	    	}
+	    }
+	
+	    #endregion
+	
+	    //-----
+	    #region Objects
+	
+	    public abstract class StoryObject : StoryExistent
+	    {
+	    }
+	    
+	
+	    #endregion
+	
+	    #endregion
+	}
+	
+}
+

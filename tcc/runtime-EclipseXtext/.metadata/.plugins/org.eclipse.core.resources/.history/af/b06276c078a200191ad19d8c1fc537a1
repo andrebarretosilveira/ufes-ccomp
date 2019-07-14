@@ -1,0 +1,634 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+ 
+namespace StoryManager
+{
+	public static class Story
+    {
+        public static Space space;
+		public static Plot plot;
+		private static Selector selector;
+		
+		private static int ato = 1;
+		public static int Ato
+		{
+		    get { return ato; }
+		    set { ato = value; }
+		}
+		private static int relogio = 0;
+		public static int Relogio
+		{
+		    get { return relogio; }
+		    set { relogio = value; }
+		}
+		public static bool __isOver;
+        public static List<Plot.Event> pastEvents;
+
+
+        public static void Init()
+        {
+			plot = new Plot();
+			space = new Space();
+			selector = new Selector();
+			
+			plot.SetEventsRefs();
+
+			ato = 1;
+			relogio = 0;
+			__isOver = false;
+			pastEvents = new List<Plot.Event>();
+        }
+
+        public static List<Plot.Event> Begin()
+        {
+            return selector.ApplyOpening();
+        }
+        
+        public static List<Plot.Event> Tick(Plot.Event playerAction)
+        {
+            return selector.ApplyNext(playerAction);;
+        }
+        
+        public static IDictionary<string, string> GetAttributes()
+		{
+			var attrs = new Dictionary<string, string>();
+			
+			attrs.Add("Ato", Ato + "");
+			attrs.Add("Relogio", Relogio + "");
+
+			return attrs;
+		}
+
+        public static List<Plot.ActionEvent> GetPossiblePlayerActions()
+        {
+            if(Story.__isOver) return new List<Plot.ActionEvent>();
+			
+            else return space.player.GetPossibleActions();
+        }
+
+        public static bool HasEventOcurred(Plot.Event consideredEvent)
+        {
+            return pastEvents.Any(e => e.Equals(consideredEvent));
+        }
+
+        //-----
+        #region Story Selector
+
+        public class Selector
+        {
+            Random random;
+
+            //
+            // Constructor
+            public Selector()
+            {
+                random = new Random();
+            }
+
+            public List<Plot.Event> ApplyOpening()
+            {
+                return ApplyEventChanges(plot.opening);
+            }
+
+            public List<Plot.Event> ApplyNext(Plot.Event playerAction)
+            {
+                List<Plot.Event> eventsApplied = new List<Plot.Event>();
+
+                if (playerAction != null)
+                {
+                    eventsApplied.AddRange(ApplyEventChanges(playerAction));
+                }
+
+                if(Story.__isOver) return eventsApplied;
+
+                var actionsToApply = CheckForOtherActorsActions();
+                foreach (var action in actionsToApply)
+                {
+                    if(Story.__isOver) return eventsApplied;
+
+					if(!action.PreconditionsMet()) continue;
+
+                    eventsApplied.AddRange(ApplyEventChanges(action));
+                }
+
+                var happeningsToApply = CheckForHappenings();
+				foreach (var happening in happeningsToApply)
+				{
+					if(Story.__isOver) return eventsApplied;
+					
+					if(!happening.PreconditionsMet()) continue;
+
+					eventsApplied.AddRange(ApplyEventChanges(happening));
+				}
+
+                return eventsApplied;
+            }
+
+
+            private List<Plot.Event> ApplyEventChanges(Plot.Event er)
+            {
+                List<Plot.Event> appliedEvents = new List<Plot.Event>();
+                
+                er.ApplyChanges();
+                Story.pastEvents.Add(er);
+
+				appliedEvents.Add(er);
+
+				// Increments every event
+				Story.Relogio += 1;
+
+				if(er is Plot.HappeningEvent)
+				{
+					// Increments every happening event
+				}
+				else if(er is Plot.ActionEvent)
+				{
+					// Increments every action event
+
+					if(Story.space.player.actions.Contains(er))
+					{
+						// Increments every player action event
+					}
+				}
+                
+                if(Story.plot.IsEnding(er)) 
+				{
+					Story.__isOver = true;
+					
+					return appliedEvents;
+				}
+				
+				if(er.eventToTrigger != null)
+				{
+					appliedEvents.AddRange(ApplyEventChanges(er.eventToTrigger));
+				}
+				if(er.eventsThatMayTrigger != null)
+				{
+					var possibleTriggers = er.eventsThatMayTrigger.Where(t => t.PreconditionsMet(true));
+					var triggers = ResolveEventsToHappen(possibleTriggers.ToList());
+
+					foreach(var trigger in triggers)
+					{
+						appliedEvents.AddRange(ApplyEventChanges(trigger));
+					}
+				}
+
+				return appliedEvents;
+	        }
+
+	        public List<Plot.Event> CheckForHappenings()
+	        {
+				return ResolveEventsToHappen(
+					plot.GetPossibleHappenings()
+					.Select(a => (Plot.Event) a).ToList()
+				);
+	        }
+	        
+	        public List<Plot.Event> CheckForOtherActorsActions()
+	        {
+	            var actors = space.actors;
+	
+	            List<Plot.Event> actionsToHappen = new List<Plot.Event>();
+	
+	            foreach (var actor in actors)
+	            {
+					actionsToHappen.AddRange(
+						ResolveEventsToHappen(actor.GetPossibleActions()
+						.Select(a => (Plot.Event) a).ToList())
+					);
+	            }
+	
+	            return actionsToHappen;
+	        }
+	
+			private List<Plot.Event> ResolveEventsToHappen(List<Plot.Event> candidateEvents)
+			{
+				List<Plot.Event> eventsToHappen = new List<Plot.Event>();
+	
+				var highPriorEvents = candidateEvents.Where(e => e.priority == EventPriority.High).ToList();
+				var veryHighPriorEvents = highPriorEvents.Where(e => e.priority == EventPriority.VeryHigh).ToList();
+	
+				if(veryHighPriorEvents.Count > 0)
+				{
+					// One or more veryhigh events
+					eventsToHappen.AddRange(veryHighPriorEvents);
+				}
+				else if(highPriorEvents.Count > 0)
+				{
+					// One or more high events
+					eventsToHappen.AddRange(highPriorEvents);
+				}
+	            else if (candidateEvents.Count > 0)
+	            {
+					// One random normal event
+	                int r = random.Next(0, candidateEvents.Count);
+	                eventsToHappen.Add(candidateEvents[r]);
+	            }
+	
+				return eventsToHappen;
+			}
+
+        }
+
+        #endregion
+    }
+	
+	public class Plot
+	{
+		// Plot opening & endings
+	    public HappeningEvent opening;
+		public List<HappeningEvent> endings;
+	
+		// Happenings
+		public HappeningEvent inicio;
+		public HappeningEvent ponteBamba;
+		public HappeningEvent encerramento;
+	
+		// Actions
+		public ActionEvent joaoSubirNaPonte;
+		public ActionEvent joaoCorrerPelaPonte;
+	
+		// Collections of Events
+		public List<Event> events;
+		public List<HappeningEvent> happenings;
+		public List<ActionEvent> actions;
+		
+		
+		public Plot()
+		{
+			inicio = new Inicio();
+			ponteBamba = new PonteBamba();
+			encerramento = new Encerramento();
+		
+			joaoSubirNaPonte = new JoaoSubirNaPonte();
+			joaoCorrerPelaPonte = new JoaoCorrerPelaPonte();
+			
+			opening = inicio;
+			endings = new List<HappeningEvent>() { encerramento,  };
+		
+			happenings = new List<HappeningEvent>() { ponteBamba, encerramento,  };
+			actions = new List<ActionEvent>() { joaoSubirNaPonte, joaoCorrerPelaPonte,  };
+			
+			events = new List<Event>() { opening };
+			events.AddRange(happenings);
+			events.AddRange(actions);
+			events.AddRange(endings);
+		}
+		
+		public void SetEventsRefs()
+		{
+			foreach (var e in events)
+			{
+				e.SetReferences();
+			}
+		}
+		
+		public List<HappeningEvent> GetPossibleHappenings()
+		{
+			return happenings.Where(e => e.PreconditionsMet()).ToList();
+		}
+		
+		public bool IsEnding(Event e)
+		{
+			if(e is ActionEvent) return false;
+			
+			return endings.Contains(e as HappeningEvent);
+		}
+		
+		//-----
+		#region Event Definitions
+	
+		public abstract class Event
+		{
+			public string name;
+			public string description;
+			public string shortDescription;
+			
+			public EventPriority priority;
+			
+			public Plot.Event eventToTrigger;
+			public List<Plot.Event> eventsThatMayTrigger;
+			
+			public abstract bool PreconditionsMet(bool isTriggerCheck = false);
+			public abstract void ApplyChanges();
+			public abstract void SetReferences();
+	
+	   		// override object.Equals
+	        public override bool Equals(object obj)
+	        {
+	            if (obj == null || GetType() != obj.GetType())
+	            {
+	                return false;
+	            }
+	
+	            return (obj as Event).name == this.name;
+	        }
+	
+	        // override object.GetHashCode
+	        public override int GetHashCode()
+	        {
+	            return base.GetHashCode();
+	        }
+	    }
+	
+	    //-----
+	    #region Happenings
+	
+	    public abstract class HappeningEvent : Event
+	    {
+	    }
+	    
+	    public class Inicio : HappeningEvent
+	    {	
+	    	public Inicio()
+	    	{
+	    		name = "Inicio";
+	    		description = "Era uma vez uma ponte que você tinha que atravessar...";
+	    		shortDescription = "";
+	    		priority = EventPriority.Normal;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ( true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class PonteBamba : HappeningEvent
+	    {	
+	    	public PonteBamba()
+	    	{
+	    		name = "PonteBamba";
+	    		description = "Ao tentar atravessar...";
+	    		shortDescription = "";
+	    		priority = EventPriority.Normal;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.HasEventOcurred(Story.plot.
+	    		joaoSubirNaPonte
+	    		)
+	    		) && (!Story.HasEventOcurred(Story.plot.
+	    		ponteBamba
+	    		)
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    		Story.space.joao.PossuiCelular 
+	    		=
+	    		 false;
+	    	}
+	    }
+	    public class Encerramento : HappeningEvent
+	    {	
+	    	public Encerramento()
+	    	{
+	    		name = "Encerramento";
+	    		description = "... e ponte foi atravessada.";
+	    		shortDescription = "";
+	    		priority = EventPriority.Normal;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.HasEventOcurred(Story.plot.
+	    		joaoCorrerPelaPonte
+	    		)
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	
+	    #endregion
+	
+	    //-----
+	    #region Actions
+	
+	    public abstract class ActionEvent : Event
+	    {
+	    	public ActionType type;
+	    	public Space.StoryActor actor;
+	    }
+	    
+	    public class JoaoSubirNaPonte : ActionEvent
+	    {
+	    	public JoaoSubirNaPonte()
+	    	{
+	    		name = "SubirNaPonte";
+	    		description = "Você começou a andar pela ponte bamba.";
+	    		shortDescription = "Subir na ponte.";
+	    		priority = EventPriority.Normal;
+	    		type = ActionType.Movement;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joao;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.HasEventOcurred(Story.plot.
+	    		inicio
+	    		)
+	    		) && (!Story.HasEventOcurred(Story.plot.
+	    		joaoSubirNaPonte
+	    		)
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	    public class JoaoCorrerPelaPonte : ActionEvent
+	    {
+	    	public JoaoCorrerPelaPonte()
+	    	{
+	    		name = "CorrerPelaPonte";
+	    		description = "Você correu e pulou desesperadamente.";
+	    		shortDescription = "Correr pela ponte!";
+	    		priority = EventPriority.Normal;
+	    		type = ActionType.Movement;
+	    	}
+	    	
+	    	public override void SetReferences()
+	    	{
+	    		actor = Story.space.joao;
+	    
+	    		eventToTrigger = null;
+	    
+	    		eventsThatMayTrigger = null;
+	    	}
+	    	
+	    	public override bool PreconditionsMet(bool isTriggerCheck = false)
+	    	{
+	    		return ((Story.HasEventOcurred(Story.plot.
+	    		ponteBamba
+	    		)
+	    		) && (!Story.HasEventOcurred(Story.plot.
+	    		joaoCorrerPelaPonte
+	    		)
+	    		) &&  true);
+	    	}
+	    	
+	    	public override void ApplyChanges()
+	    	{
+	    	}
+	    }
+	
+	    #endregion
+	
+	    #endregion
+	}
+	
+	public class Space
+	{
+		// Player
+		public Joao player;
+		
+	    // Actors
+	    public Joao joao;
+	    
+	    // Objects
+	
+	    // Collections of Existents
+	    public List<StoryExistent> existents;
+	    public List<StoryActor> actors;
+	    public List<StoryObject> objects;
+	
+		public Space()
+		{
+		    joao = new Joao();
+	
+	
+		    player = joao;
+	
+		    existents = new List<StoryExistent>() { joao,  };
+		    actors = new List<StoryActor>() {  };
+		    objects = new List<StoryObject>() {  };
+		}
+	
+	
+	    //-----
+	    #region Existent Definitions
+	
+	    public abstract class StoryExistent
+	    {
+	    	public abstract IDictionary<string, string> GetAttributes();
+	    }
+	
+	    //-----
+	    #region Actors
+	
+	    public abstract class StoryActor : StoryExistent
+	    {
+	    	public string displayName;
+	        public List<Plot.ActionEvent> actions;
+	
+	        public List<Plot.ActionEvent> GetPossibleActions()
+	        {
+	            return actions.Where(a => a.PreconditionsMet()).ToList();
+	        }
+	    }
+	    
+	    public class Joao : StoryActor
+	    {   	
+	    	public Joao()
+	    	{
+	    		displayName = "John Doe";
+	    		actions = new List<Plot.ActionEvent>() { Story.plot.joaoSubirNaPonte, Story.plot.joaoCorrerPelaPonte,  };
+	    	}
+	    	
+	    	public override IDictionary<string, string> GetAttributes()
+	    	{
+	    		var attrs = new Dictionary<string, string>();
+	    		
+	    		attrs.Add("PossuiCelular", PossuiCelular + "");
+	    		attrs.Add("Comida", Comida + "");
+	    
+	    		return attrs;
+	    	}
+	    	
+	        	private  bool possuiCelular = true;
+	        	public  bool PossuiCelular
+	        	{
+	        		get { return possuiCelular; }
+	        		set { possuiCelular = value; }
+	        	}
+	        	private  int comida = 10;
+	        	public  int Comida
+	        	{
+	        	    get { return comida; }
+	        	    set { comida = value; }
+	        	}
+	    }
+	
+	    #endregion
+	
+	    //-----
+	    #region Objects
+	
+	    public abstract class StoryObject : StoryExistent
+	    {
+	    }
+	    
+	
+	    #endregion
+	
+	    #endregion
+	}
+	
+	public enum ActionType
+	{
+		Idle,
+		Visual,
+		Interaction,
+		Movement,
+		Communication,
+		Combat,
+	}
+	
+	public enum EventPriority
+	{
+		Normal,
+		High,
+		VeryHigh
+	}
+}
+

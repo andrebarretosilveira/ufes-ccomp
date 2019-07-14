@@ -1,0 +1,452 @@
+
+
+Story data
+{
+	quantity clock = 0 [increments by 1 every player action]
+	quantity act = 1
+		
+	fact isNightTime = false
+	fact isGettingDark = false
+	fact isDayTime = true
+}
+
+Space
+{
+	//
+	// Player
+	//
+	player actor Joe {
+		name: "Player"
+		quantity food = 0
+		quantity wood = 0
+		quantity health = 5
+		quantity hunger = 10 [decrements by 1 every player action]
+		
+		fact hasStarvationRisk = false
+		fact isNearCamp = true
+	}
+	
+	//
+	// Objects
+	//
+	object Campfire {
+		fact isLit = false
+	}
+	
+	object Pyre {
+		quantity buildStage = 0
+		fact isCompleted = (Pyre.buildStage >= 5)
+		fact isLit = false
+	}
+}
+
+Plot
+{
+	//
+	// Opening
+	//
+	
+	opening event Shipwrecked {
+		description: "You shipwrecked. By a miracle you woke up is this shore."
+	}
+	
+	
+	//
+	// Act 1: Introduction
+	//
+	
+	action LookAround {
+		type: visual
+		description: "You don't see any other crew member around. And no wrecks as well."
+		short-description: "Look around."
+		actor: Joe
+		triggers: LookAroundFollowUp
+		require: before LookAround
+		require: Story.act == 1
+	}
+	event LookAroundFollowUp {
+		description: "From the looks of it, this island is big. Further in there's a dense forest, and the beach extends widely extends around it."
+		require: be-triggered
+	}
+	
+	action ExploreAndFindCamp {
+		type: visual
+		description: "After walking for some time, you discover a campsite! So it's not just any deserted island..."
+		short-description: "Explore the surroundings."
+		actor: Joe
+		triggers: ExploreFollowUp
+		require: after LookAround
+		require: before ExploreAndFindCamp
+		require: Story.act == 1
+	}
+	event ExploreFollowUp {
+		description: "The camp has a tent and a fire pit near it. No signs of anyone nearby though..."
+		require: be-triggered
+	}
+	
+	action CheckFirepit {
+		type: visual
+		description: "The ashes are completely cold. Likely this pit wasn't lit in a very long time."
+		short-description: "Check the fire pit."
+		actor: Joe
+		require: after ExploreFollowUp
+		require: before CheckFirepit
+		require: Story.act == 1
+	}
+	
+	action SearchOutsideCamp {
+		type: visual
+		description: "There isn't much around, except for an axe stuck into a log. This will be useful."
+		short-description: "Check around the camp."
+		actor: Joe
+		triggers: AxeCollect
+		require: after ExploreFollowUp
+		require: before SearchOutsideCamp
+		require: Story.act == 1
+	}
+	event AxeCollect {
+		description: "You take the axe and the log."
+		require: be-triggered
+		change: Joe.wood += 1
+	}
+	
+	action SearchInsideTent {
+		type: visual
+		description: "Inside is pretty much empty, but there is some jerky inside a small box. Why would anyone leave this behind?"
+		short-description: "Check inside the tent."
+		actor: Joe
+		triggers: FoodCollect
+		require: after ExploreFollowUp
+		require: before SearchInsideTent
+		require: Story.act == 1
+		change: Joe.food += 1
+	}
+	event FoodCollect {
+		description: "Nevertheless you take it. It looks appetizing, but it could be just you massive hunger speaking."
+		require: be-triggered
+		change: Joe.food += 1
+	}
+	
+	action LeaveCamp {
+		type: movement
+		description: "The camp is behind you. You need to find a way to survive and leave this island..."
+		short-description: "Leave the camp."
+		actor: Joe
+		triggers: Act1Closure
+		require: after FoodCollect
+		require: after AxeCollect
+		require: Story.act == 1
+	}
+	
+	event Act1Closure {
+		description: "You can only think of making a big fire and hope it draws anyones attention."
+		require: be-triggered
+		change: Story.act = 2
+		change: Story.clock = 0
+		change: Joe.hunger = 3
+	}
+	
+	//
+	// Act 2: Survival
+	//
+	
+	action EatFood {
+		type: interaction
+		description: "You ate and now feel satisfied."
+		short-description: "Eat something."
+		actor: Joe
+		require: Joe.food >= 1
+		require: Story.act == 2
+		change: Joe.food -= 1
+		change: Joe.hunger = 10
+		change: Joe.hasStarvationRisk = false
+	}
+	
+	// Search for food mechanic
+	action GatherFood {
+		type: visual
+		description: "You went looking for food."
+		short-description: "Search for food."
+		actor: Joe
+		may-trigger: FoundBerries, FoundCarrots, FoundNothing
+		require: not Story.isNightTime
+		require: Story.act == 2
+		change: Joe.isNearCamp = false
+	}
+	event FoundBerries {
+		description: "You found and collected some tasty berries."
+		require: be-triggered
+		change: Joe.food += 2
+	}
+	event FoundCarrots {
+		description: "You were able to find some uncommon looking carrots."
+		require: be-triggered
+		change: Joe.food += 3
+	}
+	event FoundNothing {
+		description: "You couldn't find any food around."
+		require: be-triggered
+	}
+	// ---
+	
+	action GatherWood {
+		type: interaction
+		description: "You chopped down a tree and got some logs."
+		short-description: "Gather wood."
+		actor: Joe
+		require: not Story.isNightTime
+		require: Story.act == 2
+		change: Joe.wood += 5
+		change: Joe.isNearCamp = false
+	}
+	
+	// Go back to camp sequence
+	action GoBackToCamp {
+		type: movement
+		description: "You start walking back to the camp..."
+		short-description: "Go back to camp."
+		actor: Joe
+		may-trigger: ReachedCamp, ReachedCampLuckly, LostInTheDark
+		require: not Joe.isNearCamp
+		require: Story.act == 2
+	}
+	event ReachedCamp {
+		description: "And back you are at the camp."
+		require: be-triggered
+		require: not Story.isNightTime
+		change: Joe.isNearCamp = true
+	}
+	event ReachedCampLuckly {
+		description: "It got dark but you were able to find the camp anyway. That was lucky."
+		require: be-triggered
+		require: Story.isNightTime
+		change: Joe.isNearCamp = true
+	}
+	event LostInTheDark {
+		description: "You get lost when trying to go back."
+		may-trigger: SurvivedLostInTheDark, DiedLostInTheDark
+		require: be-triggered
+		require: Story.isNightTime
+	}
+	event SurvivedLostInTheDark {
+		description: "Eventually you are forced to give up and lay down near some tree to wait for the night. It was a horrible night."
+		triggers: MorningStart
+		require: be-triggered
+		require: Joe.health > 0
+		change: Joe.health -= 5
+	}
+	ending event DiedLostInTheDark {
+		description: "Exposed in the dark you didn't survive this brutal night. No one will hear about you again."
+		require: be-triggered
+		require: Joe.health <= 0
+	}
+	// ---
+	
+	action LightCampfire {
+		type: interaction
+		description: "The fire is now warm and welcoming."
+		short-description: "Light the campfire."
+		actor: Joe
+		require: not Story.isDayTime and not Campfire.isLit
+		require: (Joe.wood > 0) and Joe.isNearCamp
+		require: Story.act == 2
+		change: Campfire.isLit = true
+		change: Joe.wood -= 1
+	}
+	
+	// Sleep action and variations
+	action SleepAtCamp {
+		type: interaction
+		description: "You decide to get some sleep."
+		short-description: "Go to sleep."
+		actor: Joe
+		may-trigger: SleptWithFire, SleptWithoutFire, DeathByDarkness
+		require: Story.isNightTime
+		require: Joe.isNearCamp
+		require: Story.act == 2
+	}
+	event SleptWithFire {
+		description: "The fire was reconforting."
+		triggers: MorningStart
+		require: be-triggered
+		require: Campfire.isLit
+	}
+	event SleptWithoutFire {
+		description: "Without a fire, the night was dark and cold... It was a terrible sleep."
+		triggers: MorningStart
+		require: be-triggered
+		require: (not Campfire.isLit) and (Joe.health > 0)
+		change: Joe.health -= 5
+	}
+	ending event DeathByDarkness {
+		description: "Without the fire to keep away bad things, you did not make it through the night. No one will hear about you again."
+		require: be-triggered
+		require: (not Campfire.isLit) and (Joe.health == 0)
+	}
+	// ---
+	
+	// Pyre building sequence
+	action StartBuildingPyre {
+		type: interaction
+		description: "Near the beach, you lay down logs and start tying them together to construct a pyre."
+		short-description: "Start building a pyre."
+		actor: Joe
+		triggers: PyreStartFollowUp
+		require: (Joe.wood >= 5) and Story.isDayTime
+		require: before StartBuildingPyre
+		require: Story.act == 2
+		change: Joe.wood -= 5
+		change: Pyre.buildStage += 1
+		change: Joe.isNearCamp = false
+	}
+	event PyreStartFollowUp {
+		description: "Once completed it will be able to make a big fire and maybe someone will see it..."
+		require: be-triggered
+	}
+	
+	action UpgradePyre {
+		type: interaction
+		description: "You spend an hour working on the pyre."
+		short-description: "Keep working on the pyre."
+		actor: Joe
+		may-trigger: PyreFinished, PyreNeedsMoreUpgrades
+		require: (Joe.wood >= 5) and Story.isDayTime
+		require: after StartBuildingPyre
+		require: before PyreFinished
+		require: Story.act == 2
+		change: Joe.wood -= 5
+		change: Pyre.buildStage += 1
+		change: Joe.isNearCamp = false
+	}
+	event PyreFinished {
+		description: "The pyre is completed! Now all it needs is a little bit of fire."
+		require: be-triggered		
+		require: (Pyre.buildStage == 5)
+	}
+	event PyreNeedsMoreUpgrades {
+		description: "It's bigger now, but still needs more structure and size."
+		require: be-triggered		
+		require: (Pyre.buildStage < 5)
+	}
+	
+	action LightThePyre {
+		type: interaction
+		description: "The fire is huge. Maybe someone will see it."
+		short-description: "Light up the pyre."
+		actor: Joe
+		require: Pyre.isCompleted and not Pyre.isLit
+		require: Story.act == 2
+		change: Pyre.isLit = true
+		change: Joe.isNearCamp = false
+	}
+	// ---
+	
+	// Hunger notifications
+	event HungerWarning {
+		priority: high
+		description: "You are hungry."
+		require: (Joe.hunger <= 3) and (Joe.hunger > 1)
+		require: Story.isDayTime
+		require: Story.act == 2
+	}
+	
+	event StarvationWarning {
+		priority: high
+		description: "You are starving!"
+		require: Joe.hunger <= 1
+		require: Story.isDayTime
+		require: Story.act == 2
+		change: Joe.hasStarvationRisk = true
+	}
+	// ---
+	
+	// Starvation Check: May die by starvation
+	event StarvationCheck {
+		priority: veryHigh
+		description: "You desperately need to eat..."
+		may-trigger: StarvationSave, StarveToDeath
+		require: (Joe.hunger <= 0) and (Joe.hasStarvationRisk)
+		require: Story.act == 2
+	}
+	event StarvationSave {
+		description: "Luckily you had food with you, so you desperately consumed it all."
+		require: be-triggered
+		require: Joe.food > 0
+		change: Joe.food = 0
+		change: Joe.hunger = 10
+		change: Joe.hasStarvationRisk = false
+	}
+	ending event StarveToDeath {
+		description: "Without any food you starved to death."
+		require: be-triggered
+		require: Joe.food <= 0
+	}
+	// ---
+	
+	// Ship arrival
+	event ShipArrives {
+		description: "A ship is arriving! They must have seen the smoke."
+		require: Pyre.isLit and Story.isDayTime
+		require: before ShipArrives
+		require: Story.act == 2
+	}
+	action GoToShip {
+		type: movement
+		description: "You run to the ship's location."
+		short-description: "Go to the ship."
+		actor: Joe
+		triggers: RescuedByShip
+		require: after ShipArrives
+		require: Story.act == 2
+	}
+	
+	ending event RescuedByShip {
+		description: "You board the ship. You are saved!"
+		require: be-triggered
+	}
+	// ---
+	
+	
+	// Day clock mechanic
+	event MorningStart {
+		description: "Another day is starting. Time to do things."
+		require: be-triggered
+		change: Story.clock = 0
+		change: Story.isDayTime = true
+		change: Story.isGettingDark = false
+		change: Story.isNightTime = false
+		change: Campfire.isLit = false
+	}
+	
+	event Sunset {
+		priority: high
+		description: "The sun is setting. It will be dark soon."
+		require: (Story.clock >= 5) and Story.isDayTime
+		require: Story.act == 2
+		change: Story.clock = 0
+		change: Story.isGettingDark = true
+		change: Story.isDayTime = false
+		change: Story.isNightTime = false
+	}
+	
+	event DayEnded {
+		priority: high
+		description: "It's night time. You can barely see anything around."
+		require: (Story.clock >= 1) and Story.isGettingDark
+		require: Story.act == 2
+		change: Story.clock = 0
+		change: Story.isNightTime = true
+		change: Story.isGettingDark = false
+		change: Story.isDayTime = false
+	}
+	// ---
+	
+	action DoNothing {
+		type: idle
+		description: "You just stand there, thinking why this happened to you."
+		short-description: "Do nothing."
+		actor: Joe
+		require: not Story.isNightTime
+		require: Story.act == 2
+	}
+}

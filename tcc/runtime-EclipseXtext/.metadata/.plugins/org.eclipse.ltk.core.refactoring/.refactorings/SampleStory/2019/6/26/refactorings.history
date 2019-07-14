@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 6 elements from project &apos;SampleStory&apos;&#x0D;&#x0A;- Original project: &apos;SampleStory&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     all-elements.stgen&#x0D;&#x0A;     linear.stgen&#x0D;&#x0A;     linear2.stgen&#x0D;&#x0A;     linear3.stgen&#x0D;&#x0A;     minimum-story3.stgen&#x0D;&#x0A;     simple-fork.stgen" description="Delete elements" element1="linear.stgen" element2="minimum-story3.stgen" element3="linear3.stgen" element4="all-elements.stgen" element5="simple-fork.stgen" element6="linear2.stgen" elements="0" flags="589830" id="org.eclipse.jdt.ui.delete" resources="6" stamp="1561479264175" subPackages="false" version="1.0"/>
+</session>

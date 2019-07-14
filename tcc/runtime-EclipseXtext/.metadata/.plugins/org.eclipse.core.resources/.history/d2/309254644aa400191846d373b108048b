@@ -1,0 +1,19 @@
+Story data {
+	
+}
+
+Space {
+	player actor Jogador {
+		name: "João"
+	}
+}
+
+Plot {
+	opening event Abertura {
+		description: "Era uma vez..."
+	}
+	
+	ending event Encerramento {
+		description: "... E fim."
+	}
+}

@@ -1,0 +1,51 @@
+Story data
+{
+	quantity ato = 1
+	quantity relogio = 0 [increments by 1 every event]
+}
+
+Space
+{
+	player actor Joao {
+    	name: "John Doe"
+    	fact possuiCelular = true
+    	quantity comida = 10
+	}	
+}
+
+Plot
+{
+	opening event Inicio {
+		description: "Era uma vez uma ponte que você tinha que atravessar..."
+	}
+	
+	action SubirNaPonte {
+		type: movement
+		description: "Você começou a andar pela ponte bamba."
+		short-description: "Subir na ponte."
+		actor: Joao
+		require: after Inicio
+		require: before SubirNaPonte
+	}
+	
+	event PonteBamba {
+		description: "Ao tentar atravessar..."
+		require: after SubirNaPonte
+		require: before PonteBamba
+		change: Joao.possuiCelular = false
+	}
+	
+	action CorrerPelaPonte {
+		type: movement
+		description: "Você correu e pulou desesperadamente."
+		short-description: "Correr pela ponte!"
+		actor: Joao
+		require: after PonteBamba
+		require: before CorrerPelaPonte
+	}
+	
+	ending event Encerramento {
+		description: "... e ponte foi atravessada."
+		require: after CorrerPelaPonte
+	}
+}
