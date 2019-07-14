@@ -1,0 +1,9 @@
+World{
+	fact dead
+	fact awaken
+	quantity wood
+}
+
+abstract event Name{ requires wood != 2 }
+
+abstract event Name{ requires wood != 2 }

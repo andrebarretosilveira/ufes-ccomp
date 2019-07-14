@@ -1,0 +1,332 @@
+/*************************
+*******About Us Page******
+**************************/
+
+#action , 
+#page-breadcrumb{
+  position: relative;
+}
+
+#page-breadcrumb {
+  background-image: url(../images/home/tour-bg.png);
+  background-color: #fbfafa;
+  background-repeat: repeat-x;
+  height: 130px;
+  background-position: center;
+  display: table;
+  position: static;
+  width: 100%;
+}
+
+#team {
+  padding-bottom: 85px;
+}
+
+#team-carousel {
+  margin-top: 40px;
+}
+
+#company-information .padding-top{
+  padding-top: 172px;
+  
+}
+
+.single-service img {
+  height: 85px;
+}
+
+.tour-button {
+  background-image: url(../images/home/tour-icon2.png);
+  height: 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  background-position: 200px 4px;
+}
+
+.about-image {
+  padding:90px 90px 0;
+}
+
+.team-single {
+  position: relative;
+}
+
+.person-thumb {
+  position: relative;
+}
+
+.person-thumb img {
+  margin: 0 auto;
+}
+
+
+.social-profile {
+  background: none repeat scroll 0 0 rgba(137, 97, 46, 0.8);
+  display: none;
+  position: absolute;
+  text-align: center;
+  top: 0;
+    -webkit-transition: all 0.9s ease;
+  -moz-transition: all 0.9s ease;
+  -ms-transition: all 0.9s ease;
+  -o-transition: all 0.9s ease;
+  transition: all 0.9s ease;transition: all 0.9s ease 0s;
+  width: 100%;
+  height: 100%;
+}
+
+.team-single:hover .social-profile{
+  background:rgba(112, 35, 64, 0.9);
+  display: block;
+  -webkit-animation: fadeInUp 400ms;
+  animation: fadeInUp 400ms;
+  -webkit-transition: all 0.9s ease;
+  -moz-transition: all 0.9s ease;
+  -ms-transition: all 0.9s ease;
+  -o-transition: all 0.9s ease;
+  transition: all 0.9s ease;
+}
+
+.social-profile .nav-pills {
+  display: inline-block;
+  margin-top: -26px;
+  padding: 0;
+  position: relative;
+  top: 50%;
+}
+
+.social-profile .nav-pills li {
+  display: inline-block;
+  margin: 0 5px;
+}
+
+.social-profile .nav-pills li a {
+  color: #fff;
+  border: 1px solid #fff;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  padding: 0;
+  border-radius: 40px;
+  -webkit-transition: all 0.9s ease;
+  transition: all 0.9s ease;
+}
+
+.social-profile .nav-pills li a:hover {
+  color: #702340;
+  border-color: #702340;
+}
+
+.person-info h2 {
+  font-weight: 300;
+  margin-bottom: 5px;
+}
+
+.person-info h3, .person-info p {
+  text-align: center;
+}
+
+.team-carousel-control {
+  position: absolute;
+  top: 36%;
+  width: 13px;
+  height: 16px;
+  text-indent: -9999999px;
+  -webkit-transition: all 0.9s ease;
+  -moz-transition: all 0.9s ease;
+  -ms-transition: all 0.9s ease;
+  -o-transition: all 0.9s ease;
+  transition: all 0.9s ease;
+}
+
+.right.team-carousel-control {
+  right: -50px;
+  background-image: url(../images/aboutus/right.png);
+}
+
+.left.team-carousel-control {
+  left: -50px;
+  background-image: url(../images/aboutus/left.png);
+}
+
+.team-carousel-control:hover{
+  background-position: 0 -18px;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;  
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+.count h1{
+  font-size: 60px;
+  color: #00aeef;
+}
+
+.count h3{
+  font-size: 16px;
+}
+
+.progress .progress-bar.six-sec-ease-in-out {
+  -webkit-transition: width 1s ease-in-out;
+  -moz-transition: width 1s ease-in-out;
+  -ms-transition: width 1s ease-in-out;
+  -o-transition: width 1s ease-in-out;
+  transition:  width 1s ease-in-out;
+}
+
+.top-zero{
+  margin-top: 0;
+}
+
+h3.top-zero{
+  font-size: 20px;
+}
+
+#company-information .about-us h2{
+  margin-bottom: 45px;
+}
+
+.single-skill h3{
+  font-size: 16px;
+}
+
+.progress{
+  height: 30px;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+.progress-bar{
+  line-height: 30px;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+.progress-bar.progress-bar-primary{
+  background: #00aeef;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.team{
+    padding:30px 0;
+}
+h6.description{
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #999;
+  border-bottom: 1px solid rgba(0, 0, 0,0.1);
+  padding-bottom: 5px;
+}
+.profile{
+  margin-top: 25px;
+}
+.profile h1{
+  font-weight: normal;
+  font-size: 20px;
+  margin:10px 0 0 0;
+}
+.profile h2{
+  font-size: 14px;
+  font-weight: lighter;
+  margin-top: 5px;
+}
+.profile .img-box{
+  opacity: 1;
+  display: block;
+  position: relative;
+}
+.profile .img-box:after{
+  content:"";
+  opacity: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+.img-box ul{
+  position: absolute;
+  z-index: 2;
+  bottom: 50px;
+  text-align: center;
+  width: 100%;
+  padding-left: 0px;
+  height: 0px;
+  margin:0px;
+  opacity: 0;
+}
+
+.img-box p {
+  position: absolute;
+  z-index: 2;
+  top: 50px;
+  text-align: left;
+  width: 100%;
+  padding: 20px;
+  height: 0px;
+  margin: 0 auto;
+  opacity: 0;
+}
+.profile .img-box:after, .img-box ul, .img-box ul li, .img-box p{
+  -webkit-transition: all 0.5s ease-in-out 0s;
+    -moz-transition: all 0.5s ease-in-out 0s;
+    transition: all 0.5s ease-in-out 0s;
+}
+.img-box ul i{
+  font-size: 20px;
+  letter-spacing: 10px;
+}
+.img-box ul li{
+  width: 30px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid #00aeef;
+    margin: 2px;
+    padding: 5px;
+  display: inline-block;
+}
+.img-box a, .img-box p{
+  color:#fff;
+}
+.img-box:hover:after{
+  opacity: 1;
+}
+.img-box:hover ul, .img-box:hover p{
+  opacity: 1;
+}
+.img-box ul a , .img-box p{
+  -webkit-transition: all 0.3s ease-in-out 0s;
+  -moz-transition: all 0.3s ease-in-out 0s;
+  transition: all 0.3s ease-in-out 0s;
+}
+.img-box a:hover li {
+  border-color: #fff;
+  color: #00aeef;
+}
+
+.img-box p {
+  color: #fff;
+  font-size: 18px;
+}
+
+i.red{
+    color:#BC0213;
+}

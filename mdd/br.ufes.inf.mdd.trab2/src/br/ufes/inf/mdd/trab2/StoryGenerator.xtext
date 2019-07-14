@@ -1,0 +1,74 @@
+grammar br.ufes.inf.mdd.trab2.StoryGenerator with org.eclipse.xtext.common.Terminals
+
+generate storyGenerator "http://www.ufes.br/inf/mdd/trab2/StoryGenerator"
+
+
+Story:
+	world = World
+	events += (Event)*;
+	
+World:
+	{World} 'World' '{'(attributes+=Attribute)*'}';
+
+Attribute:
+	attrType=AttrType name=ID;
+
+Event:
+	(abstract?='abstract')? 'event' name=ID ('is' superType=[Event])? '{' (conditions+=Condition)* '}';
+	
+Condition:
+	'requires' boolExp=BoolExp;
+
+
+BoolExp:
+	'(' left=BoolExp ')' boolOp=BoolOp '(' right=BoolExp ')'|
+	binaryBool=BinaryBoolExp |
+	binaryQnty=BinaryQntyExp |
+	negateBoolExp=NegateBoolExp |
+	unaryBool=UnaryBoolExp
+;
+
+BinaryBoolExp:
+	left=UnaryBoolExp boolOp=BoolOp right=UnaryBoolExp
+;
+
+BinaryQntyExp:
+	left=UnaryQuantityExp numOp=NumOp right=UnaryQuantityExp
+;
+
+UnaryBoolExp:
+	id=[Attribute] |
+	value= BooleanValue
+;
+
+NegateBoolExp:
+	'not' BoolExp
+;
+
+UnaryQuantityExp:
+	id=[Attribute] |
+	value=INT
+;
+
+enum AttrType:
+	FACT='fact' |
+	QUANTITY='quantity' ;
+
+enum BooleanValue:
+	TRUE= 'true'  |
+	FALSE='false' ;
+
+enum NumOp:
+	EQ= '==' |
+	NEQ='!=' |
+	GT= '>'  |
+	LT= '<'  |
+	GE= '>=' |
+	LE= '<=' ;
+
+enum BoolOp:
+	EQ= '==' |
+	NEQ='!=' |
+	AND='and' |
+	OR='or' 
+	;

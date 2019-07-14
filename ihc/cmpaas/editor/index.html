@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> Editor de Mapas</title>
+
+    <link rel="stylesheet" type="text/css" href="reset.css">
+
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./jquery_hotkeys.js"></script>
+
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="cmaptools.js"></script>
+    <script type="text/javascript" src="editor.js"></script>
+    <script type="text/javascript" src="go.js"></script>
+    <script type="text/javascript" src="toolbar.js"></script>
+
+    <style type="text/css">
+
+.btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
+.btn-circle.btn-lg {
+  width: 50px;
+  height: 50px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 25px;
+}
+.btn-circle.btn-xl {
+  width: 70px;
+  height: 70px;
+  padding: 10px 16px;
+  font-size: 24px;
+  line-height: 1.33;
+  border-radius: 35px;
+}
+
+
+body {
+    font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 5;
+    top: 0;
+    right:0;
+    background-color: #FFF;
+    overflow-x: hidden;
+    transition: 0.5s;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.2);
+    padding : 0px 10px 0px 10px;
+    display: none;
+}
+
+.sidenav a {
+    text-decoration: none;
+    font-size: 25px;
+    color: #000;
+
+}
+
+.sidenav table {
+	width: 100%;
+}
+
+.sidenav .closebtn {
+    font-size: 36px;
+}
+
+.closebtn {
+    text-decoration: none;
+}
+
+.tabs {
+	margin-top: 40px;
+	margin-bottom: 55px;
+}
+
+.tabs a {
+	font-size: 1em;
+}
+
+.tabs td {
+	text-align: center;
+}
+
+.tabs td {
+	border-bottom: 1px solid #DDD;
+	padding-bottom: 8px;
+	padding-top: 8px;
+}
+
+.tabs .start {
+	border-left: 1px solid #DDD;
+	border-right: 1px solid #DDD;
+	border-bottom: none;
+	border-top: 3px solid #30cae5;
+}
+
+#file-tab-content a {
+	font-size: 1em;
+}
+
+#file-tab-content li {
+	text-align: center;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #DDD;
+}
+
+#file-tab-content li:hover {
+	border-bottom: 3px solid #30cae5;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+#import-tab-content a {
+	font-size: 1em;
+}
+
+#import-tab-content li {
+	text-align: center;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #DDD;
+}
+
+#import-tab-content li:hover {
+	border-bottom: 3px solid #30cae5;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.list-top {
+	border-top: 1px solid #DDD;
+}
+
+#font-style-underlined {
+    text-decoration: underline;
+    font-size:20px;
+    width:50px;
+    height:50px;
+    border-radius: 30px;
+    margin: auto;
+}
+
+#font-style-underlined:hover {
+	background-color: #FFF;
+	text-decoration: underline;
+}
+
+#font-style-underlined:focus {
+	background-color: #FFF;
+	text-decoration: underline;
+}
+
+#font-style-italic {
+    text-decoration: none;
+    font-style: italic;
+    font-size:20px;
+    width:50px;
+    height:50px;
+    border-radius: 30px;
+    margin: auto;
+}
+
+#font-style-italic:hover {
+	background-color: #FFF;
+}
+
+#font-style-italic:focus {
+	background-color: #FFF;
+}
+
+#font-style-bold {
+    text-decoration: none;
+    font-weight: bold;
+    font-size:20px;
+    width:50px;
+    height:50px;
+    border-radius: 30px;
+    margin: auto;
+    border: 1px solid #CCC;
+    background-color: #FFF;
+}
+
+
+
+.font-style-pick-bar {
+    display: block;
+    text-align: center;
+}
+
+#font-size-small {
+    text-decoration: none;
+    font-size:20px;
+    width:50px;
+    height:50px;
+    border-radius: 30px;
+    margin: auto;
+    background-color: #FFF;
+    border: 1px solid #CCC;
+}
+
+#font-size-medium {
+    text-decoration: none;
+    font-size:30px;
+    width:64px;
+    height:64px;
+    border-radius: 35px;
+    margin: auto;
+    background-color: #FFF;
+    border: 3px solid #30cae5;
+}
+
+#font-size-big {
+    text-decoration: none;
+    font-size:40px;
+    width:78px;
+    height:78px;
+    border-radius: 38px;
+    margin: auto;
+    background-color: #FFF;
+    border: 1px solid #CCC;
+}
+
+.font-size-pick-bar {
+    margin-top:15px;
+    margin-bottom:20px;
+    display: block;
+    text-align: center;
+}
+
+.font-type-select-bar {
+    margin-top: 35%;
+    margin-bottom: 15%;
+    text-align: center;
+    display: block;
+}
+
+.font-type-select {
+    margin:auto;
+    border-radius:0px;
+    background-color: #FFF;
+    border:1px solid #CCC;
+    width:60%;
+    padding-top:5px;
+    padding-bottom:5px;
+    padding-left:7px;
+    padding-right:7px;
+}
+
+.red-color-pick {
+    background-color: #ff0000;
+}
+
+.orange-color-pick {
+    background-color: #ffff00;
+}
+
+.yellow-color-pick {
+    background-color: #00ff00;
+}
+
+.green-color-pick {
+    background-color: #00ff00;
+
+}
+
+.light-blue-color-pick {
+    background-color: #00ffff;
+
+}
+
+.violet-color-pick {
+    background-color: #4a86e8;
+
+}
+
+.dark-blue-color-pick {
+    background-color: #0000ff;
+}
+
+.purple-color-pick {
+    background-color: #9900ff;
+}
+
+.pink-color-pick {
+    background-color: #ff00ff;
+
+}
+
+#g000-color-pick {
+    background-color: #000;
+    border: 2px solid #30cae5;
+}
+
+.g222-color-pick {
+    background-color: #222;
+
+}
+
+.g444-color-pick {
+    background-color: #444;
+
+}
+
+.g666-color-pick {
+    background-color: #666;
+
+}
+
+.g888-color-pick {
+    background-color: #888;
+
+}
+
+.gaaa-color-pick {
+    background-color: #aaa;
+}
+
+.gccc-color-pick {
+    background-color: #ccc;
+
+}
+
+.gddd-color-pick {
+    background-color: #ddd;
+
+}
+
+.geee-color-pick {
+    background-color: #eee;
+
+}
+
+.gfff-color-pick {
+    background-color: #fff;
+}
+
+.color-pick-box {
+    padding-top:25px;
+    padding-left:35px;
+    padding-right:35px;
+}
+
+.color-pick  {
+    border-radius:14px;
+    padding: 9px 9px 9px 9px;
+    border:2px solid #EBF0F2;
+}
+
+.color-picked {
+    border: 2px solid #00AAFF;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav a {font-size: 18px;}
+  .tabs a {font-size: 1em;}
+  #file-tab-content a {font-size: 1em;}
+
+}
+
+.open-right-nav-bar-btn {
+    font-size:30px;
+    cursor:pointer;
+    position: fixed;
+    top:5%;
+    right:2%;
+    background-color:#fff;
+    z-index:3;
+    color:#00AAFF;
+    padding:5px 10px 5px 10px;
+    border:1px solid #00AAFF;
+    border-radius:7px;
+    opacity: 0.5;
+}
+
+.open-right-nav-bar-btn:hover {
+    opacity: 1;
+}
+
+.save-select-box {
+    position: fixed;
+    top:15%;
+    right:2%;
+    z-index:4;
+}
+
+.save-select-box a {
+    cursor:pointer;
+}
+
+.save-select-btn {
+    font-size:30px;
+    cursor:pointer;
+    background-color:#fff;
+    color:#00AAFF;
+    padding:5px 8px 5px 8px;
+    border:1px solid #00AAFF;
+    border-radius:7px;
+    opacity: 0.5;
+}
+
+.save-select-btn:hover { 
+    background-color:#fff;
+    color:#00AAFF;
+    border:1px solid #00AAFF;
+    opacity: 1;
+}
+
+.import-select-box a {
+    cursor:pointer;
+}
+
+.import-select-box {
+    position: fixed;
+    top:25%;
+    right:2%;
+    z-index:3;
+}
+
+.import-select-btn {
+    font-size:30px;
+    cursor:pointer;
+    background-color:#fff;
+    color:#00AAFF;
+    padding:5px 8px 5px 8px;
+    border:1px solid #00AAFF;
+    border-radius:7px;
+    opacity: 0.5;
+}
+
+.import-select-btn:hover { 
+    background-color:#fff;
+    color:#00AAFF;
+    border:1px solid #00AAFF;
+    opacity: 1;
+}
+
+    </style>
+
+    <script type="text/javascript">
+        
+  function handleTabSelection(tabIds,contentDivsIds) {
+
+  	var selectionClass = "start";
+
+  	var tabs = tabIds.map(function(tabId) { return document.getElementById(tabId); });
+  	var contentDivs = contentDivsIds.map(function(contentDivsId) { return document.getElementById(contentDivsId); });
+
+  	for(var i=0;i < tabs.length;i++) {
+
+  		tabs[i].onclick = function() {
+
+  			if(this.className.split(' ').indexOf(selectionClass) == -1) {
+
+  				contentDivsIdIndex = -1;
+
+  				for(var j=0;j < tabs.length;j++) {
+  					tabs[j].className = tabs[j].className.split(' ').map(function(className) { return (className == selectionClass) ? "" : className;}).join(' ');
+  					contentDivs[j].style.display = "none";
+  					if(tabs[j].id == this.id)
+  						contentDivsIdIndex = j;
+  				}
+
+  				this.className = this.className + " " + selectionClass;
+  				contentDivs[contentDivsIdIndex].style.display = "inline";
+
+  			}
+
+
+
+  		};
+
+  	}
+
+  }
+
+  function activateButtonToggle(btnIds) {
+
+  	var btns = btnIds.map(function(btnId) { return document.getElementById(btnId); });
+
+  	for(var i=0;i < btns.length;i++) {
+
+  		btns[i].onclick = function() {
+
+  			if(this.style.border == "" || this.style.border.indexOf("1px") != -1) {
+  				this.style.border = "3px solid #30cae5";
+  			}
+  			else {
+  				this.style.border = "1px solid #CCC";
+  			}
+
+  		}
+
+  	}
+
+  }
+
+  function activateFontSizeSelection(btnIds) {
+
+  	var btns = btnIds.map(function(btnId) { return document.getElementById(btnId); });
+
+  	for(var i=0;i < btns.length;i++) {
+
+  		btns[i].onclick = function() {
+
+  			for(var j=0;j < btns.length;j++) {
+
+  				btns[j].style.border = "1px solid #CCC";
+
+  			}
+
+  			this.style.border = "3px solid #30cae5";
+  			
+
+  		}
+
+  	}
+
+  }
+
+  function activateColorSelection(colorsClassName) {
+
+  	var colors = document.getElementsByClassName(colorsClassName);
+
+  	for(var i=0;i < colors.length;i++) {
+
+  		colors[i].onclick = function() {
+
+  			for(var j=0;j < colors.length;j++) {
+
+  				colors[j].style.border = "2px solid #EBF0F2";
+
+  			}
+
+  			this.style.border = "2px solid #30cae5";
+  			
+
+  		}
+
+  	}
+
+  }
+
+  function init() {
+
+  	handleTabSelection(["format-tab","file-tab"],["format-tab-content","file-tab-content"]);
+
+  	activateButtonToggle(["font-style-bold","font-style-italic","font-style-underlined"]);
+
+  	activateFontSizeSelection(["font-size-big","font-size-small","font-size-medium"]);
+
+  	activateColorSelection("color-pick");
+
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+   //alert("hi");
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
+        {
+          initialAutoScale: go.Diagram.Uniform,  // an initial automatic zoom-to-fit
+          contentAlignment: go.Spot.Center,  // align document to the center of the viewport
+          layout:
+            $(go.ForceDirectedLayout,  // automatically spread nodes apart
+              { maxIterations: 200, defaultSpringLength: 30, defaultElectricalCharge: 100 })
+        });
+
+    // define each Node's appearance
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",  // the whole node panel
+        { locationSpot: go.Spot.Center },
+        // define the node's outer shape, which will surround the TextBlock
+        $(go.Shape, "Rectangle",
+          { fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }), stroke: "black" }),
+        $(go.TextBlock,
+          { font: "bold 10pt helvetica, bold arial, sans-serif", margin: 4 },
+          new go.Binding("text", "text"))
+      );
+
+    // replace the default Link template in the linkTemplateMap
+    myDiagram.linkTemplate =
+      $(go.Link,  // the whole link panel
+        $(go.Shape,  // the link shape
+          { stroke: "black" }),
+        $(go.Shape,  // the arrowhead
+          { toArrow: "standard", stroke: null }),
+        $(go.Panel, "Auto",
+          $(go.Shape,  // the label background, which becomes transparent around the edges
+            { fill: $(go.Brush, "Radial", { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
+              stroke: null }),
+          $(go.TextBlock,  // the label text
+            { textAlign: "center",
+              font: "10pt helvetica, arial, sans-serif",
+              stroke: "#555555",
+              margin: 4 },
+            new go.Binding("text", "text"))
+        )
+      );
+
+    // create the model for the concept map
+    var nodeDataArray = [
+      { key: 1, text: "Concept Maps" },
+      { key: 2, text: "Organized Knowledge" },
+      { key: 3, text: "Context Dependent" },
+      { key: 4, text: "Concepts" },
+      { key: 5, text: "Propositions" },
+      { key: 6, text: "Associated Feelings or Affect" },
+      { key: 7, text: "Perceived Regularities" },
+      { key: 8, text: "Labeled" },
+      { key: 9, text: "Hierarchically Structured" },
+      { key: 10, text: "Effective Teaching" },
+      { key: 11, text: "Crosslinks" },
+      { key: 12, text: "Effective Learning" },
+      { key: 13, text: "Events (Happenings)" },
+      { key: 14, text: "Objects (Things)" },
+      { key: 15, text: "Symbols" },
+      { key: 16, text: "Words" },
+      { key: 17, text: "Creativity" },
+      { key: 18, text: "Interrelationships" },
+      { key: 19, text: "Infants" },
+      { key: 20, text: "Different Map Segments" }
+    ];
+    var linkDataArray = [
+      { from: 1, to: 2, text: "represent" },
+      { from: 2, to: 3, text: "is" },
+      { from: 2, to: 4, text: "is" },
+      { from: 2, to: 5, text: "is" },
+      { from: 2, to: 6, text: "includes" },
+      { from: 2, to: 10, text: "necessary\nfor" },
+      { from: 2, to: 12, text: "necessary\nfor" },
+      { from: 4, to: 5, text: "combine\nto form" },
+      { from: 4, to: 6, text: "include" },
+      { from: 4, to: 7, text: "are" },
+      { from: 4, to: 8, text: "are" },
+      { from: 4, to: 9, text: "are" },
+      { from: 5, to: 9, text: "are" },
+      { from: 5, to: 11, text: "may be" },
+      { from: 7, to: 13, text: "in" },
+      { from: 7, to: 14, text: "in" },
+      { from: 7, to: 19, text: "begin\nwith" },
+      { from: 8, to: 15, text: "with" },
+      { from: 8, to: 16, text: "with" },
+      { from: 9, to: 17, text: "aids" },
+      { from: 11, to: 18, text: "show" },
+      { from: 12, to: 19, text: "begins\nwith" },
+      { from: 17, to: 18, text: "needed\nto see" },
+      { from: 18, to: 20, text: "between" }
+    ];
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  }
+window.onload = init;
+
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("mySidenav").style.display = "inline";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("mySidenav").style.display = "none";
+}
+
+$(document).on('keydown', null, 'ctrl+a', function() {alert("ctrl+a");});
+
+function upload() {
+    document.getElementById("upload").click();
+}
+
+</script>
+
+</head>
+<body>
+    
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <table class="tabs">
+  	<tr>
+  	<td class="start" id="format-tab"><a href="#">Formatar</a></td><td id="file-tab"><a href="#">Arquivo</a></td></tr>
+  	</tr>
+  </table>
+  <div class="tab-content">
+  	<div id="file-tab-content" style="display: none;">
+	  	<ul>
+	  		<li class="list-top"><a href="#">Salvar Mapa</a></li>
+	  		<li><a href="#">Salvar Alterações</a></li>
+	  		<li><a href="#">Excluir Versão</a></li>
+	  		<li><a href="#">Excluir Mapa</a></li>
+	  		<li><a href="#">Exportar Mapa</a></li>
+	  		<li><a href="#">Importar Arquivo CXL</a></li>
+	  	</ul>
+  	</div>
+  	<div id="format-tab-content">
+  		<div class="font-type-select-bar">
+			<select class="font-type-select">
+				<option value="arial">Arial</option>
+				<option value="sans-serif">Sans-Serif</option>
+				<option value="times">Times</option>
+			</select>
+		</div>
+		<div class="font-size-pick-bar">
+	        <button type="button" id="font-size-small" class="btn btn-circle">A</button>
+	        <button type="button" id="font-size-medium" class="btn btn-circle">A</button>
+	        <button type="button" id="font-size-big" class="btn btn-circle">A</button>
+    	</div>
+    	<div class="font-style-pick-bar">
+	        <button type="button" id="font-style-bold" class="btn  btn-circle">N</button>
+	        <button type="button" id="font-style-italic" class="btn btn-default btn-circle">I</button>
+	        <button type="button" id="font-style-underlined" class="btn btn-default btn-circle">S</button>
+    	</div>
+    	<div class="color-pick-box">
+	        <button class="color-pick red-color-pick"></button>
+	        <button class="color-pick orange-color-pick"></button>
+	        <button class="color-pick yellow-color-pick"></button>
+	        <button class="color-pick green-color-pick"></button>
+	        <button class="color-pick light-blue-color-pick"></button>
+	        <button class="color-pick violet-color-pick"></button>
+	        <button class="color-pick dark-blue-color-pick"></button>
+	        <button class="color-pick purple-color-pick"></button>
+	        <button class="color-pick pink-color-pick"></button>
+	        <button id="g000-color-pick" class="color-pick"></button>
+	        <button class="color-pick g222-color-pick"></button>
+	        <button class="color-pick g444-color-pick"></button>
+	        <button class="color-pick g666-color-pick"></button>
+	        <button class="color-pick g888-color-pick"></button>
+	        <button class="color-pick gaaa-color-pick"></button>
+	        <button class="color-pick gccc-color-pick"></button>
+	        <button class="color-pick gddd-color-pick"></button>
+	        <button class="color-pick geee-color-pick"></button>
+	        <button class="color-pick gfff-color-pick"></button>
+    	</div>
+  	</div>
+  </div>
+</div>
+
+<div id="sample">
+  <div id="myDiagramDiv" style="position: absolute; background-color: whitesmoke; width: 100%; height: 100%;"></div>
+</div>
+
+<span class="open-right-nav-bar-btn" onclick="openNav()">&#9776;</span>
+
+
+<input id="upload" type="file" style="display: none;" />
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+World{
+	fact dead
+	fact awaken
+	quantity wood
+}

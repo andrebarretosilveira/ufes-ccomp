@@ -1,0 +1,19 @@
+World
+{
+	fact isNightTime
+	fact awaken
+	fact alive
+	quantity wood
+}
+
+abstract event Action
+{
+	requires awaken == true
+	requires alive == true
+	
+}
+
+event LightFire is Action
+{
+	requires wood > 0
+} 

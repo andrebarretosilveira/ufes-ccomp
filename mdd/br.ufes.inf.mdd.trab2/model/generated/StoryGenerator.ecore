@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="storyGenerator" nsURI="http://www.ufes.br/inf/mdd/trab2/StoryGenerator"
+    nsPrefix="storyGenerator">
+  <eClassifiers xsi:type="ecore:EClass" name="Story">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="world" eType="#//World"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="events" upperBound="-1"
+        eType="#//Event" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="World">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" upperBound="-1"
+        eType="#//Attribute" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Attribute">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="attrType" eType="#//AttrType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Event">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="abstract" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="superType" eType="#//Event"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditions" upperBound="-1"
+        eType="#//Condition" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Condition">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="boolExp" eType="#//BoolExp"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BoolExp">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="#//UnaryBoolExp"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="boolOp" eType="#//BoolOp"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="right" eType="#//BoolExp"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parBoolExp" eType="#//BoolExp"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="binaryBool" eType="#//BinaryBoolExp"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="binaryQnty" eType="#//BinaryQntyExp"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="negateBoolExp" eType="#//NegateBoolExp"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="unaryBool" eType="#//UnaryBoolExp"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BinaryBoolExp">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="#//UnaryBoolExp"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="boolOp" eType="#//BoolOp"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="right" eType="#//UnaryBoolExp"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BinaryQntyExp">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="#//UnaryQuantityExp"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="numOp" eType="#//NumOp"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="right" eType="#//UnaryQuantityExp"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="UnaryBoolExp">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="id" eType="#//Attribute"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="#//BooleanValue"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NegateBoolExp">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="boolExp" eType="#//BoolExp"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="UnaryQuantityExp">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="id" eType="#//Attribute"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="AttrType">
+    <eLiterals name="FACT" literal="fact"/>
+    <eLiterals name="QUANTITY" value="1" literal="quantity"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="BooleanValue">
+    <eLiterals name="TRUE" literal="true"/>
+    <eLiterals name="FALSE" value="1" literal="false"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="NumOp">
+    <eLiterals name="EQ" literal="=="/>
+    <eLiterals name="NEQ" value="1" literal="!="/>
+    <eLiterals name="GT" value="2" literal=">"/>
+    <eLiterals name="LT" value="3" literal="&lt;"/>
+    <eLiterals name="GE" value="4" literal=">="/>
+    <eLiterals name="LE" value="5" literal="&lt;="/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="BoolOp">
+    <eLiterals name="EQ" literal="=="/>
+    <eLiterals name="NEQ" value="1" literal="!="/>
+    <eLiterals name="AND" value="2" literal="and"/>
+    <eLiterals name="OR" value="3" literal="or"/>
+  </eClassifiers>
+</ecore:EPackage>

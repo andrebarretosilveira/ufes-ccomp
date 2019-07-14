@@ -1,0 +1,1 @@
+INDEX VERSION 1.130+/home/eric/runtime-EclipseXtext/.metadata/.plugins/org.eclipse.jdt.core

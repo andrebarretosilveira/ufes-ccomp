@@ -1,0 +1,14 @@
+World
+{
+	fact isNightTime
+	fact awaken
+	fact alive
+	quantity wood
+}
+
+abstract event Action
+{
+	requires awaken == true
+}
+
+event Name2 is Name { requires awaken == false } 
