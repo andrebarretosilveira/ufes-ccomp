@@ -7,6 +7,7 @@ Trabalhos e códigos de matérias do curso Ciência da Computação da UFES. Os 
 
 ## Optativas
 - [**mdd**](https://github.com/anbaretto/ufes-ccomp/tree/master/mdd): _Model Driven Development_
+- [**webdev**](https://github.com/dwws-ufes/2018-ConGames): _Web Development and the Semantic Web_
 
 ## 8o Período
 - [**cg**](https://github.com/anbaretto/ufes-ccomp/tree/master/cg): Computação Gráfica
